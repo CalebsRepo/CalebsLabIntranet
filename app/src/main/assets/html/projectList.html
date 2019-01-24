@@ -27,7 +27,6 @@
 
         <!--제목, 셀렉트박스, 추가버튼-->
         <div class="select-area">
-            <h3>• 프로젝트 일정 </h3>
             <div class="gird-pt">
                 <div class="grid-cd-1">
                     <h3>• 프로젝트 일정 </h3>
@@ -40,11 +39,13 @@
 
         <style>
             .plan{display:block; color:black;}
-            a.list-detail {border:none !important; padding:20px;}
-            ul{width:100%;}
+            .project-list a.list-detail {border:none !important; padding:20px;}
+            .project-list ul{width:100%; box-shadow:none !important;}
+            .project-list li{margin-bottom:10px; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
+}
         </style>
         <!--프로젝트 리스트화면-->
-        <div class="gird-pt">
+        <div class="gird-pt project-list">
             <ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
                 <li class="ui-corner-all">
                     <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
@@ -54,6 +55,14 @@
                         <div class="plan plan-state">상태 : 프로젝트 종료</div>
                     </a>
                 </li>
+                <li class="ui-corner-all">
+                <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
+                    <div class="plan plan-name">프로젝트명 : 하나로브랜치 고도화</div>
+                    <div class="plan plan-date">기간 : 2018/11/20 ~ 2019/01/07</div>
+                    <div class="plan plan-people">참여인원 : 8명</div>
+                    <div class="plan plan-state">상태 : 프로젝트 종료</div>
+                </a>
+            </li>
             </ul>
         </div>
 
