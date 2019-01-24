@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,target-densitydpi=medium-dpi">
+    <!--    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>-->
+    <!--제이쿼리 설정-->
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <!--커스텀 js는 제이쿼리, 제이쿼리 모바일 설정 사이에-->
+    <script src="../js/common.js"></script>
+    <link rel="stylesheet" href="../css/project_plan.css">
+    <!--제이쿼리 모바일-->
+    <script src="../js/jquery.mobile-1.4.5.js"></script>
+    <title></title>
+</head>
+<style>
+    h1,h2,h3,h4,h5{margin: 0.5em 0;}
+    select{width:100%; height:44px;}
+    .gird-pt{width:100%; display:flex; margin-bottom:0.5em;}
+    .grid-cd-1{width:70%; display:inline-flex;}
+    .grid-cd-2{width:30%; display:inline-flex;}
+    .grid-cd-2 a{width:100%; margin:0 0 0 5px;}
+</style>
+<body>
+<section id="page1" data-role="page">
+    <div data-role="content">
+
+        <!--제목, 셀렉트박스, 추가버튼-->
+        <div class="select-area">
+            <h3>• 프로젝트 일정 </h3>
+            <div class="gird-pt">
+                <div class="grid-cd-1">
+                    <select name="select-choice-1" id="select-choice-1" class="ui-corner-all">
+                        <option value="standard">NH 통합스마트뱅킹 구축</option>
+                        <option value="rush">하나로브랜치 고도화</option>
+                        <option value="express">갈랩스랩 사내 앱 개발</option>
+                    </select>
+                </div>
+                <div class="grid-cd-2">
+                    <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-theme="b">추가</a>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .plan{display:block; color:black;}
+            a.list-detail {border:none !important; padding:20px;}
+            ul{width:100%;}
+        </style>
+        <!--프로젝트 리스트화면-->
+        <div class="gird-pt">
+            <ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
+                <li class="ui-corner-all">
+                    <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
+                        <div class="plan plan-name">일정이름 : 분석자료 제출</div>
+                        <div class="plan plan-date">기간 : 2018/04/23 ~ 2018/12/31</div>
+                        <div class="plan plan-incharge">담당자 : 박진호</div>
+
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="gird-pt">
+         <button class="ui-btn ui-corner-all">더보기</button>
+        </div>
+    </div>
+
+
+    <div data-role="footer">
+
+    </div>
+
+</section>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,target-densitydpi=medium-dpi">
+    <!--    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>-->
+    <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script src="../JS/common.js"></script>
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <script src="../JS/jquery.mobile-1.4.5.js"></script>
+
+    <script language = "javascript">
+
+    var ajaxResult="";
+    var ajaxResult2="";
+    function multiSndSample() {
+        var com_val  = [] ;
+        $("input[name='com_code']").each(function (key, value) {
+            if($(this).prop("checked") == true) {
+                com_val.push($(this).val());
+            }
+        });
+        var params = {
+                        com_code : com_val,
+                        project_code : "NHBANK_2017_05_1"
+                     };
+        navigate(params, "template.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+    }
+
+
+    function sucessFncMultiSndSample(result) {
+        console.log("sucessFncMultiSndSample>>>>>" + JSON.stringify(result));
+        ajaxResult=JSON.stringify(result);
+        ajaxResult2=JSON.parse(ajaxResult);
+
+        for(var i=0;i<ajaxResult2.length;i++){
+            console.log('******************************');
+            console.log("시작일자:"+ajaxResult2[i].start_ymd);
+            console.log("종료일자:"+ajaxResult2[i].end_ymd);
+            console.log('******************************');
+        }
+
+        document.get
+    }
+
+
+    function errorFncMultiSndSample(result) {
+        console.log("errorFncMultiSndSample>>>>>>" + JSON.stringify(result));
+    }
+   </script>
+</head>
+
+<body>
+<div class="content" data-role="content">
+    <input type="text" required class="form-control" placeholder="아이디를 입력해주세요"  id="id" name="id" value=""/>
+    <input type="password"  required class="form-control" placeholder="비밀번호를 입력해주세요" id="pw" name="pw" />
+    <button id="login" onclick="javascript:multiSndSample(); return false;">로그인</button>
+
+    <input type="hidden" name="testName" value="1" />
+    <input type="hidden" name="testName" value="2" />
+    <input type="hidden" name="testName" value="3" />
+    <input type="hidden" name="testName" value="4" />
+
+
+    <table border="1">
+        <tr>
+            <th>프로젝트이름</th>
+            <th>시작일자</th>
+            <th>종료일자</th>
+        </tr>
+
+        <tr>
+            <td>ajaxTest.project_name</td>
+            <td>ajaxTest.start_ymd</td>
+            <td>ajaxTest.end_ymd</td>
+        </tr>
+
+    </table>
+</div>
+</body>
+</html>

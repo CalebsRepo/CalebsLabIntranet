@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,target-densitydpi=medium-dpi">
+<!--    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>-->
+    <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script src="../JS/common.js"></script>
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <script src="../JS/jquery.mobile-1.4.5.js"></script>
+    <title></title>
+</head>
+
+<body>
+<section id="page1" data-role="page">
+    <header data-role="header"><h1>샘플링작업</h1></header>
+    <div class="content" data-role="content">
+        <button type="button" id="btContacts" onclick="common_movePage('contacts.html')">연락처가져오기</button>
+    </div>
+    <div class="content" data-role="content">
+        <button type="button" id="btGallery" onclick="common_movePage('gallery.html')"> 갤러리,전화,메일</button>
+    </div>
+    <div class="content" data-role="content">
+        <button type="button" id="btServer" onclick="common_movePage('webServer.html')"> 웹서버통신</button>
+    </div>
+    <div class="content" data-role="content" onclick="common_movePage('movePage.html')">
+        <button type="button" id="btPush">데이터저장/화면이동</button>
+    </div>
+    <footer data-role="footer"><h1>하단</h1></footer>
+</section>
+</body>
+</html>
+
