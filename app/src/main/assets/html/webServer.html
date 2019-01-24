@@ -37,10 +37,13 @@
             console.log('******************************');
             console.log("시작일자:"+ajaxResult2[i].start_ymd);
             console.log("종료일자:"+ajaxResult2[i].end_ymd);
+            console.log("프로젝트이름:"+ajaxResult2[i].project_name);
             console.log('******************************');
-        }
 
-        document.get
+        }
+            document.getElementById('start_ymd').innerHTML=ajaxResult2[0].start_ymd;
+            document.getElementById('end_ymd').innerHTML=ajaxResult2[0].end_ymd;
+            document.getElementById('project_name').innerHTML=ajaxResult2[0].project_name;
     }
 
 
@@ -70,9 +73,9 @@
         </tr>
 
         <tr>
-            <td>ajaxTest.project_name</td>
-            <td>ajaxTest.start_ymd</td>
-            <td>ajaxTest.end_ymd</td>
+            <td id="project_name"></td>
+            <td id="start_ymd"></td>
+            <td id="end_ymd"></td>
         </tr>
 
     </table>
