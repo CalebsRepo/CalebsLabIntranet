@@ -25,7 +25,7 @@ function phoneCall(){
      ///////////////////////////////////////////////////////////////
 
    //전역변수 모음
-   var sndUrl = "http://192.168.10.157:8080/Caleb/";   //서버주소값
+   var sndUrl = "http://192.168.10.157:8080/Caleb/";   //서버주소값 (테스트할때는 본인 ip값 넣어서. localhost 안먹힘
    var ajaxResult="";
 
       //공통 Util 모음

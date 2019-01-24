@@ -35,15 +35,15 @@
 
         for(var i=0;i<ajaxResult2.length;i++){
             console.log('******************************');
-            console.log("시작일자:"+ajaxResult2[i].start_ymd);
-            console.log("종료일자:"+ajaxResult2[i].end_ymd);
-            console.log("프로젝트이름:"+ajaxResult2[i].project_name);
+            console.log("사원이름:"+ajaxResult2[i].name);
+            console.log("이메일:"+ajaxResult2[i].email);
+            console.log("전화번호:"+ajaxResult2[i].HP_NUM);
             console.log('******************************');
 
         }
-            document.getElementById('start_ymd').innerHTML=ajaxResult2[0].start_ymd;
-            document.getElementById('end_ymd').innerHTML=ajaxResult2[0].end_ymd;
-            document.getElementById('project_name').innerHTML=ajaxResult2[0].project_name;
+            document.getElementById('employee_name').innerHTML=ajaxResult2[0].NAME;
+            document.getElementById('employee_email').innerHTML=ajaxResult2[0].EMAIL;
+            document.getElementById('employee_hp_num').innerHTML=ajaxResult2[0].HP_NUM;
     }
 
 
@@ -55,9 +55,7 @@
 
 <body>
 <div class="content" data-role="content">
-    <input type="text" required class="form-control" placeholder="아이디를 입력해주세요"  id="id" name="id" value=""/>
-    <input type="password"  required class="form-control" placeholder="비밀번호를 입력해주세요" id="pw" name="pw" />
-    <button id="login" onclick="javascript:multiSndSample(); return false;">로그인</button>
+    <button id="login" onclick="javascript:multiSndSample(); return false;">사원조회</button>
 
     <input type="hidden" name="testName" value="1" />
     <input type="hidden" name="testName" value="2" />
@@ -73,9 +71,9 @@
         </tr>
 
         <tr>
-            <td id="project_name"></td>
-            <td id="start_ymd"></td>
-            <td id="end_ymd"></td>
+            <td id="employee_name"></td>
+            <td id="employee_email"></td>
+            <td id="employee_hp_num"></td>
         </tr>
 
     </table>
