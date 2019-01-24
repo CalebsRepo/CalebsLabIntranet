@@ -25,7 +25,7 @@ function phoneCall(){
      ///////////////////////////////////////////////////////////////
 
    //전역변수 모음
-   var sndUrl = "http://calebslab1.cafe24.com/";   //서버주소값
+   var sndUrl = "http://192.168.10.157:8080/Caleb/";   //서버주소값
    var ajaxResult="";
 
       //공통 Util 모음
