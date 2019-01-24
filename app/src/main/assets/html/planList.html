@@ -16,7 +16,7 @@
 </head>
 <style>
     h1,h2,h3,h4,h5{margin: 0.5em 0;}
-    select{width:100%; height:44px;}
+    select{width:100%; height:44px; padding-left:10px; background:#ededed;}
     .gird-pt{width:100%; display:flex; margin-bottom:0.5em;}
     .grid-cd-1{width:70%; display:inline-flex;}
     .grid-cd-2{width:30%; display:inline-flex;}
@@ -45,17 +45,27 @@
 
         <style>
             .plan{display:block; color:black;}
-            a.list-detail {border:none !important; padding:20px;}
-            ul{width:100%;}
+            .plan-list a.list-detail {border:none !important; padding:20px;}
+            .plan-list ul{width:100%; box-shadow:none !important;}
+            .plan-list li{ box-shadow: 0 1px 3px rgba(0,0,0,.4);}
+
         </style>
-        <!--프로젝트 리스트화면-->
-        <div class="gird-pt">
+        <!--일정 리스트화면-->
+        <div class="gird-pt plan-list">
             <ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
                 <li class="ui-corner-all">
                     <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
                         <div class="plan plan-name">일정이름 : 분석자료 제출</div>
-                        <div class="plan plan-date">기간 : 2018/04/23 ~ 2018/12/31</div>
+                        <div class="plan plan-date">기간 : 2018/04/23 ~ 2018/4/30</div>
                         <div class="plan plan-incharge">담당자 : 박진호</div>
+
+                    </a>
+                </li>
+                <li class="ui-corner-all">
+                    <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
+                        <div class="plan plan-name">일정이름 : 1차 개발 시작</div>
+                        <div class="plan plan-date">기간 : 2018/05/01 ~ 2018/05/23</div>
+                        <div class="plan plan-incharge">담당자 : 노종현</div>
 
                     </a>
                 </li>
