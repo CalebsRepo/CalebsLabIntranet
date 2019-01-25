@@ -1,0 +1,34 @@
+<style>
+
+    /*Common*/
+    h1,h2,h3,h4,h5{margin: 0.5em 0;}
+
+    /*Plan LIst Page*/
+    /*Select Area*/
+    .plan-list .title-area .select-area select{width:100%; height:44px; padding-left:10px; background:#ededed;}
+    .plan-list .title-area div.gird-pt{width:100%; display:flex; margin-bottom:0.5em;}
+    .plan-list .title-area div.grid-cd-1{width:70%; display:inline-flex;}
+    .plan-list .title-area div.grid-cd-2{width:30%; display:inline-flex;}
+    .plan-list .title-area div.grid-cd-2 a{width:100%; margin:0 0 0 5px;}
+
+    /*List-Summary*/
+    .plan-list .summary-list div.plan{display:block; color:#333333;}
+    .plan-list .summary-list a.list-detail {border:none !important; padding:20px; }
+    .plan-list .summary-list ul{width:100%; box-shadow:none !important;}
+    .plan-list .summary-list li{ margin-bottom:10px; background:#f7f7f7 !important; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
+
+    /*Project_plan Page*/
+    /*Title Area*/
+    .project-list .title-area .gird-pt{width:100%; display:flex; margin-bottom:0.5em;}
+    .project-list .title-area div.grid-cd-1{width:70%; display:inline-flex;}
+    .project-list .title-area div.grid-cd-2{width:30%; display:inline-flex;}
+    .project-list .title-area div.grid-cd-2 a{width:100%; margin:0 0 0 5px;}
+
+     /*Summary List*/
+    .project-list .summary-list .plan{display:block; color:#333333;}
+    .project-list .summary-list a.list-detail {border:none !important; padding:20px;}
+    .project-list .summary-list ul{width:100%; box-shadow:none !important;}
+    .project-list .summary-list li{margin-bottom:10px; background:#f7f7f7 !important; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
+
+
+</style>
