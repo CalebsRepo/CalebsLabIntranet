@@ -14,19 +14,12 @@
     <script src="../js/jquery.mobile-1.4.5.js"></script>
     <title></title>
 </head>
-<style>
-    h1,h2,h3,h4,h5{margin: 0.5em 0;}
-    .gird-pt{width:100%; display:flex; margin-bottom:0.5em;}
-    .grid-cd-1{width:70%; display:inline-flex;}
-    .grid-cd-2{width:30%; display:inline-flex;}
-    .grid-cd-2 a{width:100%; margin:0 0 0 5px;}
-</style>
+
 <body>
 <section id="page1" data-role="page">
-    <div data-role="content">
-
-        <!--제목, 셀렉트박스, 추가버튼-->
-        <div class="select-area">
+    <div data-role="content" class="project-list">
+        <!--제목, 추가버튼-->
+        <div  class="title-area">
             <div class="gird-pt">
                 <div class="grid-cd-1">
                     <h3>• 프로젝트 일정 </h3>
@@ -37,15 +30,8 @@
             </div>
         </div>
 
-        <style>
-            .plan{display:block; color:black;}
-            .project-list a.list-detail {border:none !important; padding:20px;}
-            .project-list ul{width:100%; box-shadow:none !important;}
-            .project-list li{margin-bottom:10px; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
-}
-        </style>
         <!--프로젝트 리스트화면-->
-        <div class="gird-pt project-list">
+        <div class="gird-pt summary-list">
             <ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
                 <li class="ui-corner-all">
                     <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
