@@ -1,38 +1,39 @@
-function common_movePage(url, jsonData) {
+document.write("<script src='https://code.jquery.com/jquery-3.3.1.js'></script>");
+document.write("<script src='http://code.jquery.com/mobile/1.5.0-alpha.1/jquery.mobile-1.5.0-alpha.1.min.js'></script>");
 
-        if(jsonData != null) {
-            window.android.movePage(url, JSON.stringify(jsonData));
-        } else {
-            window.android.movePage(url, null);
-        }
-}
+    function common_movePage(url, jsonData) {
 
+            if(jsonData != null) {
+                window.android.movePage(url, JSON.stringify(jsonData));
+            } else {
+                window.android.movePage(url, null);
+            }
+    }
 
-function emailSend(){
-    window.android.openApp();
-}
+    function emailSend(){
+        window.android.openApp();
+    }
 
-
-function phoneCall(){
-    window.android.openApp();
-}
-
-
-
+    function phoneCall(){
+        window.android.openApp();
+    }
 
      //////////////////////////////////////////////////////////////
      // 웹서버 통신 START
      ///////////////////////////////////////////////////////////////
 
-   //전역변수 모음
-   var sndUrl = "http://192.168.10.157:8080/Caleb/";   //서버주소값 (테스트할때는 본인 ip값 넣어서. localhost 안먹힘
-   var ajaxResult="";
+    //전역변수 모음
+    //var sndUrl = "http://calebslab1.cafe24.com/";	//서버주소값
+    var sndUrl = "http://192.168.10.27:8080/";	//서버주소값
 
-      //공통 Util 모음
+    var sessionInfo;
+    var wasParams = {};  //was와 통실될 파라미터
 
-      /**
-       * 서버호출 샘플
-       */
+    //공통 Util 모음
+
+    /**
+     * 서버호출 샘플
+     */
     function navigate(params, target, successFnc, errorFnc) {
         $.ajax({
             url : sndUrl + target,
@@ -44,9 +45,22 @@ function phoneCall(){
         });
     }
 
-     //////////////////////////////////////////////////////////////
-     // 웹서버 통신 END
-     ///////////////////////////////////////////////////////////////
+    function errorFunction(result) {
+        alert("errorFunction" + JSON.stringify(result));
+    }
+
+    function getSessionMap(result) {
+        sessionInfo = JSON.parse(result);
+
+        //세션 설정후 호출될 callback함수
+        if (getSessionInfo() != undefined) {
+            getSessionInfo();
+        }
+    }
+
+    //////////////////////////////////////////////////////////////
+    // 웹서버 통신 END
+    ///////////////////////////////////////////////////////////////
 
     //sessionStorage에 jsonObject 형식의 데이터를 key/value로 저장
     function setStorageItem(param, key){
