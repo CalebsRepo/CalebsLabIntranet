@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         }
         web.addJavascriptInterface(new WebAppInterface(this), "android");
 
-        web.loadUrl("file:///android_asset/html/regProject.html"); // 처음 로드할 페이지
+        web.loadUrl("file:///android_asset/html/index.html"); // 처음 로드할 페이지
 
         //크롬 클라이언트 생성:
         //html5의 file 기능을 사용하기 위해서는 웹뷰에 setWebChromeClient 설정이 따로 필요하다
