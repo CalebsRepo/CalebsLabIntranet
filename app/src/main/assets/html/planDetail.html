@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <link rel="stylesheet" href="../css/project_plan.css">
+    <script src="../js/common.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <title></title>
+</head>
+
+<body>
+<section id="page1" data-role="page">
+    <div data-role="content" class="plan-detail">
+        <!--제목-->
+        <div  class="title-area">
+            <div class="gird-pt">
+                <h3>• 프로젝트 일정 등록 </h3>
+            </div>
+        </div>
+
+        <style>
+            .project-detail .detail-form .ui-field-contain{ display:flex; width:100%;}
+            .project-detail .detail-form .ui-field-contain label{width:110px; display:flex; align-items:center; margin:0;}
+            .project-detail .detail-form .ui-field-contain input{width:calc(100% - 110px;); display:inline-flex; }
+            .project-detail .detail-form .ui-field-contain textarea{width:calc(100% - 110px); display:inline-flex; }
+        </style>
+        <!--프로젝트 리스트화면-->
+        <div class="gird-pt detail-form">
+            <form>
+               <div class="ui-field-contain">
+                   <label for="textinput-1">일정이름:</label>
+                   <input type="text" name="textinput-1" id="textinput-1" placeholder="프로젝트명 입력" value="NH 통합스마트뱅킹 구축">
+               </div>
+                <div class="ui-field-contain">
+                    <label for="textinput-2">구분:</label>
+                    <input type="text" name="textinput-2" id="textinput-2" placeholder="발주회사 입력" value="NH은행">
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput-3">시작일:</label>
+                    <input type="text" name="textinput-3" id="textinput-3" placeholder="시작일을 선택해주세요" value="2018/01/01">
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput-4">종료일:</label>
+                    <input type="text" name="textinput-4" id="textinput-4" placeholder="종료일을 선택해주세요" value="2018/12/31">
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textarea-5">설명:</label>
+                    <textarea type="textarea" name="textarea-5" id="textarea-5" placeholder="요구사항 및 내용을 입력해주세요(200자 이내)" value="NH 통합스마트뱅킹 구축 (퇴직연금 단독 구축)"> </textarea>
+                </div>
+
+            </form>
+        </div>
+        <style>
+            .btn_area .grid-pt{width:100%; display:flex;}
+            .btn_area .grid-pt .grid-cd-1{width: 50%; display:inline-flex; margin-right:0.1em;}
+            .btn_area .grid-pt .grid-cd-2{width: 50%; display:inline-flex; margin-left:0.1em;}
+            .btn_area .grid-pt .grid-cd-2 a.ui-btn-b{border: #3388cc;}
+            .btn_area .grid-pt a{width:100%;}
+        </style>
+        <div class="btn_area">
+            <div class="grid-pt">
+                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">등록</a></div>
+            </div>
+        </div>
+    </div>
+
+
+    <div data-role="footer">
+
+    </div>
+
+</section>
+</body>
+</html>
