@@ -21,7 +21,7 @@
 
     //전역변수 모음
     //var sndUrl = "http://calebslab1.cafe24.com/";	//서버주소값
-    var sndUrl = "http://192.168.10.27:8080/";	//서버주소값
+    var sndUrl = "http://192.168.10.157:8080/Caleb/";	//서버주소값
 
     var sessionInfo;
     var wasParams = {};  //was와 통실될 파라미터
