@@ -1,6 +1,3 @@
-document.write("<script src='https://code.jquery.com/jquery-3.3.1.js'></script>");
-document.write("<script src='http://code.jquery.com/mobile/1.5.0-alpha.1/jquery.mobile-1.5.0-alpha.1.min.js'></script>");
-
     function common_movePage(url, jsonData) {
 
             if(jsonData != null) {
