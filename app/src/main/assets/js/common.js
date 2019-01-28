@@ -42,6 +42,20 @@
         });
     }
 
+      /**
+       * 서버호출 샘플2 : param 존재하지 않을경우
+       */
+    function navigate2(target, successFnc, errorFnc) {
+        $.ajax({
+            url : sndUrl + target,
+            type : "post",
+            dataType: "json",
+            success : successFnc,
+            error : errorFnc
+        });
+    }
+
+
     function errorFunction(result) {
         alert("errorFunction" + JSON.stringify(result));
     }

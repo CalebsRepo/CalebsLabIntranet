@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,target-densitydpi=medium-dpi">
-<!--    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>-->
+    <!--    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>-->
     <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
     <script src="../js/common.js"></script>
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
@@ -31,7 +31,15 @@
     <div class="content" data-role="content" onclick="common_movePage('movePage.html')">
         <button type="button" id="btPush">데이터저장/화면이동</button>
     </div>
-
+    <div class="content" data-role="content" onclick="common_movePage('projectList.html')">
+        <button type="button" id="btProjectList">프로젝트 목록</button>
+    </div>
+    <div class="content" data-role="content" onclick="common_movePage('planList.html')">
+        <button type="button" id="btPlanList">프로젝트 일정목록</button>
+    </div>
+    <div class="content" data-role="content" onclick="common_movePage('projectDetail.html')">
+        <button type="button" id="btProjectDetail">프로젝트 상세조회</button>
+    </div>
 
     <!-- footer -->
     <div style="overflow: hidden;" data-role="footer" data-position="fixed">

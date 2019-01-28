@@ -13,19 +13,19 @@
 
     var ajaxResult="";
     var ajaxResult2="";
-    function multiSndSample() {
-        var com_val  = [] ;
-        $("input[name='com_code']").each(function (key, value) {
-            if($(this).prop("checked") == true) {
-                com_val.push($(this).val());
-            }
-        });
-        var params = {
-                        com_code : com_val,
-                        project_code : "NHBANK_2017_05_1"
-                     };
-        navigate(params, "employee.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+
+    function listSearch(){
+        navigate2("employee.json", sucessFncMultiSndSample, errorFncMultiSndSample);
     }
+
+    function nameSearch(){
+        var employeeName= document.getElementById('nameWrite').value;
+        var params = {
+                employeeName : employeeName,
+             };
+        navigate(params, "employeeName.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+    }
+
 
 
     function sucessFncMultiSndSample(result) {
@@ -35,15 +35,17 @@
 
         for(var i=0;i<ajaxResult2.length;i++){
             console.log('******************************');
-            console.log("사원이름:"+ajaxResult2[i].name);
-            console.log("이메일:"+ajaxResult2[i].email);
+            console.log("사원이름:"+ajaxResult2[i].NAME);
+            console.log("직급:"+ajaxResult2[i].GRADE);
             console.log("전화번호:"+ajaxResult2[i].HP_NUM);
+            console.log("이메일:"+ajaxResult2[i].EMAIL);
             console.log('******************************');
 
         }
             document.getElementById('employee_name').innerHTML=ajaxResult2[0].NAME;
-            document.getElementById('employee_email').innerHTML=ajaxResult2[0].EMAIL;
+<!--            document.getElementById('employee_grade').innerHTML=ajaxResult2[0].GRADE;-->
             document.getElementById('employee_hp_num').innerHTML=ajaxResult2[0].HP_NUM;
+            document.getElementById('employee_email').innerHTML=ajaxResult2[0].EMAIL;
     }
 
 
@@ -51,29 +53,37 @@
         console.log("errorFncMultiSndSample>>>>>>" + JSON.stringify(result));
     }
    </script>
-</head>
 
+    <style>
+      table {
+        width: 100%;
+        border: 1px solid #444444;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid #444444;
+      }
+    </style>
+</head>
 <body>
 <div class="content" data-role="content">
-    <button id="login" onclick="javascript:multiSndSample(); return false;">사원조회</button>
-
-    <input type="hidden" name="testName" value="1" />
-    <input type="hidden" name="testName" value="2" />
-    <input type="hidden" name="testName" value="3" />
-    <input type="hidden" name="testName" value="4" />
-
-
-    <table border="1">
+    <input tyle="text" id="nameWrite">
+    <button id="nameSearch" onclick="javascript:nameSearch(); return false;">이름검색</button>
+    <button id="listSearch" onclick="javascript:listSearch(); return false;">전체검색</button>
+    <table>
         <tr>
-            <th>프로젝트이름</th>
-            <th>시작일자</th>
-            <th>종료일자</th>
+            <th>이름</th>
+<!--            <th>직급</th>-->
+            <th>전화번호</th>
+            <th>이메일</th>
         </tr>
 
         <tr>
             <td id="employee_name"></td>
-            <td id="employee_email"></td>
+<!--            <td id="employee_grade"></td>-->
             <td id="employee_hp_num"></td>
+            <td id="employee_email"></td>
+
         </tr>
 
     </table>
