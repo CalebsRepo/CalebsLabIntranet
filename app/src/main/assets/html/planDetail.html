@@ -55,24 +55,39 @@
             </form>
         </div>
         <style>
-            .btn_area .grid-pt{width:100%; display:flex;}
-            .btn_area .grid-pt .grid-cd-1{width: 50%; display:inline-flex; margin-right:0.1em;}
-            .btn_area .grid-pt .grid-cd-2{width: 50%; display:inline-flex; margin-left:0.1em;}
-            .btn_area .grid-pt .grid-cd-2 a.ui-btn-b{border: #3388cc;}
-            .btn_area .grid-pt a{width:100%;}
+            .btn_area-1 .grid-pt{width:100%; display:flex;}
+            .btn_area-1 .grid-pt .grid-cd-1{width: 50%; display:inline-flex; margin-right:0.1em;}
+            .btn_area-1 .grid-pt .grid-cd-2{width: 50%; display:inline-flex; margin-left:0.1em;}
+            .btn_area-1 .grid-pt .grid-cd-2 a.ui-btn-b{border: #3388cc;}
+            .btn_area-1 .grid-pt a{width:100%;}
+
+            .btn_area-3 .grid-pt{width:100%; display:flex;}
+            .btn_area-3 .grid-pt .grid-cd-1{width: 33.33%; display:inline-flex; margin-right:0.1em;}
+            .btn_area-3 .grid-pt .grid-cd-2{width: 33.33%; display:inline-flex; margin-left:0.1em; margin-right:0.1em;}
+            .btn_area-3 .grid-pt .grid-cd-3{width: 33.33%; display:inline-flex; margin-left:0.1em;}
+            .btn_area-3 .grid-pt .grid-cd-2 a.ui-btn-b, .btn_area-3 .grid-pt .grid-cd-3 a.ui-btn-b {border: #3388cc;}
+            .btn_area-3 .grid-pt a{width:100%;}
         </style>
-        <div class="btn_area">
+        <div class="btn_area-1">
             <div class="grid-pt">
                 <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
                 <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">등록</a></div>
             </div>
         </div>
+        <div class="btn_area-2">
+            <div class="gird-pt">
+                <button class="ui-btn ui-corner-all ui-btn-b" onclick="common_movePage('index.html')" >목록</button>
+            </div>
+        </div>
+        <div class="btn_area-3">
+            <div class="grid-pt">
+                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">삭제</a></div>
+                <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">등록</a></div>
+            </div>
+        </div>
     </div>
 
-
-    <div data-role="footer">
-
-    </div>
 
 </section>
 </body>
