@@ -13,9 +13,9 @@
 
     /*List-Summary*/
     .plan-list .summary-list div.plan{display:block; color:#333333;}
-    .plan-list .summary-list a.list-detail {border:none !important; padding:20px; }
+    .plan-list .summary-list a.list-detail {border:none !important; padding:20px; background:#f7f7f7 !important;}
     .plan-list .summary-list ul{width:100%; box-shadow:none !important;}
-    .plan-list .summary-list li{ margin-bottom:10px; background:#f7f7f7 !important; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
+    .plan-list .summary-list li{ margin-bottom:10px; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
 
     /*Project_plan Page*/
     /*Title Area*/
@@ -26,9 +26,9 @@
 
      /*Summary List*/
     .project-list .summary-list .plan{display:block; color:#333333;}
-    .project-list .summary-list a.list-detail {border:none !important; padding:20px;}
+    .project-list .summary-list a.list-detail {border:none !important; padding:20px; background:#f7f7f7 !important;}
     .project-list .summary-list ul{width:100%; box-shadow:none !important;}
-    .project-list .summary-list li{margin-bottom:10px; background:#f7f7f7 !important; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
+    .project-list .summary-list li{margin-bottom:10px; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
 
 
 </style>
