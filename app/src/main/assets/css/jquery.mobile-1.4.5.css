@@ -2478,7 +2478,7 @@ button.ui-btn-icon-notext,
 .ui-field-contain:last-child {
 	border-bottom-width: 0;
 }
-@media (min-width: 28em) {
+@media (min-width: 22em) {
 	.ui-field-contain,
 	.ui-mobile fieldset.ui-field-contain {
 		padding: 0;

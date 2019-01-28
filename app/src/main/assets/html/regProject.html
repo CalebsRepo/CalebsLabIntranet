@@ -3,27 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,target-densitydpi=medium-dpi">
-    <!--    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>-->
-    <!--제이쿼리설정-->
-    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
-    <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <!--커스텀 js는 제이쿼리, 제이쿼리 모바일 설정 사이에-->
     <script src="../js/common.js"></script>
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
     <link rel="stylesheet" href="../css/project_plan.css">
-    <!--제이쿼리 모바일-->
-    <script src="../js/jquery.mobile-1.4.5.js"></script>
+    <script>
+        $.datepicker.setDefaults({
+        dateFormat: 'yy-mm-dd',
+        prevText: '이전 달',
+        nextText: '다음 달',
+        monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+        monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+        dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+        dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+        dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+        showMonthAfterYear: true,
+        yearSuffix: '년'
+      });
+    </script>
     <title></title>
 </head>
 <style>
-.regProject .grid-pt{width:100%; display:flex;}
-.regProject .grid-pt .grid-cd-1{width: 50%; display:inline-flex; margin-right:0.1em;}
-.regProject .grid-pt .grid-cd-2{width: 50%; display:inline-flex; margin-left:0.1em;}
-.regProject .grid-pt a{width:100%;}
+.btn_area .grid-pt{width:100%; display:flex;}
+.btn_area .grid-pt .grid-cd-1{width: 50%; display:inline-flex; margin-right:0.1em;}
+.btn_area .grid-pt .grid-cd-2{width: 50%; display:inline-flex; margin-left:0.1em;}
+.btn_area .grid-pt a{width:100%;}
 
 </style>
 <body>
 <section id="page1" data-role="page">
-    <div data-role="content" class="regProject">
+    <div data-role="content" class="pjt_info">
+        <div class="title_area">
+            <h3>• 프로젝트 기본정보 </h3>
+        </div>
+        <div class="ui-field-contain">
+            <label for="textarea-1">프로젝트명</label>
+            <textarea cols="40" rows="8" name="textarea-1" id="textarea-1"></textarea>
+        </div>
+        <div class="ui-field-contain">
+            <label for="textarea-2">발주회사</label>
+            <textarea cols="40" rows="8" name="textarea-2" id="textarea-2"></textarea>
+        </div>
+        <div class="datepicker">
+            <p>
+                프로젝트 기간
+                <input type="text" id="picker1" readonly> ~
+                <input type="text" id="picker2" readonly>
+                <script>
+                    $("#picker1, #picker2").datepicker();
+                </script>
+            </p>
+        </div>
+        <div class="ui-field-contain">
+            <label for="textarea-4">설명</label>
+            <textarea cols="40" rows="8" name="textarea-2" id="textarea-4"></textarea>
+        </div>
+    </div>
+    <div data-role="content" class="btn_area">
         <div class="grid-pt">
             <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
             <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all">등록</a></div>
@@ -31,9 +70,9 @@
     </div>
 
 
-    <div data-role="footer">
+    <!--<div data-role="footer">-->
 
-    </div>
+    <!--</div>-->
 </section>
 </body>
 </html>
