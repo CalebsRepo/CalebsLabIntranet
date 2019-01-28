@@ -30,5 +30,24 @@
     .project-list .summary-list ul{width:100%; box-shadow:none !important;}
     .project-list .summary-list li{margin-bottom:10px; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
 
+    /*Plan_Detail Page*/
+    /*detail-form*/
+    .project-detail .detail-form .ui-field-contain{ display:flex; width:100%;}
+    .project-detail .detail-form .ui-field-contain label{width:110px; display:flex; align-items:center; margin:0;}
+    .project-detail .detail-form .ui-field-contain input{width:calc(100% - 110px;); display:inline-flex; }
+    .project-detail .detail-form .ui-field-contain textarea{width:calc(100% - 110px); display:inline-flex; }
 
+    /*btn-area*/
+   .project-detail .btn_area-1 .grid-pt{width:100%; display:flex;}
+   .project-detail .btn_area-1 .grid-pt .grid-cd-1{width: 50%; display:inline-flex; margin-right:0.1em;}
+   .project-detail .btn_area-1 .grid-pt .grid-cd-2{width: 50%; display:inline-flex; margin-left:0.1em;}
+   .project-detail .btn_area-1 .grid-pt .grid-cd-2 a.ui-btn-b{border: #3388cc;}
+   .project-detail .btn_area-1 .grid-pt a{width:100%;}
+
+   .project-detail .btn_area-3 .grid-pt{width:100%; display:flex;}
+   .project-detail .btn_area-3 .grid-pt .grid-cd-1{width: 33.33%; display:inline-flex; margin-right:0.1em;}
+   .project-detail .btn_area-3 .grid-pt .grid-cd-2{width: 33.33%; display:inline-flex; margin-left:0.1em; margin-right:0.1em;}
+   .project-detail .btn_area-3 .grid-pt .grid-cd-3{width: 33.33%; display:inline-flex; margin-left:0.1em;}
+   .project-detail .btn_area-3 .grid-pt .grid-cd-2 a.ui-btn-b, .btn_area-3 .grid-pt .grid-cd-3 a.ui-btn-b {border: #3388cc;}
+   .project-detail .btn_area-3 .grid-pt a{width:100%;}
 </style>
