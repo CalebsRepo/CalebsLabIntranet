@@ -21,13 +21,12 @@
                 <h3>• 프로젝트 일정 등록 </h3>
             </div>
         </div>
-
         <style>
-            .project-detail .detail-form .ui-field-contain{ display:flex; width:100%;}
-            .project-detail .detail-form .ui-field-contain label{width:110px; display:flex; align-items:center; margin:0;}
-            .project-detail .detail-form .ui-field-contain input{width:calc(100% - 110px;); display:inline-flex; }
-            .project-detail .detail-form .ui-field-contain textarea{width:calc(100% - 110px); display:inline-flex; }
+            div#select-2-button { padding: 7.5px 5px; background:#ffffff;}
+            div#select-2-button span { text-align: left; font-weight: 600;}
+
         </style>
+
         <!--프로젝트 리스트화면-->
         <div class="gird-pt detail-form">
             <form>
@@ -36,8 +35,13 @@
                    <input type="text" name="textinput-1" id="textinput-1" placeholder="프로젝트명 입력" value="NH 통합스마트뱅킹 구축">
                </div>
                 <div class="ui-field-contain">
-                    <label for="textinput-2">구분:</label>
-                    <input type="text" name="textinput-2" id="textinput-2" placeholder="발주회사 입력" value="NH은행">
+                    <label for="select-2">구분:</label>
+                    <select name="select-2" id="select-2" class="ui-corner-all">
+                        <option value="projectCode">업무</option>
+                        <option value="projectCode">휴가</option>
+                        <option value="projectCode">회사</option>
+                        <option value="projectCode">기타</option>
+                    </select>
                 </div>
                 <div class="ui-field-contain">
                     <label for="textinput-3">시작일:</label>
@@ -55,24 +59,28 @@
             </form>
         </div>
         <style>
-            .btn_area .grid-pt{width:100%; display:flex;}
-            .btn_area .grid-pt .grid-cd-1{width: 50%; display:inline-flex; margin-right:0.1em;}
-            .btn_area .grid-pt .grid-cd-2{width: 50%; display:inline-flex; margin-left:0.1em;}
-            .btn_area .grid-pt .grid-cd-2 a.ui-btn-b{border: #3388cc;}
-            .btn_area .grid-pt a{width:100%;}
+
         </style>
-        <div class="btn_area">
+        <div class="btn-area-1">
             <div class="grid-pt">
                 <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
                 <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">등록</a></div>
             </div>
         </div>
+        <div class="btn-area-2">
+            <div class="gird-pt">
+                <button class="ui-btn ui-corner-all ui-btn-b" onclick="common_movePage('index.html')" >목록</button>
+            </div>
+        </div>
+        <div class="btn-area-3">
+            <div class="grid-pt">
+                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">삭제</a></div>
+                <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">등록</a></div>
+            </div>
+        </div>
     </div>
 
-
-    <div data-role="footer">
-
-    </div>
 
 </section>
 </body>
