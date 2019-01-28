@@ -9,13 +9,48 @@
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <title></title>
-    <style>.ui-btn-icon-top { padding-top : 3em;}</style>
+    <style>
+        .ui-btn-icon-top { padding-top : 3em;}
+        .ui-bar { text-align: center; }
+        .ui-bar .header-menu { float: right; }
+        .ui-bar .header-back { float: left; }
+        .ui-panel { width : 20em;}
+        #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
+    </style>
 </head>
 
 <body>
 <section id="page1" data-role="page">
     <!-- header -->
-    <header data-role="header"><h1>샘플링작업</h1></header>
+    <!-- header -->
+    <header data-role="header">
+        <div class="ui-bar">
+            <button class="header-back"><span>back</span></button>
+            <h1>CalebsLab</h1>
+            <a href="#menuPanel" class="btn header-menu">Menu</a>
+        </div>
+    </header>
+
+    <div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
+        <h2>메뉴</h2>
+        <ul data-role="listview">
+            <p>내정보</p>
+            <li><a href="#">마이페이지</a></li>
+            <p>프로젝트</p>
+            <li><a href="#">프로젝트</a></li>
+            <li><a href="#">프로젝트일정 목록</a></li>
+            <p>휴가</p>
+            <li><a href="#">휴가신청</a></li>
+            <li><a href="#">휴가신청내역</a></li>
+            <li><a href="#">휴가캘린더</a></li>
+            <p>게시판</p>
+            <li><a href="#">FAQ</a></li>
+            <p>관리</p>
+            <li><a href="#">사원등록</a></li>
+            <li><a href="#">사원목록</a></li>
+            <li><a href="#">휴가현황</a></li>
+        </ul>
+    </div>
 
 
     <!-- content -->
@@ -23,10 +58,10 @@
         <button type="button" id="btContacts" onclick="common_movePage('contacts.html')">연락처가져오기</button>
     </div>
     <div class="content" data-role="content">
-        <button type="button" id="btGallery" onclick="common_movePage('gallery.html')"> 갤러리,전화,메일</button>
+        <button type="button" id="btGallery" onclick="common_movePage('employeeDetail.html')"> 마이페이지</button>
     </div>
     <div class="content" data-role="content">
-        <button type="button" id="btServer" onclick="common_movePage('webServer.html')"> 웹서버통신</button>
+        <button type="button" id="btServer" onclick="common_movePage('employeeInfo.html')"> 사원정보</button>
     </div>
     <div class="content" data-role="content" onclick="common_movePage('movePage.html')">
         <button type="button" id="btPush">데이터저장/화면이동</button>

@@ -14,25 +14,35 @@
     var ajaxResult="";
     var ajaxResult2="";
 
+    <!--전체검색: 나중에 지울거. 화면 나오자마자 나와야함-->
     function listSearch(){
+        navigate2("employee.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+        $("#my-tbody").children().remove();
+    }
+
+    <!--더보기: 더보기 누르면 append로 더 붙여져야함-->
+    function searchMore(){
         navigate2("employee.json", sucessFncMultiSndSample, errorFncMultiSndSample);
     }
 
+    <!--이름으로 검색-->
     function nameSearch(){
         var employeeName= document.getElementById('nameWrite').value;
         var params = {
                 employeeName : employeeName,
              };
         navigate(params, "employeeName.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+        $("#my-tbody").children().remove();
     }
 
-
-
+q
+    <!--ajax통신 성공-->
     function sucessFncMultiSndSample(result) {
         console.log("sucessFncMultiSndSample>>>>>" + JSON.stringify(result));
         ajaxResult=JSON.stringify(result);
         ajaxResult2=JSON.parse(ajaxResult);
 
+    <!--동적테이블만들기-->
         for(var i=0;i<ajaxResult2.length;i++){
             console.log('******************************');
             console.log("사원이름:"+ajaxResult2[i].NAME);
@@ -41,17 +51,25 @@
             console.log("이메일:"+ajaxResult2[i].EMAIL);
             console.log('******************************');
 
+            var my_tbody = document.getElementById('my-tbody');
+            // var row = my_tbody.insertRow(0); // 상단에 추가
+            var row = my_tbody.insertRow( my_tbody.rows.length ); // 하단에 추가
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+
+            cell1.innerHTML = "<input type=checkbox id='"+ajaxResult2[i].NAME+"'>";
+            cell2.innerHTML = "<br>"+"이름:"+ajaxResult2[i].NAME+
+                              "<br>"+"직급:"+ajaxResult2[i].GRADE+
+                              "<br>"+"전화번호:"+"<a href='tel:"+ajaxResult2[i].HP_NUM+"'>"+ajaxResult2[i].HP_NUM+"</a>"+
+                              "<br>"+"이메일:"+"<a href='mailto:"+ajaxResult2[i].EMAIL+"'>"+ajaxResult2[i].EMAIL+"</a>"+
+                              "<br>";
         }
-            document.getElementById('employee_name').innerHTML=ajaxResult2[0].NAME;
-<!--            document.getElementById('employee_grade').innerHTML=ajaxResult2[0].GRADE;-->
-            document.getElementById('employee_hp_num').innerHTML=ajaxResult2[0].HP_NUM;
-            document.getElementById('employee_email').innerHTML=ajaxResult2[0].EMAIL;
     }
-
-
+    <!--ajax 통신 실패-->
     function errorFncMultiSndSample(result) {
         console.log("errorFncMultiSndSample>>>>>>" + JSON.stringify(result));
     }
+
    </script>
 
     <style>
@@ -70,23 +88,31 @@
     <input tyle="text" id="nameWrite">
     <button id="nameSearch" onclick="javascript:nameSearch(); return false;">이름검색</button>
     <button id="listSearch" onclick="javascript:listSearch(); return false;">전체검색</button>
-    <table>
+    <button id="searchMore" onclick="javascript:searchMore(); return false;">더보기</button>
+<!--    <table>
         <tr>
             <th>이름</th>
-<!--            <th>직급</th>-->
+&lt;!&ndash;            <th>직급</th>&ndash;&gt;
             <th>전화번호</th>
             <th>이메일</th>
         </tr>
-
         <tr>
             <td id="employee_name"></td>
-<!--            <td id="employee_grade"></td>-->
+&lt;!&ndash;            <td id="employee_grade"></td>&ndash;&gt;
             <td id="employee_hp_num"></td>
             <td id="employee_email"></td>
 
         </tr>
+    </table>-->
 
+    <table>
+        <thead>
+        <th>선택</th>
+        <th>사용자번호</th>
+        </thead>
+        <tbody id="my-tbody"></tbody>
     </table>
+
 </div>
 </body>
 </html>

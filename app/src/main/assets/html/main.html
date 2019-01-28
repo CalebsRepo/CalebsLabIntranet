@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,target-densitydpi=medium-dpi">
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script src="../js/jquery.mobile-1.4.5.js"></script>
+    <script src="../js/common.js"></script>
+    <title></title>
+    <script language = "javascript">
+
+    var ajaxResult="";
+    var ajaxResult2="";
+
+    function listSearch(){
+        navigate("project.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+    }
+
+  <!--  function myProject(){
+        var myProjectList= document.getElementById('nameWrite').value;
+        var params = {
+                myProjectList : myProjectList,
+             };
+        navigate(params, "myProjectList.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+    }-->
+
+
+
+    function sucessFncMultiSndSample(result) {
+        console.log("sucessFncMultiSndSample>>>>>" + JSON.stringify(result));
+        ajaxResult=JSON.stringify(result);
+        ajaxResult2=JSON.parse(ajaxResult);
+
+        for(var i=0;i<ajaxResult2.length;i++){
+            console.log('******************************');
+            console.log("ajaxResult2[i]")
+            console.log('******************************');
+
+        }
+            <!--document.getElementById('employee_name').innerHTML=ajaxResult2[0].NAME;
+            document.getElementById('employee_grade').innerHTML=ajaxResult2[0].GRADE;
+            document.getElementById('employee_hp_num').innerHTML=ajaxResult2[0].HP_NUM;
+            document.getElementById('employee_email').innerHTML=ajaxResult2[0].EMAIL;-->
+    }
+
+
+    function errorFncMultiSndSample(result) {
+        console.log("errorFncMultiSndSample>>>>>>" + JSON.stringify(result));
+    }
+   </script>
+    <style>
+        .ui-btn-icon-top { padding-top : 3em;}
+        .ui-bar { text-align: center; }
+        .ui-bar .header-menu { float: right; }
+        .ui-bar .header-back { float: left; }
+        .ui-panel { width : 20em;}
+        #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
+    </style>
+</head>
+
+<body>
+<section id="page1" data-role="page">
+    <!-- header -->
+    <header data-role="header">
+        <div class="ui-bar">
+            <button class="header-back"><span>back</span></button>
+            <h1>CalebsLab</h1>
+            <a href="#menuPanel" class="btn header-menu">Menu</a>
+        </div>
+    </header>
+
+    <div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
+        <h2>메뉴</h2>
+        <ul data-role="listview">
+            <p>내정보</p>
+            <li><a href="#">마이페이지</a></li>
+            <p>프로젝트</p>
+            <li><a href="#">프로젝트</a></li>
+            <li><a href="#">프로젝트일정 목록</a></li>
+            <p>휴가</p>
+            <li><a href="#">휴가신청</a></li>
+            <li><a href="#">휴가신청내역</a></li>
+            <li><a href="#">휴가캘린더</a></li>
+            <p>게시판</p>
+            <li><a href="#">FAQ</a></li>
+            <p>관리</p>
+            <li><a href="#">사원등록</a></li>
+            <li><a href="#">사원목록</a></li>
+            <li><a href="#">휴가현황</a></li>
+        </ul>
+    </div>
+
+    <!-- content -->
+    <div class="gird-pt summary-list">
+        <ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
+            <li class="ui-corner-all">
+                <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
+                    <div class="plan plan-name">일정이름 : 분석자료 제출</div>
+                    <div class="plan plan-date">기간 : 2018/04/23 ~ 2018/4/30</div>
+                    <div class="plan plan-incharge">담당자 : 박진호</div>
+                </a>
+            </li>
+            <li class="ui-corner-all">
+                <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
+                    <div class="plan plan-name">일정이름 : 1차 개발 시작</div>
+                    <div class="plan plan-date">기간 : 2018/05/01 ~ 2018/05/23</div>
+                    <div class="plan plan-incharge">담당자 : 노종현</div>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- footer -->
+    <div style="overflow: hidden;" data-role="footer" data-position="fixed">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#" data-icon="home">홈</a></li>
+                <li><a href="#" data-icon="shop">프로젝트</a></li>
+                <li><a href="#" data-icon="calendar">휴가신청</a></li>
+                <li><a href="#" data-icon="power">로그아웃</a></li>
+            </ul>
+        </div>
+    </div>
+</section>
+</body>
+</html>
+
