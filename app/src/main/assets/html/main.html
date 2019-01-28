@@ -43,12 +43,11 @@
             document.getElementById('employee_hp_num').innerHTML=ajaxResult2[0].HP_NUM;
             document.getElementById('employee_email').innerHTML=ajaxResult2[0].EMAIL;-->
     }
-
-
+    <!--ajax 통신 실패-->
     function errorFncMultiSndSample(result) {
         console.log("errorFncMultiSndSample>>>>>>" + JSON.stringify(result));
     }
-   </script>
+    </script>
     <style>
         .ui-btn-icon-top { padding-top : 3em;}
         .ui-bar { text-align: center; }
@@ -92,7 +91,13 @@
     </div>
 
     <!-- content -->
+    <input tyle="text" id="nameWrite">
+    <button id="nameSearch" onclick="javascript:nameSearch(); return false;">이름검색</button>
+    <button id="listSearch" onclick="javascript:listSearch(); return false;">전체검색</button>
+    <button id="searchMore" onclick="javascript:searchMore(); return false;">더보기</button>
+
     <div class="gird-pt summary-list">
+
         <ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
             <li class="ui-corner-all">
                 <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
