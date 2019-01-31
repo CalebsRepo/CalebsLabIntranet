@@ -24,56 +24,6 @@
        $(document).ready(function() {
 
           navigate({}, "calander.json", successFunction, errorFunction);
-          // navigate({}, "selCompany.json", successFunction, errorFunction);
-
-
-/*
-          $.ajax({
-                url: "http://192.168.10.239:8080/calander.json",
-                type: "POST",
-            //	data: form_data,
-                dataType: "JSON",
-                success: function(data){
-
-                    for(var i=0; i<data.length; i++) {
-
-                        var titleVal = data[i].name ;
-                        var descriptionVal = data[i].h_flag + " " + data[i].apply_count + "일";
-
-                        var startday = data[i].start_ymd;
-                        startday = startday.substring(0,4) + "-" + startday.substring(4,6) + "-" + startday.substring(6,8);
-
-                        var endday = data[i].end_ymd;
-                        endday = endday.substring(0,4) + "-" + endday.substring(4,6) + "-" + endday.substring(6,8);
-                        // 날짜 하루 더해주기
-                        var addEndday = dayAdd(endday);
-                        var colorVal = "#"+colorArr[cnt ++];
-
-                        if(cnt > 9){
-                            cnt = 0;
-                        }
-
-                        var str  = 	{
-                                     title: titleVal,
-                                     description: descriptionVal,
-                                     start: startday,
-                                     end: addEndday,
-                                     color: colorVal
-                                    }
-                        eventsArr.push(str);
-
-
-
-                  }// end of for ------------------------------------------------
-                  CalendarLoad();
-                },
-                error: function(request, status, error){
-                    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-                }
-
-            });// end of $.ajax()-------------------------------
-
-*/
 
       }); // end of $(document).ready()------------------------
 
@@ -110,6 +60,7 @@
                   }// end of for ------------------------------------------------
                   CalendarLoad();
       }
+
       function errorFunction(result) {
         alert("error>>>"+result);
       }
@@ -250,7 +201,7 @@
 
 </head>
 <body>
-<!-- <div class="container login-form" id="calendar"></div> -->
+
 <header>
 
 </header>
