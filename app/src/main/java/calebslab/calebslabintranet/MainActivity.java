@@ -19,6 +19,7 @@ import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         web = (WebView) findViewById(R.id.webview); //웹뷰 선언
+        web.setWebViewClient(new WebViewClient());
 
         // 웹뷰 세팅
         WebSettings webSet = web.getSettings();                   // 웹뷰 설정
@@ -74,6 +76,21 @@ public class MainActivity extends AppCompatActivity {
         web.addJavascriptInterface(new WebAppInterface(this), "android");
 
         web.loadUrl("file:///android_asset/html/index.html"); // 처음 로드할 페이지
+
+
+        web.setWebViewClient(new android.webkit.WebViewClient() {
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+                Log.d("MovePage", "이동 대상 URL  : " + url);
+                view.loadUrl(url);
+                Log.d("MovePage", "이동 완료");
+                return true;
+            }
+        });
+
+
 
         //크롬 클라이언트 생성:
         //html5의 file 기능을 사용하기 위해서는 웹뷰에 setWebChromeClient 설정이 따로 필요하다
