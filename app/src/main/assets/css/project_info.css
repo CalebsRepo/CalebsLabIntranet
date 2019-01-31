@@ -1,0 +1,34 @@
+<style>
+    /*Reg Project Page*/
+    /*Project Info Form Area*/
+    .regist-project .pjt-info .project-form{ display:flex; width:100%;}
+    .regist-project .pjt-info .project-form .ui-field-contain{ display:flex; width:100%;}
+    .regist-project .pjt-info .project-form .ui-field-contain label{width:110px; display:flex; align-items:center; margin:0;}
+    .regist-project .pjt-info .project-form .ui-field-contain input{width:calc(100% - 110px;); display:inline-flex; }
+    .regist-project .pjt-info .project-form .ui-field-contain div{width:calc(100% - 110px); display:inline-flex; align-items:center; margin:0;}
+    .regist-project .pjt-info .project-form .ui-field-contain textarea{width:calc(100% - 110px); display:inline-flex; }
+
+    /*Member Info Area*/
+    .regist-project .member_info .title-area select{width:100%; height:44px; padding-left:10px; background:#ededed;}
+    .regist-project .member_info .title-area div.gird-pt{width:100%; display:flex; margin-bottom:0.5em;}
+    .regist-project .member_info .title-area div.grid-cd-1{width:calc(100% - 110px); display:inline-flex;}
+    .regist-project .member_info .title-area div.grid-cd-2{width:220px; display:inline-flex; align-items:center;}
+    .regist-project .member_info .title-area div.grid-cd-2 a{width:100%; margin:0 0 0 5px;}
+    .regist-project .member_info .listview-area .member-area .ui-checkbox{ display:flex; width:100%;}
+    .regist-project .member_info .listview-area .member-area .ui-checkbox label{width:100%; display:flex; align-items:center; margin:0;}
+    .regist-project .member_info .listview-area .member-area .ui-checkbox form{width:100%; display:inline-flex; align-items:center; margin:0;}
+    .regist-project .member_info .listview-area .member-area .ui-checkbox .list-form .list-area{ display:flex; width:100%; align-content:flex-start; flex-direction:column; flex-wrap:wrap; overflow: auto;}
+    .regist-project .member_info .listview-area .member-area .ui-checkbox .list-form .list-area .ui-field-contain{ display:flex; width:100%;}
+    .regist-project .member_info .listview-area .member-area .ui-checkbox .list-form .list-area .ui-field-contain label{width:110px; display:flex; align-items:center; margin:0;}
+    .regist-project .member_info .listview-area .member-area .ui-checkbox .list-form .list-area .ui-field-contain input{width:calc(100% - 110px;); display:inline-flex; }
+    .regist-project .member_info .listview-area .member-area .ui-checkbox .list-form .list-area .ui-field-contain div{width:calc(100% - 110px); display:inline-flex; margin:0;}
+    .regist-project .member_info .listview-area .member-area .ui-checkbox .list-form .list-area .ui-field-contain textarea{width:calc(100% - 110px); display:inline-flex; }
+
+    /*Button Area*/
+    .regist-project .btn_area .grid-pt{width:100%; display:flex;}
+    .regist-project .btn_area .grid-pt .grid-cd-1{width: 50%; display:inline-flex; margin-right:0.1em;}
+    .regist-project .btn_area .grid-pt .grid-cd-2{width: 50%; display:inline-flex; margin-left:0.1em;}
+    .regist-project .btn_area .grid-pt .grid-cd-2 a.ui-btn-b{border: #3388cc;}
+    .regist-project .btn_area .grid-pt a{width:100%;}
+
+</style>

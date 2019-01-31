@@ -2,6 +2,7 @@ package calebslab.calebslabintranet;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -10,6 +11,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +21,7 @@ import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +34,8 @@ import java.io.File;
 import component.Contacts;
 
 public class MainActivity extends AppCompatActivity {
+
+    final Context myApp = this;
 
     WebView web; // 웹뷰 선언
     JSONObject jsonData; // 자바스크립트에서 값을 받을 json 변수 선언
@@ -53,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         web = (WebView) findViewById(R.id.webview); //웹뷰 선언
+        web.setWebViewClient(new WebViewClient());
 
         // 웹뷰 세팅
         WebSettings webSet = web.getSettings();                   // 웹뷰 설정
@@ -75,9 +81,45 @@ public class MainActivity extends AppCompatActivity {
 
         web.loadUrl("file:///android_asset/html/index.html"); // 처음 로드할 페이지
 
+
+        web.setWebViewClient(new android.webkit.WebViewClient() {
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+                Log.d("MovePage", "이동 대상 URL  : " + url);
+                view.loadUrl(url);
+                Log.d("MovePage", "이동 완료");
+                return true;
+            }
+        });
+
+
+
         //크롬 클라이언트 생성:
         //html5의 file 기능을 사용하기 위해서는 웹뷰에 setWebChromeClient 설정이 따로 필요하다
         web.setWebChromeClient(new WebChromeClient(){
+
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, final android.webkit.JsResult result)
+            {
+                new AlertDialog.Builder(myApp)
+//                        .setTitle("Warning") // AlertDialog
+//                        .setIcon(R.drawable.warning_icon) //warning icon add
+                        .setMessage(message)
+                        .setPositiveButton("OK",
+                                new AlertDialog.OnClickListener()
+                                {
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        result.confirm();
+                                    }
+                                })
+                        .setCancelable(false)
+                        .create()
+                        .show();
+                return true;
+            };
 
             /* 웹뷰에서는 버전별로 파일첨부 코드가 필요하다
                Android 5.0 이후 버전에서는 onShowFileChooser를 이용해서 파일선택을 할수 있다
@@ -230,5 +272,32 @@ public class MainActivity extends AppCompatActivity {
             filePathCallbackLollipop=null;
         }
 
+    }
+
+    /* 물리 백버튼키 처리 */
+    @Override
+    public void onBackPressed() {
+        WebBackForwardList list = web.copyBackForwardList(); // 누적된 history 를 저장할 변수
+        if (list.getCurrentIndex() <= 0 && !web.canGoBack()) { // 처음 들어온 페이지이거나, history 가 없는 경우
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    //.setTitle("Exit!")
+                    .setMessage("Do you want to exit the application?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+
+        } else { // history 가 있는 경우
+            if (web.canGoBack()) {
+                web.goBack();
+            }
+            web.clearHistory(); // history 삭제
+        }
     }
 }

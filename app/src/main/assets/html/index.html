@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
     <script src="../js/common.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <title></title>
@@ -17,6 +16,11 @@
         .ui-panel { width : 20em;}
         #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
     </style>
+    <script>
+        $(document).ready(function(){
+            console.log("sessionStorageItem : "+getStorageItem());
+        });
+    </script>
 </head>
 
 <body>
@@ -48,35 +52,50 @@
             <p>관리</p>
             <li><a href="#">사원등록</a></li>
             <li><a href="#">사원목록</a></li>
-            <li><a  onclick="common_movePage('main.html')">휴가현황</a></li>
+            <li><a  onclick="movePage('main.html')">휴가현황</a></li>
         </ul>
     </div>
 
 
     <!-- content -->
-    <div class="content" data-role="content">
-        <button type="button" id="btContacts" onclick="common_movePage('contacts.html')">연락처가져오기</button>
+    <div class="content" data-role="content" onclick="movePage('login.html')">
+        <button type="button" id="btLogin">로그인</button>
     </div>
     <div class="content" data-role="content">
-        <button type="button" id="btGallery" onclick="common_movePage('employeeDetail.html')"> 마이페이지</button>
+        <button type="button" id="btContacts" onclick="movePage('contacts.html')">연락처가져오기</button>
     </div>
     <div class="content" data-role="content">
-        <button type="button" id="btServer" onclick="common_movePage('employeeInfo.html')"> 사원정보</button>
+        <button type="button" id="btGallery" onclick="movePage('employeeDetail.html')"> 마이페이지</button>
     </div>
-    <div class="content" data-role="content" onclick="common_movePage('movePage.html')">
+    <div class="content" data-role="content">
+        <button type="button" id="btServer" onclick="movePage('employeeInfo.html')"> 사원정보</button>
+    </div>
+    <div class="content" data-role="content" onclick="movePage('movePage.html')">
         <button type="button" id="btPush">데이터저장/화면이동</button>
     </div>
-    <div class="content" data-role="content" onclick="common_movePage('projectList.html')">
+    <div class="content" data-role="content" onclick="movePage('projectList.html')">
         <button type="button" id="btProjectList">프로젝트 목록</button>
     </div>
-    <div class="content" data-role="content" onclick="common_movePage('planList.html')">
+    <div class="content" data-role="content" onclick="movePage('planList.html')">
         <button type="button" id="btPlanList">프로젝트 일정목록</button>
     </div>
-    <div class="content" data-role="content" onclick="common_movePage('planDetail.html')">
+    <div class="content" data-role="content" onclick="movePage('planDetail.html')">
         <button type="button" id="btPlanDetail">프로젝트 일정상세조회</button>
     </div>
-    <div class="content" data-role="content" onclick="common_movePage('regProject.html')">
+    <div class="content" data-role="content" onclick="movePage('regProject.html')">
         <button type="button" id="btRegProject">프로젝트 등록</button>
+    </div>
+    <div class="content" data-role="content" onclick="movePage('qnaList.html')">
+        <button type="button" id="btqnaList">QnA 목록</button>
+    </div>
+    <div class="content" data-role="content" onclick="movePage('calendar.html')">
+        <button type="button" id="btCalendaar">휴가 캘린더</button>
+    </div>
+    <div class="content" data-role="content" onclick="movePage('holidayList.html')">
+        <button type="button" id="btHolidayList">휴가 목록</button>
+    </div>
+    <div class="content" data-role="content" onclick="movePage('1001.html')">
+        <button type="button" id="pjh">박진호테스트</button>
     </div>
 
     <!-- footer -->
