@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,target-densitydpi=medium-dpi">
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <link rel="stylesheet" href="../css/project_info.css">
+    <script src="../js/common.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="../js/jquery.mobile-1.4.5.js"></script>
     <script src="../js/jquery.mobile-1.4.5.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <!--커스텀 js는 제이쿼리, 제이쿼리 모바일 설정 사이에-->
-    <script src="../js/common.js"></script>
-    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
-    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.min.css">
-    <link rel="stylesheet" href="../css/project_info.css">
     <script>
         $.datepicker.setDefaults({
         dateFormat: 'yy-mm-dd',
@@ -54,7 +51,7 @@
                     </div>
                     <div class="ui-field-contain">
                         <label for="datepicker">프로젝트 기간</label>
-                        <div id="datepicker">
+                        <div id="datepicker" class="datepicker">
                             <input type="text" id="picker1" readonly> ~
                             <input type="text" id="picker2" readonly>
                             <script>
@@ -74,7 +71,7 @@
         <div class="member_info">
             <!--제목, 삭제, 추가 버튼-->
             <div class="title-area">
-                <div class="gird-pt" class="select-area">
+                <div class="gird-pt select-area">
                     <div class="grid-cd-1">
                         <h3>• 참여인원 </h3>
                     </div>
@@ -84,10 +81,38 @@
                     </div>
                 </div>
             </div>
+            <!--인원등록 ListView-->
+            <div class="listview-area">
+                <div class="member-area ui-field-contain">
+                    <label><input type="checkbox"></label>
+                    <form class="list-form">
+                        <ul data-role="listview" data-inset="true" class="list-area">
+                            <li>
+                                <div class="member-name ui-field-contain">
+                                    <label for="name2">참여인원</label>
+                                    <input type="text" name="name2" id="name2" value="" data-clear-btn="true">
+                                </div>
+                                <div class="memeber-date ui-field-contain">
+                                    <label for="picker">참여기간</label>
+                                    <div id="picker">
+                                        <input type="text" id="picker3" readonly> ~
+                                        <input type="text" id="picker4" readonly>
+                                        <script>$("#picker3, #picker4").datepicker();</script>
+                                    </div>
+                                </div>
+                                <div class="use-skill ui-field-contain">
+                                    <label for="textarea2">사용기술</label>
+                                    <textarea cols="40" rows="8" name="textarea2" id="textarea2"></textarea>
+                                </div>
+                            </li>
+                        </ul>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!--버튼 Area-->
-        <div data-role="content" class="btn_area">
+        <div class="btn_area">
             <div class="grid-pt">
                 <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
                 <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">등록</a></div>

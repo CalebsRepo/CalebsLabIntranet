@@ -5,6 +5,7 @@
     .regist-project .pjt-info .project-form .ui-field-contain{ display:flex; width:100%;}
     .regist-project .pjt-info .project-form .ui-field-contain label{width:110px; display:flex; align-items:center; margin:0;}
     .regist-project .pjt-info .project-form .ui-field-contain input{width:calc(100% - 110px;); display:inline-flex; }
+    .regist-project .pjt-info .project-form .ui-field-contain div{width:calc(100% - 110px); display:inline-flex; align-items:center; margin:0;}
     .regist-project .pjt-info .project-form .ui-field-contain textarea{width:calc(100% - 110px); display:inline-flex; }
 
     /*Member Info Area*/
@@ -13,6 +14,16 @@
     .regist-project .member_info .title-area div.grid-cd-1{width:calc(100% - 110px); display:inline-flex;}
     .regist-project .member_info .title-area div.grid-cd-2{width:220px; display:inline-flex;}
     .regist-project .member_info .title-area div.grid-cd-2 a{width:100%; margin:0 0 0 5px;}
+    .regist-project .member_info .listview-area{ display:flex; width:100%;}
+    .regist-project .member_info .listview-area .member-area .ui-field-contain{ display:flex; width:100%;}
+    .regist-project .member_info .listview-area .member-area .ui-field-contain div{width:110px; display:flex; align-items:center; margin:0;}
+    .regist-project .member_info .listview-area .member-area .ui-field-contain form{width:calc(100% - 110px); display:inline-flex; align-items:center; margin:0;}
+    .regist-project .member_info .listview-area .member-area{ display:flex; width:100%;}
+    .regist-project .member_info .listview-area .member-area .list-area .ui-field-contain{ display:flex; width:100%;}
+    .regist-project .member_info .listview-area .member-area .list-area .ui-field-contain label{width:110px; display:flex; align-items:center; margin:0;}
+    .regist-project .member_info .listview-area .member-area .list-area .ui-field-contain input{width:calc(100% - 110px;); display:inline-flex; }
+    .regist-project .member_info .listview-area .member-area .list-area .ui-field-contain div{width:calc(100% - 110px); display:inline-flex; align-items:center; margin:0;}
+    .regist-project .member_info .listview-area .member-area .list-area .ui-field-contain textarea{width:calc(100% - 110px); display:inline-flex; }
 
     /*Button Area*/
     .regist-project .btn_area .grid-pt{width:100%; display:flex;}
