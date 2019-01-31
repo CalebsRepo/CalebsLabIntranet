@@ -83,30 +83,29 @@
             </div>
             <!--인원등록 ListView-->
             <div class="listview-area">
-                <div class="member-area ui-field-contain">
-                    <label><input type="checkbox"></label>
-                    <form class="list-form">
-                        <ul data-role="listview" data-inset="true" class="list-area">
-                            <li>
-                                <div class="member-name ui-field-contain">
+                <div class="member-area">
+                    <label><input type="checkbox">
+                        <form class="list-form">
+                            <ul data-role="listview" data-inset="true" class="list-area">
+                                <li class="member-name ui-field-contain">
                                     <label for="name2">참여인원</label>
                                     <input type="text" name="name2" id="name2" value="" data-clear-btn="true">
-                                </div>
-                                <div class="memeber-date ui-field-contain">
+                                </li>
+                                <li class="memeber-date ui-field-contain">
                                     <label for="picker">참여기간</label>
                                     <div id="picker">
                                         <input type="text" id="picker3" readonly> ~
                                         <input type="text" id="picker4" readonly>
                                         <script>$("#picker3, #picker4").datepicker();</script>
                                     </div>
-                                </div>
-                                <div class="use-skill ui-field-contain">
+                                </li>
+                                <li class="use-skill ui-field-contain">
                                     <label for="textarea2">사용기술</label>
                                     <textarea cols="40" rows="8" name="textarea2" id="textarea2"></textarea>
-                                </div>
-                            </li>
-                        </ul>
-                    </form>
+                                </li>
+                            </ul>
+                        </form>
+                    </label>
                 </div>
             </div>
         </div>
