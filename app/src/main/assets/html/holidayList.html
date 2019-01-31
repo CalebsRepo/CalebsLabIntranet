@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=1,initial-scale=1,user-scalable=1" />
+    <meta name="viewport" content="width=1,initial-scale=0.8,user-scalable=1" />
     <title></title>
     <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/styles.css" />
@@ -162,6 +162,10 @@
 						var apply_seq = data[i].apply_seq;
 						var start_ymd = data[i].start_ymd;
 						var end_ymd   = data[i].end_ymd;
+						var apply_content = data[i].apply_content;
+
+						apply_content = apply_content.replace('\r\n\r\n', '\r\n');
+						apply_content = apply_content.replace('\r\n', '<br>');
 
 						html += "<div class='historyline'>";
 						html +=   "<ul style='list-style: none; height: 127px;'>";
@@ -173,7 +177,7 @@
 						html += 		"<a href=javascript:viewApply('2019010205')>신청번호:2019010205</a> "+ data[i].name +"<br>";
 						html +=			data[i].h_type + " "+ start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
 						html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + data[i].apply_count +"일)";
-						html += 		"<br>"+data[i].apply_content+"<br>";
+						html += 		"<br>"+ apply_content +"<br>";
 
 						switch (data[i].approval_flag) {
 							case "신청":
@@ -279,14 +283,12 @@
     <style type="text/css">
 
 		.underline {
+			padding-top: 20px;
 		    padding-bottom: 3px;
 		    border-bottom: 1px solid #eee;
-		    margin: 0 0 20px 0;
+		    margin: 0px 0 20px 0;
 		}
 
-		.historyline {
-		    padding-top: 20px;
-		}
 	</style>
 
 </head>
