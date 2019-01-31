@@ -13,15 +13,25 @@
     var ajaxResult="";
     var ajaxResult2="";
 
+
+
+    <!--주소록 내보내기:해당체크박스의 이름, 전화번호,이메일로 이루어진 id를  subString해서 사용-->
+    $("#addressGet").click(function() {
+      $("input:checked").each(function() {
+                console.log("value값:"+test);
+            });
+    });
+
+
     <!--전체검색: 나중에 지울거. 화면 나오자마자 나와야함-->
     function listSearch(){
-        navigate2("employee.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+        navigate("employee.json", sucessFncMultiSndSample, errorFncMultiSndSample);
         $("#my-tbody").children().remove();
     }
 
     <!--더보기: 더보기 누르면 append로 더 붙여져야함-->
     function searchMore(){
-        navigate2("employee.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+        navigate("employee.json", sucessFncMultiSndSample, errorFncMultiSndSample);
     }
 
     <!--이름으로 검색-->
@@ -55,7 +65,7 @@
             var cell1 = row.insertCell(0);
             var cell2 = row.insertCell(1);
 
-            cell1.innerHTML = "<input type=checkbox id='"+ajaxResult2[i].ID+"'>";
+            cell1.innerHTML = "<input type=checkbox id='"+ajaxResult2[i].NAME+"/"+ajaxResult2[i].HP_NUM+"/"+ajaxResult2[i].EMAIL+"'>";
             cell2.innerHTML = "아이디:"+ajaxResult2[i].ID+
                               "<br>"+"이름:"+ajaxResult2[i].NAME+
                               "<br>"+"직급:"+ajaxResult2[i].GRADE+
@@ -87,7 +97,7 @@
     <input tyle="text" id="nameWrite">
     <button id="nameSearch" onclick="javascript:nameSearch(); return false;">이름검색</button>
     <button id="listSearch" onclick="javascript:listSearch(); return false;">전체검색</button>
-    <button id="addressGet" onclick="javascript:addressGet(); return false;">가져오기</button>
+    <button id="addressGet">가져오기</button>
 <!--    <table>
         <tr>
             <th>이름</th>
