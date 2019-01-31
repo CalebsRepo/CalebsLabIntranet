@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <link rel="stylesheet" href="../css/project_plan.css">
+    <script src="../js/common.js"></script>
+    <script src="../js/util.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <title></title>
+    <script>
+
+    </script>
+
+</head>
+
+<body>
+<section id="page1" data-role="page">
+    <div data-role="content" class="qna-detail">
+        <!--QnA 상세페이지화면-->
+        <div class="gird-pt detail-form">
+            <form>
+                <label for="qna-title">• 제목</label>
+                <input type="text" name="qna-title" id="qna-title" value="">
+
+                <label for="qna-part" class="select">• 게시영역</label>
+                <select name="qna-part" id="qna-part">
+                    <option value="1">알아두세요</option>
+                    <option value="2">공지</option>
+                    <option value="3">자료실</option>
+                </select>
+
+                <label for="qna-content">• 내용</label>
+                <textarea type="text" rows="4" name="qna-content" id="qna-content" value=""placeholder="내용을 입력해주세요."> </textarea>
+            </form>
+
+            <div class="btn-area-3">
+                <div class="grid-pt">
+                    <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                    <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">삭제</a></div>
+                    <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">등록</a></div>
+                </div>
+            </div>
+            <div class="btn-area-1">
+                <div class="grid-pt">
+                    <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                    <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">등록</a></div>
+                </div>
+            </div>
+            <div class="btn-area-2">
+                <div class="gird-pt">
+                    <button class="ui-btn ui-corner-all ui-btn-b" oonclick="movePage('index.html')" >목록</button>
+                </div>
+            </div>
+
+<style>
+
+</style>
+
+</section>
+</body>
+</html>
