@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=1,initial-scale=1,user-scalable=1" />
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/styles.css" />
+    <script src='../js/jquery.js'></script>
+    <script src="../js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+
+		var numCnt = 1;
+
+		$(document).ready(function(){
+
+			$('#btMore').hide();
+
+			setDateSelct();
+			totalPageCnt();
+			callAjax();
+
+			// 조회 버튼
+			$("#btResult").click(function(){
+				// 넘버링 초기화
+				$("#pageNum").val("1");
+				numCnt = 1;
+
+				totalPageCnt();
+				callAjax();
+			});// end of $("#btResult").click()---------
+
+			// 더보기 버튼
+			$("#btMore").click(function(){
+				moreList();
+			});// end of $("#btMore").click()----------
+
+		});// end of $(document).ready()--------------------------------------------
+
+		// 휴가리스트를 보여주는 함수
+		function callAjax(){
+
+			var form_data = {
+							  pageNum : $("#pageNum").val(),
+							  checkVal : $("#approvalSel option:selected").val(),
+							  date : $("#dateSel option:selected").val()
+							 };
+
+			$.ajax({
+			  	url: "http://192.168.10.239:8080/holiday.json",
+				type: "GET",
+				data: form_data,
+				dataType: "JSON",
+				success: function(data){
+					$("#showList").empty();
+					var html = ""
+
+					//데이터가 없을 시
+					if(data.length < 1) {
+						html += "<div class='historyline' style='text-align: center;'>";
+						html += "<span color='red'>휴가 조회내역이 없습니다.</span>";
+						html += "</div>";
+					}
+
+					for(var i=0; i<data.length; i++) {
+
+						var apply_seq = data[i].apply_seq;
+						var start_ymd = data[i].start_ymd;
+						var end_ymd   = data[i].end_ymd;
+						var apply_content = data[i].apply_content;
+
+						apply_content = apply_content.replace('\r\n\r\n', '\r\n');
+						apply_content = apply_content.replace('\r\n', '<br>');
+
+						html += "<div class='historyline'>";
+						html +=   "<ul style='list-style: none; height: 127px;'>";
+						html +=      "<li style='float: left; width: 35%;'>";
+						html += 		"NO."+ numCnt++ +"<br>"+ apply_seq.substring(0,4) + "-" + apply_seq.substring(4,6) + "-" + apply_seq.substring(6,8);
+						html += 	 "</li>";
+						html += 	 "<li style='float: left; width: 65%;'>";
+						html += 		"<p>";
+						html += 		"<a href=javascript:viewApply('2019010205')>신청번호:2019010205</a> "+ data[i].name +"<br>";
+						html +=			data[i].h_type + " "+ start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
+						html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + data[i].apply_count +"일)";
+						html += 		"<br>"+ apply_content +"<br>";
+
+						switch (data[i].approval_flag) {
+							case "신청":
+								html += 	"<font color='#bdb76b'>신청 상태입니다.</font><br>";  // #bdb76b : DarkKhaki
+								break;
+
+							case "검토":
+								html +=		"<font color='#6b8e23'>현재 검토중입니다.</font><br>"; // #6b8e23 : OliveDrab
+								break;
+
+							case "반려":
+								html +=		"<font color='red'>반려되었습니다. 반려사유를 확인하세요.</font><br>";
+								html +=		"<font color='#bdb76b'>" + data[i].approval_comment + "</font><br>"
+								break;
+
+							case "승인":
+								html +=		"<font color='#3cb371'>승인되었습니다.</font><br>"; // #3cb371 : MediumSeaGreen
+								break;
+						}// end of switch-----------------------------------
+
+						html += 		"</p>";
+						html += 	"</li>";
+						html +=   "</ul>";
+						html += "</div>";
+						html += "<div class='underline'></div>";
+
+					}// end of for-------------------
+
+
+					var pageNum = Number($("#pageNum").val());
+					var pageMaxNum = Number($("#pageMaxNum").val());
+
+					// 더보기 버튼 처리
+					if(pageNum < pageMaxNum ){
+						$('#btMore').show();
+					}else{
+						$('#btMore').hide();
+					}
+
+					// 페이지번호 셋팅
+					pageNum = Number(pageNum) + 1;
+					$("#pageNum").val(pageNum);
+
+					$("#showList").append(html);
+
+
+				},
+				error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+
+			});// end of $.ajax()---------------------
+
+
+		}// end of callAjax()------------------------------------
+
+		// 더보기 함수
+		function moreList() {
+
+			var form_data = {
+					  pageNum : $("#pageNum").val(),
+					  checkVal : $("#approvalSel option:selected").val(),
+					  date : $("#dateSel option:selected").val()
+					 };
+
+			$.ajax({
+			  	url: "http://192.168.10.239:8080/holiday.json",
+				type: "GET",
+				data: form_data,
+				dataType: "JSON",
+				success: function(data){
+					var html = "";
+
+					for(var i=0; i<data.length; i++) {
+
+						var apply_seq = data[i].apply_seq;
+						var start_ymd = data[i].start_ymd;
+						var end_ymd   = data[i].end_ymd;
+
+						html += "<div class='historyline'>";
+						html +=   "<ul style='list-style: none; height: 127px;'>";
+						html +=      "<li style='float: left; width: 35%;'>";
+						html += 		"NO."+ numCnt++ +"<br>"+ apply_seq.substring(0,4) + "-" + apply_seq.substring(4,6) + "-" + apply_seq.substring(6,8);
+						html += 	 "</li>";
+						html += 	 "<li style='float: left; width: 65%;'>";
+						html += 		"<p>";
+						html += 		"<a href=javascript:viewApply('2019010205')>신청번호:2019010205</a> "+ data[i].name +"<br>";
+						html +=			data[i].h_type + " "+ start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
+						html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + data[i].apply_count +"일)";
+						html += 		"<br>"+data[i].apply_content+"<br>";
+
+						switch (data[i].approval_flag) {
+							case "신청":
+								html += 	"<font color='#bdb76b'>신청 상태입니다.</font><br>";  // #bdb76b : DarkKhaki
+								break;
+
+							case "검토":
+								html +=		"<font color='#6b8e23'>현재 검토중입니다.</font><br>"; // #6b8e23 : OliveDrab
+								break;
+
+							case "반려":
+								html +=		"<font color='red'>반려되었습니다. 반려사유를 확인하세요.</font><br>";
+								html +=		"<font color='#bdb76b'>" + data[i].approval_comment + "</font><br>"
+								break;
+
+							case "승인":
+								html +=		"<font color='#3cb371'>승인되었습니다.</font><br>"; // #3cb371 : MediumSeaGreen
+								break;
+						}// end of switch-----------------------------------
+
+						html += 		"</p>";
+						html += 	"</li>";
+						html +=   "</ul>";
+						html += "</div>";
+						html += "<div class='underline'></div>";
+
+					}// end of for-------------------
+
+
+					var pageNum = Number($("#pageNum").val());
+					var pageMaxNum = Number($("#pageMaxNum").val());
+
+					// 더보기 버튼 처리
+					if(pageNum < pageMaxNum) {
+						$('#btMore').show();
+					}else {
+						$('#btMore').hide();
+					}
+					// 페이지번호 셋팅
+					pageNum = Number(pageNum) + 1;
+					$("#pageNum").val(pageNum);
+
+					$("#showList").append(html);
+
+
+				},
+				error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+
+			});// end of $.ajax()---------------------
+
+		}// end of moreList() ----------------------------------------
+
+		// 총페이지 수를 가져오는 함수
+		function totalPageCnt() {
+
+			var form_data = {
+					  checkVal : $("#approvalSel option:selected").val(),
+					  date : $("#dateSel option:selected").val()
+					 };
+
+			$.ajax({
+			  	url: "http://192.168.10.239:8080/pageCount.json",
+				type: "GET",
+				data: form_data,
+				dataType: "JSON",
+				success: function(data){
+					$("#pageMaxNum").val(data);
+
+				},
+				error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+
+			});// end of $.ajax()---------------------
+
+		}// end of totalPageCnt() -------------------------------
+
+		// 날짜 조회값을 append 해주는 함수
+		function setDateSelct() {
+			var date = new Date();
+			var year = date.getFullYear();
+			var html = "";
+
+			var cnt = year - 2017 + 1;
+
+			for(var i=0; i<cnt; i++) {
+
+				if(i == 0) {
+					html += "<option value='"+ (year - i) + "' selected='selected' >" + (year - i) + "</option>";
+				}else {
+					html += "<option value='"+ (year - i) + "'>" + (year - i) + "</option>";
+				}
+
+			}// end of for -----------------------
+
+			$("#dateSel").append(html);
+
+		}// end of setDateSelct() ----------------------------------------
+
+	</script>
+    <style type="text/css">
+
+		.underline {
+		    padding-bottom: 3px;
+		    border-bottom: 1px solid #eee;
+		    margin: 0 0 20px 0;
+		}
+
+		.historyline {
+		    padding-top: 20px;
+		}
+	</style>
+
+</head>
+<body>
+<!-- container// -->
+<section class="container">
+    <h2>휴가 조회 화면</h2>
+
+    <div class="row" style="border: 0px solid red;">
+
+        <div class="col-sm-2">
+            <span>결제구분</span>
+        </div>
+
+        <div class="col-sm-4">
+            <select class="form-control input-sm" id="approvalSel">
+                <option value="" selected="selected">전체</option>
+                <option value="신청">신청</option>
+                <option value="검토">검토</option>
+                <option value="반려">반려</option>
+                <option value="승인">승인</option>
+            </select>
+        </div>
+
+        <div class="col-sm-4">
+            <select class="form-control input-sm" id="dateSel">
+
+            </select>
+        </div>
+
+        <div class="col-sm-2">
+            <button class="form-control" id="btResult" >조회</button>
+        </div>
+
+    </div>
+    <div id="showList" style="padding-top: 50px;">
+    </div>
+    <button class="form-control" id="btMore" >더보기</button>
+
+    <input type="hidden" id="pageNum" value="1">
+    <input type="hidden" id="pageMaxNum">
+</section>
+<!-- //container -->
+</body>
+</html>

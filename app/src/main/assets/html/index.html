@@ -17,6 +17,11 @@
         .ui-panel { width : 20em;}
         #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
     </style>
+    <script>
+        $(document).ready(function(){
+            console.log("sessionStorageItem : "+getStorageItem());
+        });
+    </script>
 </head>
 
 <body>
@@ -54,6 +59,9 @@
 
 
     <!-- content -->
+    <div class="content" data-role="content" onclick="common_movePage('login.html')">
+        <button type="button" id="btLogin">로그인</button>
+    </div>
     <div class="content" data-role="content">
         <button type="button" id="btContacts" onclick="common_movePage('contacts.html')">연락처가져오기</button>
     </div>
@@ -78,8 +86,11 @@
     <div class="content" data-role="content" onclick="common_movePage('regProject.html')">
         <button type="button" id="btRegProject">프로젝트 등록</button>
     </div>
-    <div class="content" data-role="content" onclick="common_movePage('qnaList.html')">
-        <button type="button" id="btqnaList">QnA 목록</button>
+    <div class="content" data-role="content" onclick="common_movePage('calendar.html')">
+        <button type="button" id="btCalendaar">휴가 캘린더</button>
+    </div>
+    <div class="content" data-role="content" onclick="common_movePage('holidayList.html')">
+        <button type="button" id="btHolidayList">휴가 목록</button>
     </div>
 
     <!-- footer -->
