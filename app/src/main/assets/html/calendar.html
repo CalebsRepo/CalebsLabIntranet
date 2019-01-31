@@ -1,0 +1,261 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=1,initial-scale=1,user-scalable=1" />
+    <title>CMS(Caleb's lab Management System)</title>
+    <script src="../js/common.js"></script>
+    <link href="../css/bootstrap.min.css" rel='stylesheet' />
+    <link href='../css/fullcalendar.min.css' rel='stylesheet' />
+    <link href='../css/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+    <script src='../js/jquery.js'></script>
+    <script src='../js/jquery.mobile-1.4.5'></script>
+    <script src='../js/fullcalendar/moment.min.js'></script>
+    <script src='../js/fullcalendar/fullcalendar.min.js'></script>
+    <script src="../js/fullcalendar/ko.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+
+       var eventsArr = [];
+       var colorArr = ['51bec9', '24afd6', 'ffaf51', 'fd8497', 'f7d17c', '51d5a1', '21b4aa', 'aed551', 'f9916a', '99837a'];
+       var cnt = 0;
+       $(document).ready(function() {
+
+          navigate({}, "calander.json", successFunction, errorFunction);
+          // navigate({}, "selCompany.json", successFunction, errorFunction);
+
+
+/*
+          $.ajax({
+                url: "http://192.168.10.239:8080/calander.json",
+                type: "POST",
+            //	data: form_data,
+                dataType: "JSON",
+                success: function(data){
+
+                    for(var i=0; i<data.length; i++) {
+
+                        var titleVal = data[i].name ;
+                        var descriptionVal = data[i].h_flag + " " + data[i].apply_count + "일";
+
+                        var startday = data[i].start_ymd;
+                        startday = startday.substring(0,4) + "-" + startday.substring(4,6) + "-" + startday.substring(6,8);
+
+                        var endday = data[i].end_ymd;
+                        endday = endday.substring(0,4) + "-" + endday.substring(4,6) + "-" + endday.substring(6,8);
+                        // 날짜 하루 더해주기
+                        var addEndday = dayAdd(endday);
+                        var colorVal = "#"+colorArr[cnt ++];
+
+                        if(cnt > 9){
+                            cnt = 0;
+                        }
+
+                        var str  = 	{
+                                     title: titleVal,
+                                     description: descriptionVal,
+                                     start: startday,
+                                     end: addEndday,
+                                     color: colorVal
+                                    }
+                        eventsArr.push(str);
+
+
+
+                  }// end of for ------------------------------------------------
+                  CalendarLoad();
+                },
+                error: function(request, status, error){
+                    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+                }
+
+            });// end of $.ajax()-------------------------------
+
+*/
+
+      }); // end of $(document).ready()------------------------
+
+      function successFunction(data) {
+        for(var i=0; i<data.length; i++) {
+
+                        var titleVal = data[i].name ;
+                        var descriptionVal = data[i].h_flag + " " + data[i].apply_count + "일";
+
+                        var startday = data[i].start_ymd;
+                        startday = startday.substring(0,4) + "-" + startday.substring(4,6) + "-" + startday.substring(6,8);
+
+                        var endday = data[i].end_ymd;
+                        endday = endday.substring(0,4) + "-" + endday.substring(4,6) + "-" + endday.substring(6,8);
+                        // 날짜 하루 더해주기
+                        var addEndday = dayAdd(endday);
+                        var colorVal = "#"+colorArr[cnt ++];
+
+                        if(cnt > 9){
+                            cnt = 0;
+                        }
+
+                        var str  = 	{
+                                     title: titleVal,
+                                     description: descriptionVal,
+                                     start: startday,
+                                     end: addEndday,
+                                     color: colorVal
+                                    }
+                        eventsArr.push(str);
+
+
+
+                  }// end of for ------------------------------------------------
+                  CalendarLoad();
+      }
+      function errorFunction(result) {
+        alert("error>>>"+result);
+      }
+
+      function CalendarLoad() {
+
+            $("#calendar").fullCalendar({
+                header: {
+                //	left: 'prevYear'
+                    left: 'prevYear prev',
+                    center: 'title',
+                    right: 'next nextYear'
+                },
+
+                defaultDate:  getToday(),// 오늘 날짜를 불러오는 함수
+                buttonIcons: true, // show the prev/next text
+                weekNumbers: false,
+                editable: false,
+                lang:'ko',
+                events:  eventsArr
+                      /* [
+
+                    {
+                        id:'0',
+                        title: '<img src="/images/is/flag/11101_s.gif" style="width:15px;height:11px"> 파리',
+                        start: '2019-02-21',
+                        end: '2019-03-01',
+
+                        color: '#51bec9'
+                    },
+
+                    {
+                        id:'1',
+                        title: '<img src="/images/is/flag/13103_s.gif" style="width:15px;height:11px"> 바르샤바',
+                        start: '2019-02-24',
+                        end: '2019-02-26',
+
+                        color: '#24afd6'
+                    },
+
+                    {
+                        title: '출국일',
+                        start: '2019-02-21',
+                        end: '2019-02-29',
+                        color: '#999999'
+
+                    }
+                ]  */ ,
+                height: 450,
+                eventRender: function (event, element) {
+                    element.find('.fc-content').html(event.title);
+                    element.popover({
+                          title: event.title,
+                          content: event.description,
+                          trigger: 'hover',
+                          placement: 'bottom',
+                          container: 'body'
+                    });
+                }
+
+            }); // end of $("#calendar").fullCalendar()--------------------------------------
+
+      } // end of CalendarLoad() --------------------------------------------
+
+      // 날짜를 하루 더하는 함수
+      function dayAdd(pdate){
+
+          // console.log("pdate : " + pdate);
+          var arr = pdate.split('-');
+          var date = new Date(arr[0], arr[1]-1, arr[2]);
+          date.setDate(date.getDate()+1);
+
+          var year = date.getFullYear();
+          var month = new String(date.getMonth()+1);
+          var day = new String(date.getDate());
+
+          // 한자리수일 경우 0을 채워준다.
+          if(month.length == 1){
+            month = "0" + month;
+          }
+          if(day.length == 1){
+            day = "0" + day;
+          }
+          return year + "-" + month + "-" + day;
+
+      }
+      // 오늘 날짜를 알아오는 함수
+      function getToday(){
+
+          var date = new Date();
+
+          var year = date.getFullYear();
+          var month = new String(date.getMonth()+1);
+          var day = new String(date.getDate());
+
+          // 한자리수일 경우 0을 채워준다.
+          if(month.length == 1){
+            month = "0" + month;
+          }
+          if(day.length == 1){
+            day = "0" + day;
+          }
+          return year + "-" + month + "-" + day;
+
+      }
+
+    </script>
+
+
+    <style type="text/css">
+        header {
+          width: 100%;
+          height: 48px;
+          background-color: #8e488e;
+          z-index: 100;
+          box-sizing: border-box;
+          padding-left: 10%;
+          position: fixed;
+          left: 0;
+          right: 0;
+          border: 1px solid red;
+        }
+
+        footer {
+          display: flex;
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 54px;
+          background-color: #fff;
+          padding: 3px 0;
+          border-top: 1px solid #999;
+          z-index: 100;
+          border: 1px solid green;
+        }
+    </style>
+
+</head>
+<body>
+<!-- <div class="container login-form" id="calendar"></div> -->
+<header>
+
+</header>
+
+<div id="calendar" style="border: 0px solid  blue; padding-top:50px;"></div>
+
+</body>
+</html>

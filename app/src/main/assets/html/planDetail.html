@@ -4,12 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <!--DatePicker--><link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="../css/project_plan.css">
     <script src="../js/common.js"></script>
+    <script src="../js/temp.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <!--DatePicker--><script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <!--DatePicker--><script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <title></title>
+    <script>
+
+    </script>
+
 </head>
 
 <body>
@@ -45,11 +53,17 @@
                 </div>
                 <div class="ui-field-contain">
                     <label for="textinput-3">시작일:</label>
-                    <input type="text" name="textinput-3" id="textinput-3" placeholder="시작일을 선택해주세요" value="2018/01/01">
+                    <input type="text" name="textinput-3" id="textinput-3" placeholder="시작일을 선택해주세요" value="" readonly>
+                    <script>
+                    $("#textinput-3").datepicker();
+                    </script>
                 </div>
                 <div class="ui-field-contain">
                     <label for="textinput-4">종료일:</label>
-                    <input type="text" name="textinput-4" id="textinput-4" placeholder="종료일을 선택해주세요" value="2018/12/31">
+                    <input type="text" name="textinput-4" id="textinput-4" placeholder="종료일을 선택해주세요" value="" readonly>
+                    <script>
+                    $("#textinput-4").datepicker();
+                    </script>
                 </div>
                 <div class="ui-field-contain">
                     <label for="textarea-5">설명:</label>
