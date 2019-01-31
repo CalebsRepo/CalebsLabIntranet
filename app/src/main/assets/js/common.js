@@ -1,11 +1,11 @@
-    function common_movePage(url, jsonData) {
+/*    function common_movePage(url, jsonData) {
 
             if(jsonData != null) {
                 window.android.movePage(url, JSON.stringify(jsonData));
             } else {
                 window.android.movePage(url, null);
             }
-    }
+    }*/
 
     function emailSend(){
         window.android.openApp();
@@ -25,6 +25,7 @@
 
     var sessionInfo;
     var wasParams = {};  //was와 통실될 파라미터
+    var temp_key = "reqParam";
 
     //공통 Util 모음
 
@@ -75,12 +76,19 @@
 
     //sessionStorage에 jsonObject 형식의 데이터를 key/value로 저장
     function setStorageItem(param, key){
+        var setItem = "";
 
-        var setItem = JSON.stringify(param);
+        if(param != null){
+            setItem = JSON.stringify(param);
+        }
 
-        console.log("set_key: "+key+" setValue: "+setItem);
-
-        sessionStorage.setItem(key,setItem);
+        if(key !=null && key !=""){
+            sessionStorage.setItem(key,setItem);
+            console.log("set_key: "+key+" setValue: "+setItem);
+        }else{
+            sessionStorage.setItem(temp_key,setItem);
+            console.log("set_key: "+temp_key+" setValue: "+setItem);
+        }
 
     }
 
@@ -91,10 +99,11 @@
 
         if(key != null && key != ""){
             result = sessionStorage.getItem(key);
-            sessionStorage.removeItem(key);
+            sessionStorage.removeItem(key); //한번 출력한 키는 삭제
+        }else{ //key를 지정하지 않을 시 임의 지정(temp_key)
+            result = sessionStorage.getItem(temp_key);
+            sessionStorage.removeItem(temp_key);
         }
-
-        console.log("get_key: "+key+" getValue: "+result);
 
         return result;
     }
@@ -114,4 +123,16 @@
             yearSuffix: '년'
           });
           $("#picker1, #picker2").datepicker();
+    }
+
+    //sessionStorage에 데이터 저장 후 화면이동
+    function common_movePage(URL, param){
+
+        console.log("navigate: "+URL);
+
+        if(URL !=null && param != null){
+            setStorageItem(param);
+        }
+
+        location.href=URL;
     }
