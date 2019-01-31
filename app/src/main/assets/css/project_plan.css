@@ -34,8 +34,9 @@
     /*detail-form*/
     .plan-detail .detail-form .ui-field-contain{ display:flex; width:100%;}
     .plan-detail .detail-form .ui-field-contain label{width:110px; display:flex; align-items:center; margin:0;}
-    .plan-detail .detail-form .ui-field-contain input{width:calc(100% - 110px;); display:inline-flex; }
+    .plan-detail .detail-form .ui-field-contain input{width:100%; display:inline-flex; }
     .plan-detail .detail-form .ui-field-contain textarea{width:calc(100% - 110px); display:inline-flex; }
+    .plan-detail .detail-form .ui-field-contain label + div{width:calc(100% - 110px);}
 
     /*btn-area*/
    .plan-detail .btn-area-1 .grid-pt{width:100%; display:flex;}

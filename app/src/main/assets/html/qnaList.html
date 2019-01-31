@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <link rel="stylesheet" href="../css/project_plan.css">
+    <script src="../js/common.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <title></title>
+</head>
+
+<body>
+<section id="page1" data-role="page">
+    <div data-role="content" class="qna-list">
+        <!--제목, 추가버튼-->
+        <div class="title-area">
+            <div class="gird-pt" class="select-area">
+                <div class="grid-cd-1">
+                    <h3>• FAQ 목록 </h3>
+                </div>
+                <div class="grid-cd-2">
+                    <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b">추가</a>
+                </div>
+            </div>
+        </div>
+
+        <!--프로젝트 리스트화면-->
+        <div class="gird-pt summary-list">
+            <ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
+                <li class="ui-corner-all">
+                    <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
+                        <div class="qna qna-title">휴가 / 연차 관련</div>
+                    </a>
+                </li>
+                <li class="ui-corner-all">
+                    <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
+                        <div class="qna qna-title">지출결의 작성 관련</div>
+                    </a>
+                </li>
+                <li class="ui-corner-all">
+                    <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
+                        <div class="qna qna-title">휴가계획서 작성방법</div>
+                    </a>
+                </li>
+                <li class="ui-corner-all">
+                    <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
+                        <div class="qna qna-title">체력단련비 사용 관련 </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="gird-pt">
+            <button class="ui-btn ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">더보기</button>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>
