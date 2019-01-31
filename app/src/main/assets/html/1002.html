@@ -1,0 +1,113 @@
+<html>
+<head>
+    <meta charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Caleb's lab App Sample Source</title>
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <script src="../js/common.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+
+    <script type="text/javascript">
+
+    console.log("!!!! sndUrl", sndUrl);
+
+    $(document).ready(function () {
+        console.log("ready sndUrl", sndUrl);
+    });
+
+    function onCreate() {
+        var currentDate = new Date();
+        console.log("1002.html onCreate    = [" + currentDate + "]");
+        console.log("onCreate sndUrl", sndUrl);
+    }
+
+    function onPageFinished() {
+        var currentDate = new Date();
+        console.log("1002.html onPageFinished   = [" + currentDate + "]");
+        console.log("onPageFinished sndUrl", sndUrl);
+    }
+
+    function onBackProcess() {
+        var currentDate = new Date();
+        console.log("1002.html onBackProcess   = [" + currentDate + "]");
+        console.log("onBackProcess sndUrl", sndUrl);
+    }
+
+
+		/**
+		 * 다건전송 샘플
+		 */
+		function multiSndSample() {
+			var com_val  = [] ;
+			$("input[name='com_code']").each(function (key, value) {
+				if($(this).prop("checked") == true) {
+					com_val.push($(this).val());
+				}
+			});
+
+			var params = {
+							com_code : com_val,
+							project_code : "NHBANK_2017_05_1"
+				         };
+
+			sndServer(params, "template.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+		}
+
+		function sucessFncMultiSndSample(result) {
+			console.log("sucessFncMultiSndSample" + JSON.stringify(result));
+			alert("sucessFncMultiSndSample" + JSON.stringify(result));
+		}
+
+		function errorFncMultiSndSample(result) {
+			console.log("errorFncMultiSndSample" + JSON.stringify(result));
+			alert("errorFncMultiSndSample" + JSON.stringify(result));
+		}
+
+
+	</script>
+
+</head>
+<body>
+
+<!-- HEADER 영역 START -->
+<div id="header" data-role="header" data-position="fixed" >
+    <div data-role="navbar">
+        <ul>
+            <li><a href="#" class="ui-btn-active" data-icon="back"></a></li>
+            <li align="center">1002.html</li>
+            <li><a href="#" class="ui-btn-active" data-icon="grid"></a></li>
+        </ul>
+    </div>
+</div>
+<!-- HEADER 영역 END -->
+
+
+<div id="article">
+    <section>
+        1. 서버 통신
+            <input type="checkbox" id="j1" name="com_code" value="NHBANK"> <label for="j1">NHBANK</label>
+            <input type="checkbox" id="j2" name="com_code" value="SK"> <label for="j2">SK</label>
+            <input type="checkbox" id="j3" name="com_code" value="KBSTAR"> <label for="j3">KBSTAR</label>
+        <button id="login" class="btn btn-primary btn-block" onclick="javascript:multiSndSample(); return false;"> 다건전송</button>
+    </section>
+</div>
+
+
+<!-- FOOTER 영역 START -->
+<div id="footer" data-role="footer" data-position="fixed" >
+    <div data-role="navbar">
+        <ul>
+            <li><a href="#" class="ui-btn-active" >홈</a></li>
+            <li><a href="#" class="ui-btn-active" >프로젝트</a></li>
+            <li><a href="#" class="ui-btn-active" >휴가</a></li>
+            <li><a href="#" class="ui-btn-active" >로그인</a></li>
+        </ul>
+    </div>
+</div>
+<!-- FOOTER 영역 END -->
+
+
+</body>
+
+</html>
