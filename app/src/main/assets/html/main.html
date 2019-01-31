@@ -2,46 +2,47 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,target-densitydpi=medium-dpi">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
     <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
     <script src="../js/jquery.mobile-1.4.5.js"></script>
     <script src="../js/common.js"></script>
-    <title></title>
+    <title>갈렙스랩 메인</title>
     <script language = "javascript">
 
     var ajaxResult="";
     var ajaxResult2="";
+    $(document).ready(function(){
+        navigate2("myProject.json", sucessFncMultiSndSample, errorFncMultiSndSample);
 
-    function listSearch(){
-        navigate("project.json", sucessFncMultiSndSample, errorFncMultiSndSample);
-    }
-
-  <!--  function myProject(){
-        var myProjectList= document.getElementById('nameWrite').value;
-        var params = {
-                myProjectList : myProjectList,
-             };
-        navigate(params, "myProjectList.json", sucessFncMultiSndSample, errorFncMultiSndSample);
-    }-->
-
-
-
+    });
+     <!--ajax통신 성공-->
     function sucessFncMultiSndSample(result) {
         console.log("sucessFncMultiSndSample>>>>>" + JSON.stringify(result));
+         console.log("============================================");
+          console.log("============================================");
         ajaxResult=JSON.stringify(result);
         ajaxResult2=JSON.parse(ajaxResult);
+        console.log("sucessFncMultiSndSample>>>>>" + ajaxResult);
+        console.log("============================================");
 
-        for(var i=0;i<ajaxResult2.length;i++){
-            console.log('******************************');
-            console.log("ajaxResult2[i]")
-            console.log('******************************');
+        for(var i=0; i<ajaxResult2.length; i++) {
+            console.log(ajaxResult2[i].start_ymd);
+            console.log(ajaxResult2[i].end_ymd);
+            console.log(ajaxResult2[i].project_name);
+
+            var myListview = document.getElementById('myListview');
+
+            $("#myListview").append("<li class='ui-corner-al'>"
+                                    +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r'>"
+                                    +"<div class='plan plan-name'> 일정이름 : " + ajaxResult2[i].project_name + "</div>"
+                                    +"<div class='plan plan-date'> 기간 : " + ajaxResult2[i].start_ymd +" ~ " + ajaxResult2[i].end_ymd  + "</div>"
+                                    +"<div class='plan-teamCnt'> 참여인원 : 4명 </div>"
+                                    +"<div class='plan-state'> 상태 : 프로젝트 진행중</div>"
+                                    + "</a>"
+                                    + "<li>");
 
         }
-            <!--document.getElementById('employee_name').innerHTML=ajaxResult2[0].NAME;
-            document.getElementById('employee_grade').innerHTML=ajaxResult2[0].GRADE;
-            document.getElementById('employee_hp_num').innerHTML=ajaxResult2[0].HP_NUM;
-            document.getElementById('employee_email').innerHTML=ajaxResult2[0].EMAIL;-->
     }
     <!--ajax 통신 실패-->
     function errorFncMultiSndSample(result) {
@@ -91,28 +92,17 @@
     </div>
 
     <!-- content -->
-    <input tyle="text" id="nameWrite">
-    <button id="nameSearch" onclick="javascript:nameSearch(); return false;">이름검색</button>
-    <button id="listSearch" onclick="javascript:listSearch(); return false;">전체검색</button>
-    <button id="searchMore" onclick="javascript:searchMore(); return false;">더보기</button>
+    <div class="gird-pt summary-list">
+        <h2>나의 프로젝트 정보</h2>
+        <ul id="myListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
+
+        </ul>
+    </div>
 
     <div class="gird-pt summary-list">
+        <h2>나의 휴가정보</h2>
+        <ul id="myListview2" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
 
-        <ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
-            <li class="ui-corner-all">
-                <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
-                    <div class="plan plan-name">일정이름 : 분석자료 제출</div>
-                    <div class="plan plan-date">기간 : 2018/04/23 ~ 2018/4/30</div>
-                    <div class="plan plan-incharge">담당자 : 박진호</div>
-                </a>
-            </li>
-            <li class="ui-corner-all">
-                <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
-                    <div class="plan plan-name">일정이름 : 1차 개발 시작</div>
-                    <div class="plan plan-date">기간 : 2018/05/01 ~ 2018/05/23</div>
-                    <div class="plan plan-incharge">담당자 : 노종현</div>
-                </a>
-            </li>
         </ul>
     </div>
 
