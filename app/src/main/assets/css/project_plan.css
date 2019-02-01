@@ -7,9 +7,9 @@
     /*Select Area*/
     .plan-list .title-area select{width:100%; height:44px; padding-left:10px; background:#ededed;}
     .plan-list .title-area div.gird-pt{width:100%; display:flex; margin-bottom:0.5em;}
-    .plan-list .title-area div.grid-cd-1{width:calc(100% - 120px); display:inline-flex;}
+    .plan-list .title-area div.grid-cd-1{width:calc(100% - 140px); display:inline-flex;}
     .plan-list .title-area div.grid-cd-1 select{width:100%;}
-    .plan-list .title-area div.grid-cd-2{width:50px; display:inline-flex; align-items:center;}
+    .plan-list .title-area div.grid-cd-2{width:70px; display:inline-flex; align-items:center;}
     .plan-list .title-area div.grid-cd-2 a{width:100%; margin:0 0 0 5px;}
     .plan-list .title-area div.grid-cd-3{width:70px; display:inline-flex; align-items:center;}
     .plan-list .title-area div.grid-cd-3 a{width:100%; margin:0 0 0 5px;}
