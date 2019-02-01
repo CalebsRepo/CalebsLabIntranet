@@ -2,12 +2,14 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=1,initial-scale=0.8,user-scalable=1" />
+    <meta name="viewport" content="width=1,initial-scale=1,user-scalable=no" />
     <title></title>
     <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="../css/styles.css" />
-    <script src='../js/jquery.js'></script>
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <script src="../js/common.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <script type="text/javascript">
 
@@ -25,6 +27,7 @@
 			$("#btResult").click(function(){
 				// 넘버링 초기화
 				$("#pageNum").val("1");
+				$("#temp").val($("#approvalSel option:selected").val());
 				numCnt = 1;
 
 				totalPageCnt();
@@ -79,7 +82,7 @@
 						html += 		"NO."+ numCnt++ +"<br>"+ apply_seq.substring(0,4) + "-" + apply_seq.substring(4,6) + "-" + apply_seq.substring(6,8);
 						html += 	 "</li>";
 						html += 	 "<li style='float: left; width: 65%;'>";
-						html += 		"<p>";
+				//		html += 		"<p>";
 						html += 		"<a href=javascript:viewApply('2019010205')>신청번호:2019010205</a> "+ data[i].name +"<br>";
 						html +=			data[i].h_type + " "+ start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
 						html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + data[i].apply_count +"일)";
@@ -104,7 +107,7 @@
 								break;
 						}// end of switch-----------------------------------
 
-						html += 		"</p>";
+				//		html += 		"</p>";
 						html += 	"</li>";
 						html +=   "</ul>";
 						html += "</div>";
@@ -145,7 +148,7 @@
 
 			var form_data = {
 					  pageNum : $("#pageNum").val(),
-					  checkVal : $("#approvalSel option:selected").val(),
+					  checkVal : $("#temp").val(),
 					  date : $("#dateSel option:selected").val()
 					 };
 
@@ -173,7 +176,7 @@
 						html += 		"NO."+ numCnt++ +"<br>"+ apply_seq.substring(0,4) + "-" + apply_seq.substring(4,6) + "-" + apply_seq.substring(6,8);
 						html += 	 "</li>";
 						html += 	 "<li style='float: left; width: 65%;'>";
-						html += 		"<p>";
+				//		html += 		"<p>";
 						html += 		"<a href=javascript:viewApply('2019010205')>신청번호:2019010205</a> "+ data[i].name +"<br>";
 						html +=			data[i].h_type + " "+ start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
 						html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + data[i].apply_count +"일)";
@@ -198,7 +201,7 @@
 								break;
 						}// end of switch-----------------------------------
 
-						html += 		"</p>";
+				//		html += 		"</p>";
 						html += 	"</li>";
 						html +=   "</ul>";
 						html += "</div>";
@@ -289,11 +292,45 @@
 		    margin: 0px 0 20px 0;
 		}
 
+        .ui-btn-icon-top { padding-top : 3em;}
+        .ui-bar { text-align: center; }
+        .ui-bar .header-menu { float: right; }
+        .ui-bar .header-back { float: left; }
+        .ui-panel { width : 20em;}
+        #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
+
 	</style>
 
 </head>
 <body>
 <!-- container// -->
+<header data-role="header">
+    <div class="ui-bar">
+        <button class="header-back"><span>back</span></button>
+        <h1>CalebsLab</h1>
+        <a href="#menuPanel" class="btn header-menu">Menu</a>
+    </div>
+</header>
+<div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
+    <h2>메뉴</h2>
+    <ul data-role="listview">
+        <p>내정보</p>
+        <li><a href="#">마이페이지</a></li>
+        <p>프로젝트</p>
+        <li><a href="#">프로젝트</a></li>
+        <li><a href="#">프로젝트일정 목록</a></li>
+        <p>휴가</p>
+        <li><a href="#">휴가신청</a></li>
+        <li><a href="#">휴가신청내역</a></li>
+        <li><a href="#">휴가캘린더</a></li>
+        <p>게시판</p>
+        <li><a href="#">FAQ</a></li>
+        <p>관리</p>
+        <li><a href="#">사원등록</a></li>
+        <li><a href="#">사원목록</a></li>
+        <li><a  onclick="movePage('main.html')">휴가현황</a></li>
+    </ul>
+</div>
 <section class="container">
     <h2>휴가 조회 화면</h2>
 
@@ -320,17 +357,30 @@
         </div>
 
         <div class="col-sm-2">
-            <button class="form-control" id="btResult" >조회</button>
+            <button class="form-control btn btn-success" id="btResult" >조회</button>
         </div>
 
     </div>
     <div id="showList" style="padding-top: 50px;">
     </div>
-    <button class="form-control" id="btMore" >더보기</button>
+    <button class="form-control btn btn-info" id="btMore" >더보기</button>
 
     <input type="hidden" id="pageNum" value="1">
     <input type="hidden" id="pageMaxNum">
+    <input type="text" id="temp" >
 </section>
 <!-- //container -->
+
+<!-- footer -->
+<div style="overflow: hidden;" data-role="footer" data-position="fixed">
+    <div data-role="navbar">
+        <ul>
+            <li><a href="#" data-icon="home">홈</a></li>
+            <li><a href="#" data-icon="shop">프로젝트</a></li>
+            <li><a href="#" data-icon="calendar">휴가신청</a></li>
+            <li><a href="#" data-icon="power">로그아웃</a></li>
+        </ul>
+    </div>
+</div>
 </body>
 </html>

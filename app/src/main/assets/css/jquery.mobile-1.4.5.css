@@ -950,12 +950,12 @@ html body .ui-group-theme-a .ui-bar-inherit {
 /* Page and overlay */
 .ui-overlay-a,
 .ui-page-theme-a,
-.ui-page-theme-a .ui-panel-wrapper {
-	background-color: 			#f9f9f9 /*{a-page-background-color}*/;
-	border-color:	 		#bbb /*{a-page-border}*/;
-	color: 					#333 /*{a-page-color}*/;
-	text-shadow: 0 /*{a-page-shadow-x}*/ 1px /*{a-page-shadow-y}*/ 0 /*{a-page-shadow-radius}*/ 	#f3f3f3 /*{a-page-shadow-color}*/;
-}
+/*.ui-page-theme-a .ui-panel-wrapper {
+	background-color: 			#f9f9f9 *//*{a-page-background-color}*//*;
+	border-color:	 		#bbb *//*{a-page-border}*//*;
+	color: 					#333 *//*{a-page-color}*//*;
+	text-shadow: 0 *//*{a-page-shadow-x}*//* 1px *//*{a-page-shadow-y}*//* 0 *//*{a-page-shadow-radius}*//* 	#f3f3f3 *//*{a-page-shadow-color}*//*;
+}*/
 /* Body: Read-only lists, text inputs, collapsible content */
 .ui-body-a,
 .ui-page-theme-a .ui-body-inherit,
@@ -966,7 +966,7 @@ html .ui-panel-page-container-a {
 	background-color: 			#fff /*{a-body-background-color}*/;
 	border-color:	 		#ddd /*{a-body-border}*/;
 	color: 					#333 /*{a-body-color}*/;
-	text-shadow: 0 /*{a-body-shadow-x}*/ 1px /*{a-body-shadow-y}*/ 0 /*{a-body-shadow-radius}*/ 	#f3f3f3 /*{a-body-shadow-color}*/;
+	text-shadow: /*0 {a-body-shadow-x}*/ /*1px {a-body-shadow-y}*/ /*0 {a-body-shadow-radius}*/ 	/*#f3f3f3 {a-body-shadow-color}*/;
 }
 .ui-body-a {
 	border-width: 1px;
@@ -976,27 +976,28 @@ html .ui-panel-page-container-a {
 .ui-page-theme-a a,
 html .ui-bar-a a,
 html .ui-body-a a,
-html body .ui-group-theme-a a {
-	color: #3388cc /*{a-link-color}*/;
+/*
+    html body .ui-group-theme-a a {
+	color: #3388cc *//*{a-link-color}*//*;
 	font-weight: bold;
-}
+}*/
 .ui-page-theme-a a:visited,
 html .ui-bar-a a:visited,
 html .ui-body-a a:visited,
-html body .ui-group-theme-a a:visited {
-    color: #3388cc /*{a-link-visited}*/;
-}
+/*html body .ui-group-theme-a a:visited {
+    color: #3388cc *//*{a-link-visited}*//*;
+}*/
 .ui-page-theme-a a:hover,
 html .ui-bar-a a:hover,
 html .ui-body-a a:hover,
-html body .ui-group-theme-a a:hover {
-	color: #005599 /*{a-link-hover}*/;
-}
+/*html body .ui-group-theme-a a:hover {
+	color: #005599 *//*{a-link-hover}*//*;
+}*/
 .ui-page-theme-a a:active,
 html .ui-bar-a a:active,
 html .ui-body-a a:active,
 html body .ui-group-theme-a a:active {
-	color: #005599 /*{a-link-active}*/;
+	color: /* #005599 {a-link-active}*/;
 }
 /* Button up */
 .ui-page-theme-a .ui-btn,

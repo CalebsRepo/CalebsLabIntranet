@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,7 @@ import org.json.JSONObject;
 import java.io.File;
 
 import component.Contacts;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -86,10 +88,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
+                /*전화 또는 메일로 연결시 loadUrl 타지않고 해당 앱으로 연결*/
+                if (url.startsWith(("tel:")) || url.startsWith("mailto:")) {
+                    Intent intent ;
+                    if (url.startsWith("tel:")) {
+                        intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
+                    }else {
+                        intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(url));
+                    }
+                    startActivity(intent);
+                    return true;
+                }
+
                 Log.d("MovePage", "이동 대상 URL  : " + url);
                 view.loadUrl(url);
                 Log.d("MovePage", "이동 완료");
                 return true;
+
             }
         });
 
@@ -242,6 +257,33 @@ public class MainActivity extends AppCompatActivity {
             Contacts contacts = new Contacts();
             contacts.callPhone(phoneNum);
         }
+
+        //주소록 저장
+        @JavascriptInterface
+        public void saveToOldContact(final String jsonDataTest) {
+            Intent contactIntent = new Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT);
+
+            if (jsonDataTest != null) {
+                try {
+                    jsonData = new JSONObject(jsonDataTest);
+
+                    contactIntent.putExtra(ContactsContract.Intents.Insert.NAME, jsonData.getString("name"));
+                    contactIntent.putExtra(ContactsContract.Intents.Insert.PHONE, jsonData.getString("cellPhone"));
+                    contactIntent.putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE);
+                    contactIntent.setData(Uri.fromParts("tel", jsonData.getString("cellPhone"), null));
+
+                    contactIntent.putExtra(ContactsContract.Intents.Insert.EMAIL, jsonData.getString("email"));
+                    contactIntent.putExtra(ContactsContract.Intents.Insert.EMAIL_TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK);
+                    contactIntent.setData(Uri.fromParts("mailto", jsonData.getString("email"), null));
+
+                    startActivity(contactIntent);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
     }
 
 
