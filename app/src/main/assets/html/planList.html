@@ -4,16 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
 
+    <!--헤더푸터추가--><link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
     <link rel="stylesheet" href="../css/project_plan.css">
     <script src="../js/common.js"></script>
+    <!--헤더푸터추가--><script src="../js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <title></title>
+    <script type="text/javascript">
+        var ajaxResult="";
+        var ajaxResult2="";
+        $(document).ready(function(){
+            navigate("getProjectList.json", successFncProjectList, errorFncProjectList);
+            navigate("getPlanSummary.json", successFncPlanSummary, errorFncPlanSummary);
+        };
+
+     <!--프로젝트 ajax통신 성공-->
+    function successFncProjectList(result) {
+        console.log("successFncMultiSndSample>>>>>" + JSON.stringify(result));
+         console.log("============================================");
+          console.log("============================================");
+        ajaxResult=JSON.stringify(result);
+        ajaxResult2=JSON.parse(ajaxResult);
+        console.log("successFncMultiSndSample>>>>>" + ajaxResult);
+        console.log("============================================");
+
+        for(var i=0; i<ajaxResult2.length; i++) {
+            var projectListview = document.getElementById('select-choice-1');
+            if (ajaxResult2[i].project_cnt != 0) {
+                $("#projectListview").append("<li class='ui-corner-all'>"
+                                        +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
+                                        +"<div class='plan plan-name'> 일정이름 : " + ajaxResult2[i].project_name + "</div>"
+                                        +"<div class='plan plan-date'> 기간 : " + ajaxResult2[i].start_ymd +" ~ " + ajaxResult2[i].end_ymd  + "</div>"
+                                        +"<div class='plan-teamCnt'> 참여인원 : " + ajaxResult2[i].project_cnt +" 명 </div>"
+                                        +"<div class='plan-state'> 상태 : 프로젝트 진행중</div>"
+                                        + "</a>"
+                                    + "<li>");
+            } else {
+                $("#projectListview").append("<li class='ui-corner-all'>"
+                                        +"<span class='list-detail ui-corner-all info-box'>"
+                                        +"<div class='plan plan-state'> 현재 진행중인 프로젝트가 없습니다.</div>"
+                                        + "</span>"
+                                        + "<li>");
+
+            }
+        }
+    }
+    <!--프로젝트 ajax 통신 실패-->
+    function errorFncProjectList(result) {
+        console.log("errorFncProjectList>>>>>>" + JSON.stringify(result));
+    }
+
+    </script>
+
+    <style type="text/css">
+
+		.underline {
+			padding-top: 20px;
+		    padding-bottom: 3px;
+		    border-bottom: 1px solid #eee;
+		    margin: 0px 0 20px 0;
+		}
+
+        .ui-btn-icon-top { padding-top : 3em;}
+        .ui-bar { text-align: center; }
+        .ui-bar .header-menu { float: right; }
+        .ui-bar .header-back { float: left; }
+        .ui-panel { width : 20em;}
+        #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
+
+	</style>
 </head>
 <body>
-<section id="page1" data-role="page">
+<header data-role="header">
+    <div class="ui-bar">
+        <button class="header-back"><span>back</span></button>
+        <h1>CalebsLab</h1>
+        <a href="#menuPanel" class="btn header-menu">Menu</a>
+    </div>
+</header>
+
+<div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
+    <h2>메뉴</h2>
+    <ul data-role="listview">
+        <p>내정보</p>
+        <li><a href="#">마이페이지</a></li>
+        <p>프로젝트</p>
+        <li><a href="#">프로젝트</a></li>
+        <li><a href="#">프로젝트일정 목록</a></li>
+        <p>휴가</p>
+        <li><a href="#">휴가신청</a></li>
+        <li><a href="#">휴가신청내역</a></li>
+        <li><a href="#">휴가캘린더</a></li>
+        <p>게시판</p>
+        <li><a href="#">FAQ</a></li>
+        <p>관리</p>
+        <li><a href="#">사원등록</a></li>
+        <li><a href="#">사원목록</a></li>
+        <li><a  onclick="movePage('main.html')">휴가현황</a></li>
+    </ul>
+</div>
+
+<section id="page1" data-role="page" class="container">
     <div data-role="content" class="plan-list">
         <!--제목, 셀렉트박스, 추가버튼-->
         <div class="title-area">
@@ -71,5 +165,16 @@
     </div>
 
 </section>
+<!-- footer -->
+<div style="overflow: hidden;" data-role="footer" data-position="fixed">
+    <div data-role="navbar">
+        <ul>
+            <li><a href="#" data-icon="home">홈</a></li>
+            <li><a href="#" data-icon="shop">프로젝트</a></li>
+            <li><a href="#" data-icon="calendar">휴가신청</a></li>
+            <li><a href="#" data-icon="power">로그아웃</a></li>
+        </ul>
+    </div>
+</div>
 </body>
 </html>
