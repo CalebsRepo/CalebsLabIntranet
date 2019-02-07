@@ -3,7 +3,8 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=1,initial-scale=1,user-scalable=no" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <!--<meta name="viewport" content="width=1,initial-scale=1,user-scalable=no" />-->
     <title>CMS(Caleb's lab Management System)</title>
     <script src="../js/common.js"></script>
 
@@ -17,6 +18,8 @@
     <script src='../js/fullcalendar/fullcalendar.min.js'></script>
     <script src="../js/fullcalendar/ko.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+
+
 
 
     <script type="text/javascript">
@@ -110,7 +113,7 @@
 
                     }
                 ]  */ ,
-                height: 450,
+                height: 600,
                 eventRender: function (event, element) {
                     element.find('.fc-content').html(event.title);
                     element.popover({
@@ -180,8 +183,6 @@
         #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
 
         }
-
-
     </style>
 
 </head>
@@ -215,8 +216,8 @@
     </ul>
 </div>
 
-<section class="container">
-<div id="calendar" style="border: 0px solid  blue; padding-top:50px;"></div>
+<section class="container" data-role="content">
+<div id="calendar" style="padding-top:30px;"></div>
 </section>
 
 <!-- footer -->

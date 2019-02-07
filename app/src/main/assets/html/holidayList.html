@@ -2,13 +2,14 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=1,initial-scale=1,user-scalable=no" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <!--<meta name="viewport" content="width=1,initial-scale=1,user-scalable=no" />-->
     <title></title>
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+    <!--<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />-->
 
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
     <script src="../js/common.js"></script>
-    <script src="../js/bootstrap.min.js"></script>
+    <!--<script src="../js/bootstrap.min.js"></script>-->
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <script type="text/javascript">
@@ -51,8 +52,8 @@
 							 };
 
 			$.ajax({
-			  	url: "http://192.168.10.239:8080/holiday.json",
-				type: "GET",
+			  	url: "http://calebslab1.cafe24.com/holiday.json",
+				type: "POST",
 				data: form_data,
 				dataType: "JSON",
 				success: function(data){
@@ -70,21 +71,24 @@
 
 						var apply_seq = data[i].apply_seq;
 						var start_ymd = data[i].start_ymd;
+				   //   console.log("start_ym"+ i + " : " + start_ymd)
 						var end_ymd   = data[i].end_ymd;
 						var apply_content = data[i].apply_content;
 
 						apply_content = apply_content.replace('\r\n\r\n', '\r\n');
 						apply_content = apply_content.replace('\r\n', '<br>');
+						apply_content = apply_content.replace('\\','');
 
 						html += "<div class='historyline'>";
-						html +=   "<ul style='list-style: none; height: 127px;'>";
-						html +=      "<li style='float: left; width: 35%;'>";
-						html += 		"NO."+ numCnt++ +"<br>"+ apply_seq.substring(0,4) + "-" + apply_seq.substring(4,6) + "-" + apply_seq.substring(6,8);
+						html +=   "<ul style='list-style: none; height: 140px;'>";
+						html +=      "<li style='float: left; width: 30%;'>";
+						html += 		"NO."+ numCnt++ +"<br>"+ data[i].apply_date;
 						html += 	 "</li>";
-						html += 	 "<li style='float: left; width: 65%;'>";
+						html += 	 "<li style='float: left; width: 70%;'>";
 				//		html += 		"<p>";
-						html += 		"<a href=javascript:viewApply('2019010205')>신청번호:2019010205</a> "+ data[i].name +"<br>";
-						html +=			data[i].h_type + " "+ start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
+						html += 		"<a href=javascript:viewApply('" + apply_seq + "')>신청번호 : " + apply_seq + "</a> " + data[i].name + "<br>";
+						html +=			"휴가종류 : " + data[i].h_type + "<br>";
+						html +=         start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
 						html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + data[i].apply_count +"일)";
 						html += 		"<br>"+ apply_content +"<br>";
 
@@ -153,8 +157,8 @@
 					 };
 
 			$.ajax({
-			  	url: "http://192.168.10.239:8080/holiday.json",
-				type: "GET",
+			  	url: "http://calebslab1.cafe24.com/holiday.json",
+				type: "POST",
 				data: form_data,
 				dataType: "JSON",
 				success: function(data){
@@ -164,6 +168,7 @@
 
 						var apply_seq = data[i].apply_seq;
 						var start_ymd = data[i].start_ymd;
+				   //   console.log("start_ym"+ i + " : " + start_ymd)
 						var end_ymd   = data[i].end_ymd;
 						var apply_content = data[i].apply_content;
 
@@ -171,14 +176,15 @@
 						apply_content = apply_content.replace('\r\n', '<br>');
 
 						html += "<div class='historyline'>";
-						html +=   "<ul style='list-style: none; height: 127px;'>";
-						html +=      "<li style='float: left; width: 35%;'>";
-						html += 		"NO."+ numCnt++ +"<br>"+ apply_seq.substring(0,4) + "-" + apply_seq.substring(4,6) + "-" + apply_seq.substring(6,8);
+						html +=   "<ul style='list-style: none; height: 140px;'>";
+						html +=      "<li style='float: left; width: 30%;'>";
+						html += 		"NO."+ numCnt++ +"<br>"+ data[i].apply_date;
 						html += 	 "</li>";
-						html += 	 "<li style='float: left; width: 65%;'>";
+						html += 	 "<li style='float: left; width: 70%;'>";
 				//		html += 		"<p>";
-						html += 		"<a href=javascript:viewApply('2019010205')>신청번호:2019010205</a> "+ data[i].name +"<br>";
-						html +=			data[i].h_type + " "+ start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
+						html += 		"<a href=javascript:viewApply('" + apply_seq + "')>신청번호 : " + apply_seq + "</a> " + data[i].name + "<br>";
+						html +=			"휴가종류 : " + data[i].h_type + "<br>";
+						html +=         start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
 						html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + data[i].apply_count +"일)";
 						html += 		"<br>"+ apply_content +"<br>";
 
@@ -244,8 +250,9 @@
 					 };
 
 			$.ajax({
-			  	url: "http://192.168.10.239:8080/pageCount.json",
-				type: "GET",
+			  	url: "http://calebslab1.cafe24.com/pageCount.json",
+				type: "POST",
+				async: false,
 				data: form_data,
 				dataType: "JSON",
 				success: function(data){
@@ -279,6 +286,7 @@
 			}// end of for -----------------------
 
 			$("#dateSel").append(html);
+			$("#dateSel").selectmenu("refresh", true);
 
 		}// end of setDateSelct() ----------------------------------------
 
@@ -286,10 +294,10 @@
     <style type="text/css">
 
 		.underline {
-			padding-top: 20px;
+			padding-top: 30px;
 		    padding-bottom: 3px;
 		    border-bottom: 1px solid #eee;
-		    margin: 0px 0 20px 0;
+		    margin: 0px 0 30px 0;
 		}
 
         .ui-btn-icon-top { padding-top : 3em;}
@@ -331,17 +339,17 @@
         <li><a  onclick="movePage('main.html')">휴가현황</a></li>
     </ul>
 </div>
-<section class="container">
+<section class="container" data-role="content">
     <h2>휴가 조회 화면</h2>
 
     <div class="row" style="border: 0px solid red;">
 
-        <div class="col-sm-2">
+        <div>
             <span>결제구분</span>
         </div>
 
-        <div class="col-sm-4">
-            <select class="form-control input-sm" id="approvalSel">
+        <div >
+            <select id="approvalSel">
                 <option value="" selected="selected">전체</option>
                 <option value="신청">신청</option>
                 <option value="검토">검토</option>
@@ -350,13 +358,13 @@
             </select>
         </div>
 
-        <div class="col-sm-4">
-            <select class="form-control input-sm" id="dateSel">
+        <div id="selectDIv">
+            <select  id="dateSel">
 
             </select>
         </div>
 
-        <div class="col-sm-2">
+        <div >
             <button class="form-control btn btn-success" id="btResult" >조회</button>
         </div>
 
@@ -367,7 +375,7 @@
 
     <input type="hidden" id="pageNum" value="1">
     <input type="hidden" id="pageMaxNum">
-    <input type="text" id="temp" >
+    <input type="hidden" id="temp" >
 </section>
 <!-- //container -->
 
