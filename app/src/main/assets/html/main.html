@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
-    <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
-    <script src="../js/jquery.mobile-1.4.5.js"></script>
+    <link rel="stylesheet" href="../css/main.css">
     <script src="../js/common.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <title>갈렙스랩 메인</title>
     <script language = "javascript">
-
     var ajaxResult="";
     var ajaxResult2="";
     $(document).ready(function(){
-        navigate2("myProject.json", sucessFncMultiSndSample, errorFncMultiSndSample);
-
+        navigate("myProject.json", sucessFncMyProject, errorFncMyProject);
+        navigate("getMyHoliday.json", sucessFncMyHoliday, errorFncMyHoliday);
     });
-     <!--ajax통신 성공-->
-    function sucessFncMultiSndSample(result) {
+
+     <!--프로젝트 ajax통신 성공-->
+    function sucessFncMyProject(result) {
         console.log("sucessFncMultiSndSample>>>>>" + JSON.stringify(result));
          console.log("============================================");
           console.log("============================================");
@@ -27,33 +27,79 @@
         console.log("============================================");
 
         for(var i=0; i<ajaxResult2.length; i++) {
-            console.log(ajaxResult2[i].start_ymd);
-            console.log(ajaxResult2[i].end_ymd);
-            console.log(ajaxResult2[i].project_name);
-
-            var myListview = document.getElementById('myListview');
-
-            $("#myListview").append("<li class='ui-corner-al'>"
-                                    +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r'>"
-                                    +"<div class='plan plan-name'> 일정이름 : " + ajaxResult2[i].project_name + "</div>"
-                                    +"<div class='plan plan-date'> 기간 : " + ajaxResult2[i].start_ymd +" ~ " + ajaxResult2[i].end_ymd  + "</div>"
-                                    +"<div class='plan-teamCnt'> 참여인원 : 4명 </div>"
-                                    +"<div class='plan-state'> 상태 : 프로젝트 진행중</div>"
-                                    + "</a>"
+            var projectListview = document.getElementById('projectListview');
+            if (ajaxResult2[i].project_cnt != 0) {
+                $("#projectListview").append("<li class='ui-corner-all'>"
+                                        +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
+                                        +"<div class='plan plan-name'> 일정이름 : " + ajaxResult2[i].project_name + "</div>"
+                                        +"<div class='plan plan-date'> 기간 : " + ajaxResult2[i].start_ymd +" ~ " + ajaxResult2[i].end_ymd  + "</div>"
+                                        +"<div class='plan-teamCnt'> 참여인원 : " + ajaxResult2[i].project_cnt +" 명 </div>"
+                                        +"<div class='plan-state'> 상태 : 프로젝트 진행중</div>"
+                                        + "</a>"
                                     + "<li>");
+            } else {
+                $("#projectListview").append("<li class='ui-corner-all'>"
+                                        +"<span class='list-detail ui-corner-all info-box'>"
+                                        +"<div class='plan plan-state'> 현재 진행중인 프로젝트가 없습니다.</div>"
+                                        + "</span>"
+                                        + "<li>");
 
+            }
         }
     }
-    <!--ajax 통신 실패-->
-    function errorFncMultiSndSample(result) {
-        console.log("errorFncMultiSndSample>>>>>>" + JSON.stringify(result));
+    <!--프로젝트 ajax 통신 실패-->
+    function errorFncMyProject(result) {
+        console.log("errorFncMyProject>>>>>>" + JSON.stringify(result));
+    }
+
+
+    <!--연차정보 ajax통신 성공-->
+    function sucessFncMyHoliday(result) {
+        console.log("sucessFncMyHoliday>>>>>" + JSON.stringify(result));
+         console.log("============================================");
+          console.log("============================================");
+        ajaxResult=JSON.stringify(result);
+        ajaxResult2=JSON.parse(ajaxResult);
+        console.log("sucessFncMyHoliday>>>>>" + ajaxResult);
+        console.log("============================================");
+
+        for(var i=0; i<ajaxResult2.length; i++) {
+            var holidayListview = document.getElementById('holidayListview');
+
+            var holidayCnt = 15;                                //  기본휴가일수
+            var wd_80 = 292;                                    //  입사 후 1년 80% 근무일수
+            var join_year = ajaxResult2[i].join_year;           //  근무년수
+            var join_mon = ajaxResult2[i].join_mon;             //  근무월수
+            var join_day = ajaxResult2[i].join_day;             //  근무일수
+            var usingHolilday = ajaxResult2[i].use_holiday_cnt  //  사용휴가일수
+
+            if(ajaxResult2[i].join_year == 3) {
+                holidayCnt = holidayCnt + 1;                                        // 입사후 3년 근무 시 15 + 1 일 휴가
+            }else if(ajaxResult2[i].join_year > 3) {
+                holidayCal = holidayCnt + 1 + Math.floor((join_year - 3)/2);        // 입사 3년 후 2년마다 +1:  15+1 + (2년*1)일 휴가 max : 25
+                holidayCnt = (holidayCal > 25) ? 25 : holidayCal;
+            }else if(join_day < WD_80) {
+                holidayCnt = join_mon * 1; // 근속년수 80% 미만인 사람은 1개월 개근시 1일의 휴가
+            }
+
+            var holidayResult = holidayCnt - usingHolilday;
+            $("#holidayListview").append("<li class='ui-corner-all'>"
+                                    +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
+                                    +"<div class='plan plan-name'> 이름 : " + ajaxResult2[i].name + "</div>"
+                                    +"<div class='plan plan-date'> 연차 발생기간 : " + ajaxResult2[i].hs_ymd +" ~ " + ajaxResult2[i].he_ymd  + "</div>"
+                                    +"<div class='plan-teamCnt'> 당해연도 발생연차 : " + holidayCnt +" 일 </div>"
+                                    +"<div class='plan-state'> 남은 연차일수 : " + holidayResult + " 일</div>"
+                                    + "</a>"
+                                + "<li>");
+        }
+    }
+    <!--연차정보 ajax 통신 실패-->
+    function errorFncMyHoliday(result) {
+        console.log("errorFncMyHoliday>>>>>>" + JSON.stringify(result));
     }
     </script>
     <style>
         .ui-btn-icon-top { padding-top : 3em;}
-        .ui-bar { text-align: center; }
-        .ui-bar .header-menu { float: right; }
-        .ui-bar .header-back { float: left; }
         .ui-panel { width : 20em;}
         #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
     </style>
@@ -62,12 +108,11 @@
 <body>
 <section id="page1" data-role="page">
     <!-- header -->
+
     <header data-role="header">
-        <div class="ui-bar">
-            <button class="header-back"><span>back</span></button>
-            <h1>CalebsLab</h1>
-            <a href="#menuPanel" class="btn header-menu">Menu</a>
-        </div>
+        <h1>CalebsLab</h1>
+        <a class="ui-btn ui-corner-all ui-btn-inline ui-mini footer-button-left ui-btn-icon-left ui-icon-carat-l" href="javascript:history.back()">back</a>
+        <a href="#menuPanel" data-icon="bars">menu</a>
     </header>
 
     <div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
@@ -92,19 +137,22 @@
     </div>
 
     <!-- content -->
-    <div class="gird-pt summary-list">
-        <h2>나의 프로젝트 정보</h2>
-        <ul id="myListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
+    <div data-role="content" class="main-warp">
+        <div class="gird-pt holiday-list">
+            <h2>나의 연차정보</h2>
+            <ul id="holidayListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a">
 
-        </ul>
+            </ul>
+        </div>
+
+        <div class="gird-pt project-list ">
+            <h2>나의 프로젝트 정보</h2>
+            <ul id="projectListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a">
+
+            </ul>
+        </div>
     </div>
 
-    <div class="gird-pt summary-list">
-        <h2>나의 휴가정보</h2>
-        <ul id="myListview2" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
-
-        </ul>
-    </div>
 
     <!-- footer -->
     <div style="overflow: hidden;" data-role="footer" data-position="fixed">

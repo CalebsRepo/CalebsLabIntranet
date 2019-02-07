@@ -1,0 +1,17 @@
+<style>
+
+    /*Common*/
+    h1,h2,h3,h4,h5{margin: 0.5em 0;}
+
+    /*List-Summary*/
+    .project-list  div.plan{display:block; color:#333333; text-shadow: none;}
+    .project-list  a.list-detail {border:none !important; padding:20px; background:#f7f7f7 !important;}
+    .project-list  ul{width:100%; box-shadow:none !important;}
+    .project-list  li{ margin-bottom:10px; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
+
+    .info-box {
+        text-align: center;
+        padding: 1.5em;
+    }
+
+</style>
