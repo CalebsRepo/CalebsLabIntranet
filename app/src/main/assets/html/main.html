@@ -9,11 +9,17 @@
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <title>갈렙스랩 메인</title>
     <script language = "javascript">
+    var loginId = "silveragtl";
+    var params = {
+                loginId : loginId,
+             };
+
     var ajaxResult="";
     var ajaxResult2="";
+
     $(document).ready(function(){
-        navigate("myProject.json", sucessFncMyProject, errorFncMyProject);
-        navigate("getMyHoliday.json", sucessFncMyHoliday, errorFncMyHoliday);
+        navigate(params, "myProject.json", sucessFncMyProject, errorFncMyProject);
+        navigate(params, "getMyHoliday.json", sucessFncMyHoliday, errorFncMyHoliday);
     });
 
      <!--프로젝트 ajax통신 성공-->
@@ -115,7 +121,7 @@
         <a href="#menuPanel" data-icon="bars">menu</a>
     </header>
 
-    <div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
+    <div data-role="panel" id="menuPanel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
         <h2>메뉴</h2>
         <ul data-role="listview">
             <p>내정보</p>
@@ -158,7 +164,7 @@
     <div style="overflow: hidden;" data-role="footer" data-position="fixed">
         <div data-role="navbar">
             <ul>
-                <li><a href="#" data-icon="home">홈</a></li>
+                <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
                 <li><a href="#" data-icon="shop">프로젝트</a></li>
                 <li><a href="#" data-icon="calendar">휴가신청</a></li>
                 <li><a href="#" data-icon="power">로그아웃</a></li>
