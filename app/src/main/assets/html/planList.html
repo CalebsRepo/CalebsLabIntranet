@@ -34,21 +34,13 @@
         for(var i=0; i<ajaxResult2.length; i++) {
             var projectListview = document.getElementById('select-choice-1');
             if (ajaxResult2[i].project_cnt != 0) {
-                $("#projectListview").append("<li class='ui-corner-all'>"
-                                        +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
-                                        +"<div class='plan plan-name'> 일정이름 : " + ajaxResult2[i].project_name + "</div>"
-                                        +"<div class='plan plan-date'> 기간 : " + ajaxResult2[i].start_ymd +" ~ " + ajaxResult2[i].end_ymd  + "</div>"
-                                        +"<div class='plan-teamCnt'> 참여인원 : " + ajaxResult2[i].project_cnt +" 명 </div>"
-                                        +"<div class='plan-state'> 상태 : 프로젝트 진행중</div>"
-                                        + "</a>"
-                                    + "<li>");
+                $("#projectListview").append(
+                                        "<option value='" + ajaxResult2[i].project_code + "'>" + ajaxResult2[i].project_name + "</option>"
+                                      );
             } else {
-                $("#projectListview").append("<li class='ui-corner-all'>"
-                                        +"<span class='list-detail ui-corner-all info-box'>"
-                                        +"<div class='plan plan-state'> 현재 진행중인 프로젝트가 없습니다.</div>"
-                                        + "</span>"
-                                        + "<li>");
-
+                $("#projectListview").append(
+                                        "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
+                                      );
             }
         }
     }
@@ -114,10 +106,10 @@
             <h3>• 프로젝트 일정 </h3>
             <div class="gird-pt" class="select-area">
                 <div class="grid-cd-1">
-                    <select name="select-choice-1" id="select-choice-1" class="ui-corner-all">
-                        <option value="projectCode">NH 통합스마트뱅킹 구축</option>
-                        <option value="projectCode">하나로브랜치 고도화</option>
-                        <option value="projectCode">갈랩스랩 사내 앱 개발</option>
+                        <select name="select-choice-1" id="select-choice-1" class="ui-corner-all">
+                           <!-- <option value="projectCode">NH 통합스마트뱅킹 구축</option>
+                            <option value="projectCode">하나로브랜치 고도화</option>
+                            <option value="projectCode">갈랩스랩 사내 앱 개발</option>-->
                     </select>
                 </div>
                 <div class="grid-cd-2">
