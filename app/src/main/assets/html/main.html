@@ -10,8 +10,10 @@
     <title>갈렙스랩 메인</title>
     <script language = "javascript">
     var loginId = "silveragtl";
+    var loginName = "이은표";
     var params = {
                 loginId : loginId,
+                loginName : loginName,
              };
 
     var ajaxResult="";
@@ -37,7 +39,7 @@
             if (ajaxResult2[i].project_cnt != 0) {
                 $("#projectListview").append("<li class='ui-corner-all'>"
                                         +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
-                                        +"<div class='plan plan-name'> 일정이름 : " + ajaxResult2[i].project_name + "</div>"
+                                        +"<div class='plan plan-name'> 프로젝트명 : " + ajaxResult2[i].project_name + "</div>"
                                         +"<div class='plan plan-date'> 기간 : " + ajaxResult2[i].start_ymd +" ~ " + ajaxResult2[i].end_ymd  + "</div>"
                                         +"<div class='plan-teamCnt'> 참여인원 : " + ajaxResult2[i].project_cnt +" 명 </div>"
                                         +"<div class='plan-state'> 상태 : 프로젝트 진행중</div>"
@@ -57,7 +59,6 @@
     function errorFncMyProject(result) {
         console.log("errorFncMyProject>>>>>>" + JSON.stringify(result));
     }
-
 
     <!--연차정보 ajax통신 성공-->
     function sucessFncMyHoliday(result) {
@@ -121,8 +122,8 @@
         <a href="#menuPanel" data-icon="bars">menu</a>
     </header>
 
-    <div data-role="panel" id="menuPanel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
-        <h2>메뉴</h2>
+    <div data-role="panel" id="menuPanel" data-position="right"  data-display="overlay" data-theme="a">
+        <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab" width="260" style="margin: 1em;">
         <ul data-role="listview">
             <p>내정보</p>
             <li><a href="#">마이페이지</a></li>
@@ -145,14 +146,14 @@
     <!-- content -->
     <div data-role="content" class="main-warp">
         <div class="gird-pt holiday-list">
-            <h2>나의 연차정보</h2>
+            <h2>· 연차정보</h2>
             <ul id="holidayListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a">
 
             </ul>
         </div>
 
         <div class="gird-pt project-list ">
-            <h2>나의 프로젝트 정보</h2>
+            <h2>· 나의 프로젝트 정보</h2>
             <ul id="projectListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a">
 
             </ul>
