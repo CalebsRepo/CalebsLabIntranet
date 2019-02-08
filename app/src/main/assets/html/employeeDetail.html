@@ -2,32 +2,201 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,target-densitydpi=medium-dpi">
-    <!--    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>-->
-    <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
-    <script src="../js/common.js"></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
-    <script src="../js/jquery.mobile-1.4.5.js"></script>
+    <!--DatePicker--><link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="../css/project_plan.css">
+    <script src="../js/common.js"></script>
+    <script src="../js/datepicker.js"></script>
+    <script src="../js/postCodeAPI.js"></script><!--다음 지도 api-->
+    <script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script> <!--다음 지도 api-->
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <!--DatePicker--><script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <!--DatePicker--><script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
-    <script language = "javascript">
-            $(function(){
-                $('#camera').change(function(e){
-                    $('#pic').attr('src', URL.createObjectURL(e.target.files[0]));
-                });
+    <title></title>
+    <script>
+        <!--상세페이지 데이터 셋팅-->
+        $(function(){
+             var ajaxResult="";
+             ajaxResult= JSON.parse(getStorageItem());
+             for(var i=0;i<ajaxResult.length;i++){
+                $('#pic1').attr('src',"http://calebslab1.cafe24.com/images/"+ajaxResult[i].id+""); <!--프로필사진-->
+                $('#pic2').attr('src',"http://calebslab1.cdn3.cafe24.com/test.png"); <!--사인사진-->
+                $('#employeeName').val(ajaxResult[i].name); <!--이름-->
+                $('#birth_ymd').val(ajaxResult[i].birth_ymd); <!--생년월일-->
+
+                $("#selGrade option:contains('"+ajaxResult[i].grade+"')").prop('selected', 'selected'); <!--직급-->
+                $("#selGrade").selectmenu("refresh", true);
+
+                $('#join_ymd').val(ajaxResult[i].join_ymd); <!--입사일자-->
+                $('#employeeId').val(ajaxResult[i].id); <!--아이디-->
+
+                $('#employeeName').val(ajaxResult[i].name); <!--비밀번호-->
+                $('#employeeName').val(ajaxResult[i].name); <!--비밀번호 확인-->
+
+                $('#employeeEmail').val(ajaxResult[i].email); <!--이메일-->
+                $('#hp_num').val(ajaxResult[i].hp_num); <!--연락처-->
+                $('#contact_num').val(ajaxResult[i].contact_num); <!--비상연락처-->
+
+                $('#sample2_postcode').val(ajaxResult[i].zip_code); <!--우편번호-->
+                $('#sample2_address').val(ajaxResult[i].address1); <!--주소-->
+                $('#sample2_detailAddress').val(ajaxResult[i].address2); <!--상세주소-->
+
+                $("#adm_flag option:contains('"+ajaxResult[i].adm_flag+"')").prop('selected', 'selected'); <!--권한->
+                $("#adm_flag").selectmenu("refresh", true);
+
+             }
+        });
+
+        <!--사진 첨부파일 미리보기 기능-->
+        $(function(){
+            $('#camera').change(function(e){
+                $('#pic1').attr('src', URL.createObjectURL(e.target.files[0]));
             });
-   </script>
+            $('#imginput2').change(function(e){
+                $('#pic2').attr('src', URL.createObjectURL(e.target.files[0]));
+            });
+        });
+
+    </script>
+
 </head>
 
-<body>
-<div class="content" data-role="content">
-    <input type="file" id="camera" name="camera" capture="camera" accept="image/*" />
-    <br/>
-    <img id="pic" style="width:50%; high:50%;"/>
-    <br/>
-    <a href='tel:012-345-6789'>0123456789</a><br/>
-    <br/>
-    <a href='mailto:hyjlm92@naver.com'>hyjlm92@naver.com</a>
+<body onload="getStorageItem()">
+<section id="page1" data-role="page">
+    <div data-role="content" class="plan-detail">
+        <!--제목-->
+        <div  class="title-area">
+            <div class="gird-pt">
+                <h3>• 사원 상세정보 </h3>
+            </div>
+        </div>
+        <style>
+            div#select-2-button { padding: 7.5px 5px; background:#ffffff;}
+            div#select-2-button span { text-align: left; font-weight: 600;}
 
-</div>
+        </style>
+
+        <!--사원 상세정보 페이지-->
+        <div class="gird-pt detail-form">
+            <form>
+                <img id="pic1" style="width:47.5%; high:100%; float:left; margin-right:5%;"/>
+                <img id="pic2" style="width:47.5%; high:100%; float:left;"/>
+                <br>
+                <div class="ui-field-contain">
+                    <label for="camera">프로필파일첨부</label>
+                    <input type="file" id="camera" name="camera" capture="camera" accept="image/*" />
+                </div>
+                <div class="ui-field-contain">
+                    <label for="camera">사인파일첨부</label>
+                    <input type="file" id="imginput2" name="imginput2" capture="camera" accept="image/*" />
+                </div>
+
+                <div class="ui-field-contain">
+                    <label for="employeeName">이 름:</label>
+                    <input type="text" name="employeeName" id="employeeName" placeholder="이름을 입력하세요" value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="birth_ymd">생년월일:</label>
+                    <input type="text" name="birth_ymd" id="birth_ymd"placeholder="생년월일을 선택해주세요" value="" readonly>
+                    <script>
+                    $("#textinput3").datepicker();
+                    </script>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="selGrade">직 급:</label>
+                    <select name="selGrade" id="selGrade" class="ui-corner-all">
+                        <option value="사원">사원</option>
+                        <option value="대리">대리</option>
+                        <option value="과장">과장</option>
+                        <option value="차장">차장</option>
+                        <option value="부장">부장</option>
+                        <option value="이사">이사</option>
+                        <option value="상무">상무</option>
+                        <option value="대표">대표</option>
+                    </select>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="join_ymd">입사일자:</label>
+                    <input type="text" name="join_ymd" id="join_ymd" placeholder="입사일자를 선택해주세요" value="" readonly>
+                    <script>
+                    $("#textinput4").datepicker();
+                    </script>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="employeeId">아이디:</label>
+                    <input type="text" name="employeeId" id="employeeId" placeholder="아이디를 입력하세요" value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="employeePw">비밀번호:</label>
+                    <input type="text" name="employeePw" id="employeePw" placeholder="비밀번호를 입력하세요" value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="employeePw2">비밀번호 확인</label>
+                    <input type="text" name="employeePw2" id="employeePw2" value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="employeeEmail">이메일</label>
+                    <input type="text" name="employeeEmail" id="employeeEmail" placeholder="이메일을 입력하세요" value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="hp_num">연락처</label>
+                    <input type="text" name="hp_num" id="hp_num"  value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="contact_num">비상연락처</label>
+                    <input type="text" name="contact_num" id="contact_num"value="" >
+                </div>
+                <!--<div class="ui-field-contain">-->
+                <div class="btn-area-3">
+                    <div class="grid-pt">
+                        <div class="grid-cd-1"><label for="sample2_postcode">우편번호</label></div>
+                        <div class="grid-cd-2"><input type="text" name="sample2_postcode" id="sample2_postcode"  value="" ></div>
+                        <div class="grid-cd-3">
+                            <a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="movePage('postcodeAPI.html')">우편번호찾기</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="sample2_postcode">주 소</label>
+                    <input type="text" id="sample2_address" placeholder="주소"><br>
+                    <!--<input type="text" id="sample2_extraAddress" placeholder="참고항목">-->
+                    <!-- iOS에서는 position:fixed 버그가 있음, 적용하는 사이트에 맞게 position:absolute 등을 이용하여 top,left값 조정 필요 -->
+                    <div id="layer" style="display:none;position:fixed;overflow:hidden;z-index:1;-webkit-overflow-scrolling:touch;">
+                        <img src="http://t1.daumcdn.net/postcode/resource/images/close.png" id="btnCloseLayer"
+                             style="cursor:pointer;position:absolute;right:-3px;top:-3px;z-index:1" onclick="closeDaumPostcode()" alt="닫기 버튼">
+                    </div>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="sample2_detailAddress">상세주소</label>
+                    <input type="text" name="sample2_detailAddress"id="sample2_detailAddress" placeholder="나머지 주소를 입력해주세요">
+                </div>
+                <div class="ui-field-contain">
+                    <label for="adm_flag">권한</label>
+                    <select name="adm_flag" id="adm_flag" class="ui-corner-all">
+                        <option value="G">G</option>
+                        <option value="A">A</option>
+                        <option value="U">U</option>
+                    </select>
+                </div>
+
+            </form>
+        </div>
+        <style>
+
+        </style>
+        <div class="btn-area-1">
+            <div class="grid-pt">
+                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">수정</a></div>
+            </div>
+        </div>
+
+    </div>
+
+
+</section>
 </body>
 </html>
