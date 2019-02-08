@@ -52,10 +52,9 @@
             <p>관리</p>
             <li><a href="#">사원등록</a></li>
             <li><a href="#">사원목록</a></li>
-            <li><a  onclick="movePage('main.html')">휴가현황</a></li>
+            <li><a href="#">휴가현황</a></li>
         </ul>
     </div>
-
 
     <!-- content -->
     <div class="content" data-role="content" onclick="movePage('login.html')">
@@ -100,12 +99,15 @@
     <div class="content" data-role="content" onclick="movePage('1001.html')">
         <button type="button" id="pjh">박진호테스트</button>
     </div>
+    <div class="content" data-role="content" onclick="movePage('main.html')">
+        <button type="button" id="btMainPage" >메인페이지</button>
+    </div>
 
     <!-- footer -->
     <div style="overflow: hidden;" data-role="footer" data-position="fixed">
         <div data-role="navbar">
             <ul>
-                <li><a href="#" data-icon="home">홈</a></li>
+                <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
                 <li><a href="#" data-icon="shop">프로젝트</a></li>
                 <li><a href="#" data-icon="calendar">휴가신청</a></li>
                 <li><a href="#" data-icon="power">로그아웃</a></li>
