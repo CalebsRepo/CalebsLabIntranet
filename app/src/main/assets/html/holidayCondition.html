@@ -9,18 +9,35 @@
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <title>휴가현황</title>
     <script language = "javascript">
-    var loginId = "silveragtl";
+    var sessionId = "silveragtl";
     var params = {
-                loginId : loginId,
-             };
+                sessionId : sessionId,
+    };
 
     var ajaxResult="";
     var ajaxResult2="";
 
+
+     function getHolidayDetail(obj){
+       console.log($(obj).children('.detailID').val())
+       var sessionId = $(obj).children('.detailID').val();
+       var params = {
+            sessionId : sessionId
+        };
+       console.log(params)
+       navigate(params,"getMyHoliday.json", detailSuccess, errorFncMyHoliday);
+     }
+
+      function detailSuccess(result){
+          movePage('holidayConditionDetail.html',result);
+          console.log(result)
+      }
+
+
+
     $(document).ready(function(){
         navigate("getHolidayCondition.json", sucessFncMyHoliday, errorFncMyHoliday);
     });
-
 
 
     <!--연차정보 ajax통신 성공-->
@@ -42,11 +59,13 @@
             var join_mon = ajaxResult2[i].join_mon;             //  근무월수
             var join_day = ajaxResult2[i].join_day;             //  근무일수
             var usingHolilday = ajaxResult2[i].use_holiday_cnt  //  사용휴가일수
+            var o_join_year = join_year+1
 
-            if(ajaxResult2[i].join_year == 3) {
+
+            if(o_join_year == 3) {
                 holidayCnt = holidayCnt + 1;                                        // 입사후 3년 근무 시 15 + 1 일 휴가
-            }else if(ajaxResult2[i].join_year > 3) {
-                holidayCal = holidayCnt + 1 + Math.floor((join_year - 3)/2);        // 입사 3년 후 2년마다 +1:  15+1 + (2년*1)일 휴가 max : 25
+            }else if(o_join_year > 3) {
+                holidayCal = holidayCnt + 1 + Math.floor((o_join_year - 3)/2);        // 입사 3년 후 2년마다 +1:  15+1 + (2년*1)일 휴가 max : 25
                 holidayCnt = (holidayCal > 25) ? 25 : holidayCal;
             }else if(join_day < wd_80) {
                 holidayCnt = join_mon * 1; // 근속년수 80% 미만인 사람은 1개월 개근시 1일의 휴가
@@ -54,37 +73,25 @@
 
             var holidayResult = holidayCnt - usingHolilday;
             $("#holidayListview").append("<li class='ui-corner-all'>"
-                                    +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
+                                    +"<a onclick='getHolidayDetail(this);'  class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
+                                    +"<input class='detailID' name='detailID' type='hidden' value='" + ajaxResult2[i].id + "'> "
                                     +"<div class='plan plan-name'> 이름 : " + ajaxResult2[i].name + "</div>"
                                     +"<div class='plan plan-name'> 직급 : " + ajaxResult2[i].grade + "</div>"
                                     +"<div class='plan plan-name'> 입사일 : " + ajaxResult2[i].join_ymd + "</div>"
+                                    +"<div class='plan plan-date'> 연차 발생기간 : " + ajaxResult2[i].hs_ymd +" ~ " + ajaxResult2[i].he_ymd  + "</div>"
                                     +"<div class='plan-teamCnt'> 연차 발생 일수 : " + holidayCnt +" 일 </div>"
                                     +"<div class='plan-teamCnt'> 연차 사용 일수 : " + usingHolilday +" 일 </div>"
                                     +"<div class='plan-state'> 남은 연차일수 : " + holidayResult + " 일</div>"
                                     + "</a>"
                                 + "<li>");
-
-
-            var my_tbody = document.getElementById('my-tbody');
-            // var row = my_tbody.insertRow(0); // 상단에 추가
-            var row = my_tbody.insertRow( my_tbody.rows.length ); // 하단에 추가
-            var cell1 = row.insertCell(0);
-            var cell2 = row.insertCell(1);
-            var num = i + 1
-
-            cell1.innerHTML = num;
-            cell2.innerHTML = "이름 : " + ajaxResult2[i].name + "<br/>"
-                             +"직급 : " + ajaxResult2[i].grade + "<br/>"
-                             +"입사일 : " + ajaxResult2[i].join_ymd + "<br/>"
-                             +"연차 발생 일수 : " + holidayCnt + "<br/>"
-                             +"연차 사용 일수 : " + usingHolilday + "<br/>"
-                             +"남은 연차일수 : " + holidayResult + "<br/>"
         }
+
     }
     <!--연차정보 ajax 통신 실패-->
     function errorFncMyHoliday(result) {
         console.log("errorFncMyHoliday>>>>>>" + JSON.stringify(result));
     }
+
     </script>
     <style>
         .ui-btn-icon-top { padding-top : 3em;}
@@ -134,22 +141,11 @@
     <!-- content -->
     <div data-role="content" class="main-warp">
         <div class="gird-pt holiday-list">
-            <h2>나의 연차정보</h2>
+            <h2>휴가현황</h2>
             <ul id="holidayListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a">
 
             </ul>
         </div>
-
-        <table>
-            <thead>
-                <th>번호</th>
-                <th>휴가현황정보</th>
-            </thead>
-            <colgroup>
-                <col span="1" style="width:15%;">
-            </colgroup>
-            <tbody id="my-tbody"></tbody>
-        </table>
     </div>
 
 

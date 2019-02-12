@@ -1,0 +1,10 @@
+<style>
+    /*전체메뉴*/
+    #menuPanel { width : 20em; }
+    #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
+    #menuPanel img { margin: 1em;}
+
+    /*푸터*/
+    .footer { overflow: hidden; }
+    .footer .ui-btn-icon-top { padding-top : 3em; }
+</style>
