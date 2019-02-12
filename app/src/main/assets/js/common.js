@@ -18,13 +18,19 @@
     /**
      * 서버호출
      */
-    function navigate(param1, param2, param3, param4) {
+    function navigate(param1, param2, param3, param4, param5) {
         //JSON 데이터가 없을 시
         if(arguments.length == 3) {
             $.ajax({
                 url : sndUrl + param1, type : "post", dataType: "json",
                 success : param2, error : param3
             });
+        } else if(arguments.length == 5){
+            $.ajax({
+                url : sndUrl + param2, type : "post", dataType: "json", data : param1, async: param5,
+                success : param3, error : param4
+            });
+
         } else {
         //JSON 데이터가 있을 시
             $.ajax({
