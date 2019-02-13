@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Build;
@@ -282,6 +283,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+        }
+
+        @JavascriptInterface
+        public String returnSessionId(){
+
+            SharedPreferences pref = myApp.getSharedPreferences("sessionCookie",Context.MODE_PRIVATE);
+            String sessionid = pref.getString("sessionid",null);
+            sessionid = sessionid.substring(11);
+
+            return sessionid;
         }
 
     }
