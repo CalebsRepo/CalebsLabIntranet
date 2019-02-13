@@ -14,7 +14,7 @@ function callLogout(){
 
         logout_result = window.android.callLogout();
 
-        if(logout_param == "success"){
+        if(logout_result == "success"){
             movePage("login.html");
         }else{
             alert("로그아웃 실패!");

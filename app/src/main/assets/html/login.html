@@ -29,9 +29,10 @@
             var result = callLogin(id,pwd);
 
             if(result != null){
-                   alert(result);
-                   sessionStorage.setItem("userData",param);
-                   movePage("index.html");
+
+               sessionStorage.setItem("userData",result);
+               movePage("index.html");
+
             }
         }
 

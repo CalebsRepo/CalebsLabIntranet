@@ -3,8 +3,6 @@
     document.write('<script type="text/javascript" src="../js/and_interface.js"><\/script>')
     document.write('<script type="text/javascript" src="../js/common_util.js"><\/script>')
 
-    sessionId = window.android.returnSessionId();
-
     /**
      * 페이지 이동
      */
@@ -19,19 +17,18 @@
     /**
      * 서버호출
      */
-    function navigate(param1, param2, param3, param4) {
+    function navigate(param1, param2, param3) {
 
         sessionId = window.android.returnSessionId();
-        alert(sessionId);
         //JSON 데이터가 없을 시
-        if(arguments.length == 3) {
+        if(arguments.length == 2) {
             $.ajax({
                 url : sndUrl + param1, type : "post", dataType: "json",
                 beforeSend : function(xmlHttpRequest){
                                     xmlHttpRequest.setRequestHeader("AJAX", "true");
                                     xmlHttpRequest.setRequestHeader("sessionId", sessionId);
                                 },
-                success : param2, error : param3,
+                success : param2,
                 error:function(xhr, textStatus, error){
 
                         if(xhr.status=="400")
@@ -40,6 +37,10 @@
                         alert("세션이 만료되었습니다.");
 
                         movePage("login.html");
+
+                        }else{
+
+                        alert("통신 중 문제가 발생하였습니다.");
 
                         }
 
@@ -53,7 +54,7 @@
                                     xmlHttpRequest.setRequestHeader("AJAX", "true");
                                     xmlHttpRequest.setRequestHeader("sessionId", sessionId);
                                 },
-                success : param3, error : param4,
+                success : param3,
                 error:function(xhr, textStatus, error){
 
                     if(xhr.status=="400")
@@ -63,7 +64,14 @@
 
                     movePage("login.html");
 
+                    }else{
+
+                        alert("통신 중 문제가 발생하였습니다.");
+
                     }
+
+
+
 
                 }
             });
@@ -79,7 +87,7 @@
     }
 
     //sessionStorage에 jsonObject 형식의 데이터를 key/value로 저장
-    function setStorageItem(param, key){
+    function setStorageItem(key, param){
         var setItem = "";
         if(param != null){
             setItem = JSON.stringify(param);
@@ -117,4 +125,11 @@
         }
         console.log("sessionId return : "+ jsId);
         return jsId;
+    }
+    //session Storage에 저장된 로그인 유저 데이터 (json String)
+    function getUserData(){
+
+        var userData = sessionStorage.getItem("userData");
+
+        return userData;
     }
