@@ -10,11 +10,192 @@
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
-    <title></title>
+    <script type="text/javascript">
+
+		$(document).ready(function(){
+
+			totalPageCnt();
+			showQnaList();
+
+			// 더보기 버튼
+			$("#btMore").click(function(){
+				moreList();
+			});// end of $("#btMore").click() ----------
+
+		});
+
+		// 총페이지 수를 가져오는 함수
+		function totalPageCnt() {
+
+			$.ajax({
+			  	url: "http://calebslab1.cafe24.com/qnaPageCnt.json",
+				type: "POST",
+				async: false,
+				dataType: "JSON",
+				success: function(data){
+					$("#pageMaxNum").val(data);
+
+				},
+				error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+
+			});// end of $.ajax()---------------------
+
+		}// end of totalPageCnt() -------------------------------
+
+		// 게시판 리스트를 보여주는 함수
+		function showQnaList(){
+
+			var form_data = {  pageNum : $("#pageNum").val() };
+
+            navigate(form_data, "qnaList.json", successQnaList, errorFunction);
+
+		}// end of showQnaList()------------------------------------
+
+
+		// 더보기 함수
+		function moreList() {
+
+			var form_data = { pageNum : $("#pageNum").val() };
+
+			navigate(form_data, "qnaList.json", successMoreList, errorFunction);
+
+		}// end of moreList() ----------------------------------------
+
+		// 페이지 이동전 sessionStorage 값 넣어주기
+		function addSessionStorage(num) {
+
+		    sessionStorage.setItem('regnum', num);
+			movePage('qnaDetail.html',num);
+
+		}// end of addSessionStorage(num)-------------------------------------
+
+        // 게시물 추가페이지로 이동
+		function moveQnaDetail() {
+            // 페이지 이동전 regnum 값 삭제
+		    sessionStorage.removeItem('regnum');
+		    movePage('qnaDetail.html');
+
+		}// end of moveQnaAdd()-----------------------------------
+
+        function successQnaList(data) {
+
+            $("#qnaList").empty();
+            var html = "<ul data-role='listview' data-inset='true' class='ui-listview ui-listview-inset ui-corner-all ui-shadow'data-theme='b' id='listViewUl'>";
+
+            //데이터가 없을 시
+            if(data.length < 1) {
+                html += "<li class='ui-corner-all'>";
+                html += 	"<div class='qna qna-title'>조회 결과가 없습니다.</div>";
+                html += "</li>";
+            }
+
+            for(var i=0; i<data.length; i++) {
+                html += "<li class='ui-corner-all'>";
+                html += 	"<a href=''#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r'onclick='addSessionStorage(" + data[i].regnum + ")'>";
+                html += 		"<span>" + data[i].subject + "</span>";
+                html += 	"</a>";
+                html += "</li>";
+            }// end of for-------------------
+
+            html += "</ul>";
+
+            var pageNum = Number($("#pageNum").val());
+            var pageMaxNum = Number($("#pageMaxNum").val());
+
+            // 더보기 버튼 처리
+            if(pageNum < pageMaxNum ){
+                $('#btMore').show();
+            }else{
+                $('#btMore').hide();
+            }
+
+            // 페이지번호 셋팅
+            pageNum = Number(pageNum) + 1;
+            $("#pageNum").val(pageNum);
+
+            $("#qnaList").append(html);
+
+        }// end of successQnaList(data) ---------------------------------------------
+
+        function successMoreList(data) {
+
+            var html = "";
+
+            for(var i=0; i<data.length; i++) {
+                html += "<li class='ui-corner-all'>";
+                html += 	"<a href=''#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r'onclick='addSessionStorage(" + data[i].regnum + ")'>";
+                html += 		"<span>" + data[i].subject + "</span>";
+                html += 	"</a>";
+                html += "</li>";
+            }// end of for() -------------------
+
+            var pageNum = Number($("#pageNum").val());
+            var pageMaxNum = Number($("#pageMaxNum").val());
+
+            // 더보기 버튼 처리
+            if(pageNum < pageMaxNum ){
+                $('#btMore').show();
+            }else{
+                $('#btMore').hide();
+            }
+
+            // 페이지번호 셋팅
+            pageNum = Number(pageNum) + 1;
+            $("#pageNum").val(pageNum);
+
+            $("#listViewUl").append(html);
+
+        }// end of successMoreList() -------------------------------
+
+         function errorFunction(result) {
+            alert("error>>>"+result);
+        }// end of errorFunction(result) ----------------------------
+
+	</script>
+
+    <style type="text/css">
+        .ui-btn-icon-top { padding-top : 3em;}
+        .ui-bar { text-align: center; }
+        .ui-bar .header-menu { float: right; }
+        .ui-bar .header-back { float: left; }
+        .ui-panel { width : 20em;}
+        #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
+
+    </style>
+
 </head>
 
 <body>
-<section id="page1" data-role="page">
+<header data-role="header">
+    <div class="ui-bar">
+        <button class="header-back"><span>back</span></button>
+        <h1>CalebsLab</h1>
+        <a href="#menuPanel" class="btn header-menu">Menu</a>
+    </div>
+</header>
+<div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
+    <h2>메뉴</h2>
+    <ul data-role="listview">
+        <p>내정보</p>
+        <li><a href="#">마이페이지</a></li>
+        <p>프로젝트</p>
+        <li><a href="#">프로젝트</a></li>
+        <li><a href="#">프로젝트일정 목록</a></li>
+        <p>휴가</p>
+        <li><a href="#">휴가신청</a></li>
+        <li><a href="#">휴가신청내역</a></li>
+        <li><a href="#">휴가캘린더</a></li>
+        <p>게시판</p>
+        <li><a href="#">FAQ</a></li>
+        <p>관리</p>
+        <li><a href="#">사원등록</a></li>
+        <li><a href="#">사원목록</a></li>
+        <li><a  onclick="movePage('main.html')">휴가현황</a></li>
+    </ul>
+</div>
+<section id="page1">
     <div data-role="content" class="qna-list">
         <!--제목, 추가버튼-->
         <div class="title-area">
@@ -23,42 +204,36 @@
                     <h3>• FAQ 목록 </h3>
                 </div>
                 <div class="grid-cd-2">
-                    <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b">추가</a>
+                    <a onclick="moveQnaDetail()"  class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b">추가</a>
                 </div>
             </div>
         </div>
 
         <!--프로젝트 리스트화면-->
-        <div class="gird-pt summary-list">
-            <ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
-                <li class="ui-corner-all">
-                    <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
-                        <div class="qna qna-title">휴가 / 연차 관련</div>
-                    </a>
-                </li>
-                <li class="ui-corner-all">
-                    <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
-                        <div class="qna qna-title">지출결의 작성 관련</div>
-                    </a>
-                </li>
-                <li class="ui-corner-all">
-                    <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
-                        <div class="qna qna-title">휴가계획서 작성방법</div>
-                    </a>
-                </li>
-                <li class="ui-corner-all">
-                    <a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">
-                        <div class="qna qna-title">체력단련비 사용 관련 </div>
-                    </a>
-                </li>
-            </ul>
+
+        <div class="gird-pt summary-list" id="qnaList">
+
         </div>
 
         <div class="gird-pt">
-            <button class="ui-btn ui-corner-all ui-btn-b" onclick="movePage('index.html')">더보기</button>
+            <button class="ui-btn ui-corner-all ui-btn-b" id="btMore">더보기</button>
         </div>
+
+        <input type="hidden" id="pageNum" value="1">
+        <input type="hidden" id="pageMaxNum">
     </div>
 
 </section>
+<!-- footer -->
+<div style="overflow: hidden;" data-role="footer" data-position="fixed">
+    <div data-role="navbar">
+        <ul>
+            <li><a href="#" data-icon="home">홈</a></li>
+            <li><a href="#" data-icon="shop">프로젝트</a></li>
+            <li><a href="#" data-icon="calendar">휴가신청</a></li>
+            <li><a href="#" data-icon="power">로그아웃</a></li>
+        </ul>
+    </div>
+</div>
 </body>
 </html>
