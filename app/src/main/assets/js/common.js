@@ -3,6 +3,7 @@
     document.write('<script type="text/javascript" src="../js/and_interface.js"><\/script>')
     document.write('<script type="text/javascript" src="../js/common_util.js"><\/script>')
 
+    sessionId = window.android.returnSessionId();
 
     /**
      * 페이지 이동
@@ -19,17 +20,52 @@
      * 서버호출
      */
     function navigate(param1, param2, param3, param4) {
+
+        sessionId = window.android.returnSessionId();
+        alert(sessionId);
         //JSON 데이터가 없을 시
         if(arguments.length == 3) {
             $.ajax({
                 url : sndUrl + param1, type : "post", dataType: "json",
-                success : param2, error : param3
+                beforeSend : function(xmlHttpRequest){
+                                    xmlHttpRequest.setRequestHeader("AJAX", "true");
+                                    xmlHttpRequest.setRequestHeader("sessionId", sessionId);
+                                },
+                success : param2, error : param3,
+                error:function(xhr, textStatus, error){
+
+                        if(xhr.status=="400")
+                        {
+
+                        alert("세션이 만료되었습니다.");
+
+                        movePage("login.html");
+
+                        }
+
+                    }
             });
         } else {
         //JSON 데이터가 있을 시
             $.ajax({
                 url : sndUrl + param2, type : "post", dataType: "json", data : param1,
-                success : param3, error : param4
+                beforeSend : function(xmlHttpRequest){
+                                    xmlHttpRequest.setRequestHeader("AJAX", "true");
+                                    xmlHttpRequest.setRequestHeader("sessionId", sessionId);
+                                },
+                success : param3, error : param4,
+                error:function(xhr, textStatus, error){
+
+                    if(xhr.status=="400")
+                    {
+
+                    alert("세션이 만료되었습니다.");
+
+                    movePage("login.html");
+
+                    }
+
+                }
             });
         }
     }
@@ -69,4 +105,16 @@
             sessionStorage.removeItem(temp_key);
         }
         return result;
+    }
+
+    function getJSessionId(){
+        var jsId = document.cookie.match(/JSESSIONID=[^;]+/);
+        if(jsId != null) {
+            if (jsId instanceof Array)
+                jsId = jsId[0].substring(11);
+            else
+                jsId = jsId.substring(11);
+        }
+        console.log("sessionId return : "+ jsId);
+        return jsId;
     }
