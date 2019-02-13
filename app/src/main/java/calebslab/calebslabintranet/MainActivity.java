@@ -29,7 +29,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import component.Contacts;
 
@@ -48,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private ValueCallback<Uri> mUploadMessage =null;
     private ValueCallback<Uri[]> filePathCallbackLollipop;
     private Uri mCapturedImageURI;
+    private static String userData;
 
 
     private final Handler handler = new Handler();
@@ -140,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                Android 5.0 이후 버전에서는 onShowFileChooser를 이용해서 파일선택을 할수 있다
                그 이전 버전 확인은 http://acorn-world.tistory.com/62에서 확인가능하다
             */
-            public  boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback,
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback,
                                               WebChromeClient.FileChooserParams fileChooserParams){
                 Log.d("MainActivity","HYJ:갤러리열기");
 
@@ -284,6 +294,140 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+
+        //로그인 통신
+        @JavascriptInterface
+        public String callLogin(final String id, final String pwd) throws Exception {
+
+            userData ="";
+
+            Thread t1 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try{
+                        URL url;
+                        HttpURLConnection conn;
+                        DataOutputStream wr;
+
+                        url = new URL("http://192.168.10.220:8080/Caleb/login.json");
+                        conn = (HttpURLConnection) url.openConnection();
+                        conn.setDoOutput(true);
+                        conn.setConnectTimeout(15000);
+                        conn.setReadTimeout(10000);
+                        conn.setRequestMethod("POST");
+                        conn.connect();
+                        SessionManager sm = new SessionManager();
+
+                        String param = "id=" + id + "&pwd=" + pwd;
+
+                        wr = new DataOutputStream(conn.getOutputStream());
+                        wr.writeBytes(param);
+                        wr.flush();
+                        wr.close();
+
+                        Log.d("LOG", url + "로 HTTP 요청 전송");
+
+                        if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) { //이때 요청이 보내짐.
+
+                            Log.d("LOG", "HTTP_OK를 받지 못했습니다.");
+
+                        } else {
+
+                            InputStream in = new BufferedInputStream(conn.getInputStream());
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                            String output = "";
+                            String line;
+                            System.out.println("reader 전");
+                            while ((line = reader.readLine()) != null) {
+                                output += line;
+                            }
+
+                            System.out.println(conn.getHeaderField("Set-Cookie"));
+                            sm.getCookieHeader(conn, myApp);
+
+                            userData = output;
+
+                        }
+                        conn.disconnect();
+                    } catch(MalformedURLException e){
+                        e.printStackTrace();
+                    } catch (IOException e){
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+
+            t1.start();
+            t1.join();
+
+            return userData;
+        }
+
+        //로그인 통신
+        @JavascriptInterface
+        public String callLogout() throws Exception {
+            userData ="";
+            Thread t2 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try{
+                        URL url;
+                        HttpURLConnection conn;
+                        DataOutputStream wr;
+
+                        url = new URL("http://192.168.10.220:8080/Caleb/logOut.json");
+                        conn = (HttpURLConnection) url.openConnection();
+                        conn.setDoOutput(true);
+                        conn.setConnectTimeout(15000);
+                        conn.setReadTimeout(10000);
+                        conn.setRequestMethod("POST");
+                        conn.setDefaultUseCaches(false);
+                        conn.setUseCaches(false);
+                        conn.setDoInput(true);
+                        conn.setDoOutput(true);
+                        SessionManager sm = new SessionManager();
+                        sm.setCookieHeader(myApp, conn);
+
+                        wr = new DataOutputStream(conn.getOutputStream());
+                        wr.flush();
+                        wr.close();
+
+                        Log.d("LOG", url + "로 HTTP 요청 전송");
+
+                        if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) { //이때 요청이 보내짐.
+
+                            Log.d("LOG", "HTTP_OK를 받지 못했습니다.");
+
+                        } else {
+
+                            InputStream in = new BufferedInputStream(conn.getInputStream());
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                            String result ="";
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                result += line;
+                            }
+                            userData = result;
+                            Log.d("logout result", userData);
+                        }
+                        conn.disconnect();
+                    } catch(MalformedURLException e){
+                        e.printStackTrace();
+                    } catch(IOException e){
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            t2.start();
+            t2.join();
+
+            return userData;
+        }
+
 
         @JavascriptInterface
         public String returnSessionId(){
