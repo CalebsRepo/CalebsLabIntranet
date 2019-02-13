@@ -3,7 +3,8 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=1,initial-scale=1,user-scalable=no" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <!--<meta name="viewport" content="width=1,initial-scale=1,user-scalable=no" />-->
     <title>CMS(Caleb's lab Management System)</title>
     <script src="../js/common.js"></script>
 
@@ -19,13 +20,17 @@
     <script src="../js/bootstrap.min.js"></script>
 
 
+
+
     <script type="text/javascript">
 
        var eventsArr = [];
        var colorArr = ['51bec9', '24afd6', 'ffaf51', 'fd8497', 'f7d17c', '51d5a1', '21b4aa', 'aed551', 'f9916a', '99837a'];
        var cnt = 0;
+
        $(document).ready(function() {
 
+          // 승인된 휴가정보를 가져오는 함수
           navigate({}, "calander.json", successFunction, errorFunction);
 
       }); // end of $(document).ready()------------------------
@@ -33,44 +38,45 @@
       function successFunction(data) {
             for(var i=0; i<data.length; i++) {
 
-                    var titleVal = data[i].name ;
-                    var descriptionVal = data[i].h_flag + " " + data[i].apply_count + "일";
+                var titleVal = data[i].name ;
+                var descriptionVal = data[i].h_flag + " " + data[i].apply_count + "일";
 
-                    var startday = data[i].start_ymd;
-                    startday = startday.substring(0,4) + "-" + startday.substring(4,6) + "-" + startday.substring(6,8);
+                var startday = data[i].start_ymd;
+                startday = startday.substring(0,4) + "-" + startday.substring(4,6) + "-" + startday.substring(6,8);
 
-                    var endday = data[i].end_ymd;
-                    endday = endday.substring(0,4) + "-" + endday.substring(4,6) + "-" + endday.substring(6,8);
-                    // 날짜 하루 더해주기
-                    var addEndday = dayAdd(endday);
-                    var colorVal = "#"+colorArr[cnt ++];
+                var endday = data[i].end_ymd;
+                endday = endday.substring(0,4) + "-" + endday.substring(4,6) + "-" + endday.substring(6,8);
+                // 날짜 하루 더해주기
+                var addEndday = dayAdd(endday);
+                var colorVal = "#"+colorArr[cnt ++];
 
-                    if(cnt > 9){
-                        cnt = 0;
-                    }
+                if(cnt > 9) {
+                    cnt = 0;
+                }
 
-                    var str  = 	{
-                                 title: titleVal,
-                                 description: descriptionVal,
-                                 start: startday,
-                                 end: addEndday,
-                                 color: colorVal
-                                }
-                    eventsArr.push(str);
+                var str  = 	{
+                             title       : titleVal,
+                             description : descriptionVal,
+                             start       : startday,
+                             end         : addEndday,
+                             color       : colorVal
+                            }
+                eventsArr.push(str);
 
-             }// end of for ------------------------------------------------
-             CalendarLoad();
-      }
+         }// end of for ------------------------------------------------
+         CalendarLoad();
+
+      }// end of successFunction(data)-----------------------------------------
 
       function errorFunction(result) {
         alert("error>>>"+result);
-      }
+      }// end of errorFunction(result)--------------------------------------------
 
+      // 달력 만들어주는 함수
       function CalendarLoad() {
 
             $("#calendar").fullCalendar({
                 header: {
-                //	left: 'prevYear'
                     left: 'prevYear prev',
                     center: 'title',
                     right: 'next nextYear'
@@ -81,36 +87,8 @@
                 weekNumbers: false,
                 editable: false,
                 lang:'ko',
-                events:  eventsArr
-                      /* [
-
-                    {
-                        id:'0',
-                        title: '<img src="/images/is/flag/11101_s.gif" style="width:15px;height:11px"> 파리',
-                        start: '2019-02-21',
-                        end: '2019-03-01',
-
-                        color: '#51bec9'
-                    },
-
-                    {
-                        id:'1',
-                        title: '<img src="/images/is/flag/13103_s.gif" style="width:15px;height:11px"> 바르샤바',
-                        start: '2019-02-24',
-                        end: '2019-02-26',
-
-                        color: '#24afd6'
-                    },
-
-                    {
-                        title: '출국일',
-                        start: '2019-02-21',
-                        end: '2019-02-29',
-                        color: '#999999'
-
-                    }
-                ]  */ ,
-                height: 450,
+                events:  eventsArr,
+                height: 600,
                 eventRender: function (event, element) {
                     element.find('.fc-content').html(event.title);
                     element.popover({
@@ -180,8 +158,6 @@
         #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
 
         }
-
-
     </style>
 
 </head>
@@ -215,8 +191,8 @@
     </ul>
 </div>
 
-<section class="container">
-<div id="calendar" style="border: 0px solid  blue; padding-top:50px;"></div>
+<section class="container" data-role="content">
+<div id="calendar" style="padding-top:30px;"></div>
 </section>
 
 <!-- footer -->

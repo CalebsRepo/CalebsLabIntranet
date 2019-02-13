@@ -5,46 +5,182 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
 
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/project_plan.css">
     <script src="../js/common.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <title></title>
+
+    <script type="text/javascript">
+        var ajaxResult="";
+        var ajaxResult2="";
+        var today = todayFormat();
+        var selectedProject;
+        $(document).ready(function(){
+            navigate("getProjectList.json", successFncProjectList, errorFncProjectList);
+            getProjectStatus();
+            //navigate(키값,"getPlanSummary.json", successFncPlanSummary, errorFncPlanSummary);
+        });
+
+    function successFncPlanSummary(){
+
+    }
+    function errorFncPlanSummary(){
+
+    }
+
+    //프로젝트 상태 선택
+    function getProjectStatus(){
+        var projectStatus = $("a.ui-slider-handle").attr("aria-valuenow");
+        if(projectStatus == "on"){
+            console.log("진행중인 프로젝트 리스트다 임마.");
+            $(".grid-cd-3").children().eq(1).hide();
+            $(".grid-cd-3").children().eq(0).show();
+            $("#select-choice-1").selectmenu("refresh", true);
+            $("#select-choice-1").prev().addClass("selectedProject");
+            $("#select-choice-2").prev().removeClass("selectedProject");
+        }else if(projectStatus == "off"){
+            console.log("종료된 프로젝트 리스트다 임마.");
+            $(".grid-cd-3").children().eq(0).hide();
+            $(".grid-cd-3").children().eq(1).show();
+            $("#select-choice-2").selectmenu("refresh", true);
+            $("#select-choice-1").prev().addClass("selectedProject");
+            $("#select-choice-2").prev().removeClass("selectedProject");
+        }
+    }
+    //프로젝트 리스트 ajax통신 성공
+    function successFncProjectList(result) {
+        console.log("successFncMultiSndSample>>>>>" + JSON.stringify(result));
+        console.log("============================================");
+        console.log("============================================");
+        ajaxResult=JSON.stringify(result);
+        ajaxResult2=JSON.parse(ajaxResult);
+        console.log("successFncMultiSndSample>>>>>" + ajaxResult);
+        console.log("============================================");
+
+        for(var i=0; i<ajaxResult2.length; i++) {
+            var projectListview = document.getElementById('select-choice-1');
+            if (ajaxResult2[i].length != 0) {
+                //진행중_ 플젝 마지막 날이 오늘보다 크거나 같을 때, 시작날이 오늘보다 작을 때
+                if(ajaxResult2[i].end_ymd > today || ajaxResult2[i].end_ymd == today){
+                   $("#select-choice-1").append(
+                       "<option value='"+ajaxResult2[i].project_code + "'>" + ajaxResult2[i].project_name + "</option>"
+                          );
+                        $("#select-choice-1").selectmenu("refresh", true);
+                // 종료_ 플젝 마지막 날이 오늘보다 작을 때
+                }else if(ajaxResult2[i].end_ymd < today){
+                    $("#select-choice-2").append(
+                       "<option value='"+ajaxResult2[i].project_code + "'>" + ajaxResult2[i].project_name + "</option>"
+                          );
+
+                    $("#select-choice-2").selectmenu("refresh", true);
+                }
+            } else {
+                $("#projectListview").append(
+                                "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
+                                  );
+            }
+        }
+        //$("#select-choice-1").selectmenu("refresh", true);
+    }
+    //프로젝트 리스트 ajax 통신 실패
+    function errorFncProjectList(result) {
+        console.log("errorFncProjectList>>>>>>" + JSON.stringify(result));
+    }
+    //오늘날짜 포맷 리턴
+    function todayFormat(){
+        var now = new Date();
+        var todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+        return todayUTC.toISOString().slice(0, 10).replace(/-/g, '');
+    }
+    </script>
+
+    <style type="text/css">
+
+		.underline {
+			padding-top: 20px;
+		    padding-bottom: 3px;
+		    border-bottom: 1px solid #eee;
+		    margin: 0px 0 20px 0;
+		}
+        .ui-btn-icon-top { padding-top : 3em;}
+        .ui-bar { text-align: center; }
+        .ui-bar .header-menu { float: right; }
+        .ui-bar .header-back { float: left; }
+        .ui-panel { width : 20em;}
+        #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
+    .ui-select{display:block;}
+	</style>
 </head>
 <body>
-<section id="page1" data-role="page">
+<style>
+        .ui-btn-icon-top { padding-top : 3em;}
+        .ui-panel { width : 20em;}
+        #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
+    </style>
+
+<section id="page1" data-role="page" class="container">
+
+    <header data-role="header">
+        <div class="ui-bar">
+            <button class="header-back"><span>back</span></button>
+            <h1>프로젝트 일정</h1>
+            <a href="#menuPanel" class="btn header-menu">Menu</a>
+        </div>
+    </header>
+
+    <div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
+        <h2>메뉴</h2>
+        <ul data-role="listview">
+            <p>내정보</p>
+            <li><a href="#">마이페이지</a></li>
+            <p>프로젝트</p>
+            <li><a href="#">프로젝트</a></li>
+            <li><a href="#">프로젝트일정 목록</a></li>
+            <p>휴가</p>
+            <li><a href="#">휴가신청</a></li>
+            <li><a href="#">휴가신청내역</a></li>
+            <li><a href="#">휴가캘린더</a></li>
+            <p>게시판</p>
+            <li><a href="#">FAQ</a></li>
+            <p>관리</p>
+            <li><a href="#">사원등록</a></li>
+            <li><a href="#">사원목록</a></li>
+            <li><a  onclick="movePage('main.html')">휴가현황</a></li>
+        </ul>
+    </div>
+
     <div data-role="content" class="plan-list">
         <!--제목, 셀렉트박스, 추가버튼-->
-        <div class="title-area">
-            <h3>• 프로젝트 일정 </h3>
-            <div class="gird-pt" class="select-area">
+        <div  class="title-area">
+            <div class="gird-pt">
                 <div class="grid-cd-1">
-                    <select name="select-choice-1" id="select-choice-1" class="ui-corner-all">
-                        <option value="projectCode">NH 통합스마트뱅킹 구축</option>
-                        <option value="projectCode">하나로브랜치 고도화</option>
-                        <option value="projectCode">갈랩스랩 사내 앱 개발</option>
-                    </select>
+                    <h3>• 프로젝트 일정 </h3>
                 </div>
                 <div class="grid-cd-2">
-                    <select name="flip-1" id="flip-1" data-role="slider"data-mini="true">
+                    <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b">추가</a>
+                </div>
+            </div>
+            <div class="gird-pt">
+                <div class="grid-cd-3">
+                    <select name="select-choice-1" id="select-choice-1" class="ui-corner-all" style="display:block;">
+                        //select box options
+                    </select>
+                    <select name="select-choice-2" id="select-choice-2" class="ui-corner-all" style="display:block;">
+                        //select box options
+                    </select>
+                </div>
+                <div class="grid-cd-4">
+                    <select name="flip-1" id="flip-1" data-role="slider"data-mini="true" onchange="getProjectStatus()">
                         <option value="on">진행중</option>
                         <option value="off">종료</option>
                     </select>
-
-   <!--                  <fieldset data-role="controlgroup" data-type="horizontal">
-                        <input type="radio" name="radio-choice-h-2" id="radio-choice-h-2a" value="on" checked="checked">
-                        <label for="radio-choice-h-2a">진행중</label>
-                        <input type="radio" name="radio-choice-h-2" id="radio-choice-h-2c" value="other">
-                        <label for="radio-choice-h-2c">종료</label>
-                     </fieldset>-->
                 </div>
-                <div class="grid-cd-3">
-                    <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b">추가</a>
-                </div>
-
             </div>
         </div>
+
         <!--일정 리스트화면-->
         <div class="gird-pt summary-list">
             <ul data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="b">
@@ -70,6 +206,19 @@
         </div>
     </div>
 
+    <!-- footer -->
+    <div style="overflow: hidden;" data-role="footer" data-position="fixed">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#" data-icon="home">홈</a></li>
+                <li><a href="#" data-icon="shop">프로젝트</a></li>
+                <li><a href="#" data-icon="calendar">휴가신청</a></li>
+                <li><a href="#" data-icon="power">로그아웃</a></li>
+            </ul>
+        </div>
+    </div>
+
 </section>
+
 </body>
 </html>

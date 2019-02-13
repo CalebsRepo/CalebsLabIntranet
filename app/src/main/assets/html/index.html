@@ -35,8 +35,8 @@
         </div>
     </header>
 
-    <div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
-        <h2>메뉴</h2>
+    <div data-role="panel" id="menuPanel" data-position="right"  data-display="overlay" data-theme="a" >
+        <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab" width="260" style="margin: 1em;">
         <ul data-role="listview">
             <p>내정보</p>
             <li><a href="#">마이페이지</a></li>
@@ -52,10 +52,9 @@
             <p>관리</p>
             <li><a href="#">사원등록</a></li>
             <li><a href="#">사원목록</a></li>
-            <li><a  onclick="movePage('main.html')">휴가현황</a></li>
+            <li><a href="#">휴가현황</a></li>
         </ul>
     </div>
-
 
     <!-- content -->
     <div class="content" data-role="content" onclick="movePage('login.html')">
@@ -82,7 +81,7 @@
     <div class="content" data-role="content" onclick="movePage('planDetail.html')">
         <button type="button" id="btPlanDetail">프로젝트 일정상세조회</button>
     </div>
-    <div class="content" data-role="content" onclick="movePage('regProject.html')">
+    <div class="content" data-role="content" onclick="movePage('projectRegister.html')">
         <button type="button" id="btRegProject">프로젝트 등록</button>
     </div>
     <div class="content" data-role="content" onclick="movePage('qnaList.html')">
@@ -100,12 +99,15 @@
     <div class="content" data-role="content" onclick="movePage('1001.html')">
         <button type="button" id="pjh">박진호테스트</button>
     </div>
+    <div class="content" data-role="content" onclick="movePage('main.html')">
+        <button type="button" id="btMainPage" >메인페이지</button>
+    </div>
 
     <!-- footer -->
     <div style="overflow: hidden;" data-role="footer" data-position="fixed">
         <div data-role="navbar">
             <ul>
-                <li><a href="#" data-icon="home">홈</a></li>
+                <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
                 <li><a href="#" data-icon="shop">프로젝트</a></li>
                 <li><a href="#" data-icon="calendar">휴가신청</a></li>
                 <li><a href="#" data-icon="power">로그아웃</a></li>

@@ -7,58 +7,21 @@
     <link rel="stylesheet" href="../css/main.css">
     <script src="../js/common.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-    <title>갈렙스랩 메인</title>
+    <title>휴가현황</title>
     <script language = "javascript">
     var loginId = "silveragtl";
-    var loginName = "이은표";
     var params = {
                 loginId : loginId,
-                loginName : loginName,
              };
 
     var ajaxResult="";
     var ajaxResult2="";
 
     $(document).ready(function(){
-        navigate(params, "myProject.json", sucessFncMyProject, errorFncMyProject);
-        navigate(params, "getMyHoliday.json", sucessFncMyHoliday, errorFncMyHoliday);
+        navigate("getHolidayCondition.json", sucessFncMyHoliday, errorFncMyHoliday);
     });
 
-     <!--프로젝트 ajax통신 성공-->
-    function sucessFncMyProject(result) {
-        console.log("sucessFncMultiSndSample>>>>>" + JSON.stringify(result));
-         console.log("============================================");
-          console.log("============================================");
-        ajaxResult=JSON.stringify(result);
-        ajaxResult2=JSON.parse(ajaxResult);
-        console.log("sucessFncMultiSndSample>>>>>" + ajaxResult);
-        console.log("============================================");
 
-        for(var i=0; i<ajaxResult2.length; i++) {
-            var projectListview = document.getElementById('projectListview');
-            if (ajaxResult2[i].project_cnt != 0) {
-                $("#projectListview").append("<li class='ui-corner-all'>"
-                                        +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
-                                        +"<div class='plan plan-name'> 프로젝트명 : " + ajaxResult2[i].project_name + "</div>"
-                                        +"<div class='plan plan-date'> 기간 : " + ajaxResult2[i].start_ymd +" ~ " + ajaxResult2[i].end_ymd  + "</div>"
-                                        +"<div class='plan-teamCnt'> 참여인원 : " + ajaxResult2[i].project_cnt +" 명 </div>"
-                                        +"<div class='plan-state'> 상태 : 프로젝트 진행중</div>"
-                                        + "</a>"
-                                    + "<li>");
-            } else {
-                $("#projectListview").append("<li class='ui-corner-all'>"
-                                        +"<span class='list-detail ui-corner-all info-box'>"
-                                        +"<div class='plan plan-state'> 현재 진행중인 프로젝트가 없습니다.</div>"
-                                        + "</span>"
-                                        + "<li>");
-
-            }
-        }
-    }
-    <!--프로젝트 ajax 통신 실패-->
-    function errorFncMyProject(result) {
-        console.log("errorFncMyProject>>>>>>" + JSON.stringify(result));
-    }
 
     <!--연차정보 ajax통신 성공-->
     function sucessFncMyHoliday(result) {
@@ -93,11 +56,29 @@
             $("#holidayListview").append("<li class='ui-corner-all'>"
                                     +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
                                     +"<div class='plan plan-name'> 이름 : " + ajaxResult2[i].name + "</div>"
-                                    +"<div class='plan plan-date'> 연차 발생기간 : " + ajaxResult2[i].hs_ymd +" ~ " + ajaxResult2[i].he_ymd  + "</div>"
-                                    +"<div class='plan-teamCnt'> 당해연도 발생연차 : " + holidayCnt +" 일 </div>"
+                                    +"<div class='plan plan-name'> 직급 : " + ajaxResult2[i].grade + "</div>"
+                                    +"<div class='plan plan-name'> 입사일 : " + ajaxResult2[i].join_ymd + "</div>"
+                                    +"<div class='plan-teamCnt'> 연차 발생 일수 : " + holidayCnt +" 일 </div>"
+                                    +"<div class='plan-teamCnt'> 연차 사용 일수 : " + usingHolilday +" 일 </div>"
                                     +"<div class='plan-state'> 남은 연차일수 : " + holidayResult + " 일</div>"
                                     + "</a>"
                                 + "<li>");
+
+
+            var my_tbody = document.getElementById('my-tbody');
+            // var row = my_tbody.insertRow(0); // 상단에 추가
+            var row = my_tbody.insertRow( my_tbody.rows.length ); // 하단에 추가
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var num = i + 1
+
+            cell1.innerHTML = num;
+            cell2.innerHTML = "이름 : " + ajaxResult2[i].name + "<br/>"
+                             +"직급 : " + ajaxResult2[i].grade + "<br/>"
+                             +"입사일 : " + ajaxResult2[i].join_ymd + "<br/>"
+                             +"연차 발생 일수 : " + holidayCnt + "<br/>"
+                             +"연차 사용 일수 : " + usingHolilday + "<br/>"
+                             +"남은 연차일수 : " + holidayResult + "<br/>"
         }
     }
     <!--연차정보 ajax 통신 실패-->
@@ -109,6 +90,13 @@
         .ui-btn-icon-top { padding-top : 3em;}
         .ui-panel { width : 20em;}
         #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
+
+        table, th, td {
+          border: 1px solid black;
+          border-collapse: collapse;
+        }
+        table { width:100%;}
+        th { padding:0.5em 0.2em; }
     </style>
 </head>
 
@@ -122,8 +110,8 @@
         <a href="#menuPanel" data-icon="bars">menu</a>
     </header>
 
-    <div data-role="panel" id="menuPanel" data-position="right"  data-display="overlay" data-theme="a">
-        <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab" width="260" style="margin: 1em;">
+    <div data-role="panel" id="menuPanel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
+        <h2>메뉴</h2>
         <ul data-role="listview">
             <p>내정보</p>
             <li><a href="#">마이페이지</a></li>
@@ -139,25 +127,29 @@
             <p>관리</p>
             <li><a href="#">사원등록</a></li>
             <li><a href="#">사원목록</a></li>
-            <li><a onclick="movePage('holidayCondition.html')">휴가현황</a></li>
+            <li><a href="#">휴가현황</a></li>
         </ul>
     </div>
 
     <!-- content -->
     <div data-role="content" class="main-warp">
         <div class="gird-pt holiday-list">
-            <h2>· 연차정보</h2>
+            <h2>나의 연차정보</h2>
             <ul id="holidayListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a">
 
             </ul>
         </div>
 
-        <div class="gird-pt project-list ">
-            <h2>· 나의 프로젝트 정보</h2>
-            <ul id="projectListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a">
-
-            </ul>
-        </div>
+        <table>
+            <thead>
+                <th>번호</th>
+                <th>휴가현황정보</th>
+            </thead>
+            <colgroup>
+                <col span="1" style="width:15%;">
+            </colgroup>
+            <tbody id="my-tbody"></tbody>
+        </table>
     </div>
 
 

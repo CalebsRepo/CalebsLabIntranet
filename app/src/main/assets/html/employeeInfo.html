@@ -4,44 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <!--DatePicker--><link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="../css/project_plan.css">
     <script src="../js/common.js"></script>
+    <script src="../js/datepicker.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <!--DatePicker--><script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <!--DatePicker--><script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
+    <title></title>
     <script language = "javascript">
 
+    $(function(){
+        searchMore();
+    });
+
+    <!--ajax통신 후 가지온 값 저장용 변수-->
     var ajaxResult="";
     var ajaxResult2="";
+    <!--페이징할때 필요한 변수:보여주고자하는 row의 시작넘버-->
+    var rowNum=0;
 
+    <!--사원 상세보기 : 바꿀내용=>먼저 권한 체크 하고 난 다음에 조회해서 result값을 넘겨줘야함-->
+    function getEmployeeDetail(obj){
+       var employeeId= $(obj).attr('data-value');
+       var params = {
+            "employeeId": employeeId
+        };
+        navigate(params,"employeeDetail.json", detailSuccess, detailError);
+    }
+
+    function detailSuccess(result){
+       movePage('employeeDetail.html',result);
+    }
+
+    function detailError(result){
+        alert("권한이 없소!");
+    }
 
 
     <!--주소록 내보내기:해당체크박스의 이름, 전화번호,이메일로 이루어진 id를  subString해서 사용-->
-    $("#addressGet").click(function() {
+    function addressGet(){
+        var addName="";
+        var addCellPhone="";
+        var addEmail="";
+
       $("input:checked").each(function() {
-                console.log("value값:"+test);
-            });
-    });
+        addName=$(this).attr('data-value1');
+        addCellPhone=$(this).attr('data-value2');
+        addEmail=$(this).attr('data-value3');
+      });
+        var jsonDataTest={
+            "name":addName,
+            "cellPhone":addCellPhone,
+            "email":addEmail
+        };
 
-
-    <!--전체검색: 나중에 지울거. 화면 나오자마자 나와야함-->
-    function listSearch(){
-        navigate("employee.json", sucessFncMultiSndSample, errorFncMultiSndSample);
-        $("#my-tbody").children().remove();
+        window.android.saveToOldContact(JSON.stringify(jsonDataTest));
     }
+
 
     <!--더보기: 더보기 누르면 append로 더 붙여져야함-->
     function searchMore(){
-        navigate("employee.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+        var params = {
+                rowNum : rowNum,
+        };
+        rowNum+=5; <!--5건씩 보여주기 원한다면 플러스5씩 전역변수에 저장-->
+        navigate(params,"employee.json", sucessFncMultiSndSample, errorFncMultiSndSample);
     }
+
+     // 정규식 : 이름
+     function chkName(str){
+          var reg_name = /^[가-힣]{1,4}$/;
+          if(!reg_name.test(str)) {
+             return false;
+          }else {
+             return true;
+         }
+     }
 
     <!--이름으로 검색-->
     function nameSearch(){
         var employeeName= document.getElementById('nameWrite').value;
-        var params = {
-                employeeName : employeeName,
-             };
-        navigate(params, "employeeName.json", sucessFncMultiSndSample, errorFncMultiSndSample);
-        $("#my-tbody").children().remove();
+        if(chkName(employeeName)==true){
+             var params = {
+                    employeeName : employeeName,
+                 };
+            navigate(params, "employeeName.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+            $("#my-tbody").children().remove();
+            <!--이름검색시 더보기버튼 다시 활성화-->
+            $("#searchMore").show();
+        }else{
+          alert("검색어를 다시 한번 확인해주세요");
+        }
     }
 
     <!--ajax통신 성공-->
@@ -50,6 +106,11 @@
         ajaxResult=JSON.stringify(result);
         ajaxResult2=JSON.parse(ajaxResult);
 
+    <!--페이징에서 데이터없을때-->
+        if(ajaxResult2==null || ajaxResult2==""){
+            alert("더이상 조회할 데이터가 없습니다");
+            $("#searchMore").hide();
+        }
     <!--동적테이블만들기-->
         for(var i=0;i<ajaxResult2.length;i++){
             console.log('******************************');
@@ -65,9 +126,9 @@
             var cell1 = row.insertCell(0);
             var cell2 = row.insertCell(1);
 
-            cell1.innerHTML = "<input type=checkbox id='"+ajaxResult2[i].NAME+"/"+ajaxResult2[i].HP_NUM+"/"+ajaxResult2[i].EMAIL+"'>";
+            cell1.innerHTML = "<input type=checkbox id='"+ajaxResult2[i].ID+"' data-value1='"+ajaxResult2[i].NAME+"' data-value2='"+ajaxResult2[i].HP_NUM+"' data-value3='"+ajaxResult2[i].EMAIL+"'>";
             cell2.innerHTML = "아이디:"+ajaxResult2[i].ID+
-                              "<br>"+"이름:"+ajaxResult2[i].NAME+
+                              "<br>"+"이름:"+"<a href='#' onclick='getEmployeeDetail(this)' data-value='"+ajaxResult2[i].ID+"'>"+ajaxResult2[i].NAME+"</a>"+
                               "<br>"+"직급:"+ajaxResult2[i].GRADE+
                               "<br>"+"전화번호:"+"<a href='tel:"+ajaxResult2[i].HP_NUM+"'>"+ajaxResult2[i].HP_NUM+"</a>"+
                               "<br>"+"이메일:"+"<a href='mailto:"+ajaxResult2[i].EMAIL+"'>"+ajaxResult2[i].EMAIL+"</a>"+
@@ -93,27 +154,28 @@
     </style>
 </head>
 <body>
-<div class="content" data-role="content">
-    <input tyle="text" id="nameWrite">
-    <button id="nameSearch" onclick="javascript:nameSearch(); return false;">이름검색</button>
-    <button id="listSearch" onclick="javascript:listSearch(); return false;">전체검색</button>
-    <button id="addressGet">가져오기</button>
-<!--    <table>
-        <tr>
-            <th>이름</th>
-&lt;!&ndash;            <th>직급</th>&ndash;&gt;
-            <th>전화번호</th>
-            <th>이메일</th>
-        </tr>
-        <tr>
-            <td id="employee_name"></td>
-&lt;!&ndash;            <td id="employee_grade"></td>&ndash;&gt;
-            <td id="employee_hp_num"></td>
-            <td id="employee_email"></td>
-
-        </tr>
-    </table>-->
-
+<section id="page1" data-role="page">
+    <div data-role="content" class="plan-detail">
+        <!--제목-->
+        <div  class="title-area">
+            <div class="gird-pt">
+                <h3>• 사원목록 </h3>
+            </div>
+        </div>
+        <style>
+            div#select-2-button { padding: 7.5px 5px; background:#ffffff;}
+            div#select-2-button span { text-align: left; font-weight: 600;}
+        </style>
+        <!--프로젝트 리스트화면-->
+        <div class="btn-area-3">
+            <div class="grid-pt">
+                    <input type="text" id="nameWrite" placeholder="이름으로 검색">
+                    <div class="grid-cd-3">
+                        <a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" id="nameSearch" onclick="javascript:nameSearch(); return false;">검색</a>
+                    </div>
+                </div>
+        </div>
+    <button id="addressGet" onclick="javascript:addressGet(); return false;">가져오기</button>
     <table>
         <thead>
         <th>선택</th>
@@ -121,8 +183,11 @@
         </thead>
         <tbody id="my-tbody"></tbody>
     </table>
-    <button id="searchMore" onclick="javascript:searchMore(); return false;">더보기</button>
-
+        <div class="gird-pt" id>
+            <button class="ui-btn ui-corner-all ui-btn-b" id="searchMore" onclick="javascript:searchMore();return false;" >더보기</button>
+        </div>
 </div>
+    </div>
+</section>
 </body>
 </html>

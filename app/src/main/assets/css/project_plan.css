@@ -5,14 +5,16 @@
 
     /*Plan LIst Page*/
     /*Select Area*/
+    .plan-list .title-area div.grid-cd-1{width:calc(100% - 80px); display:inline-flex; align-items:center;height:44px;}
+    .plan-list .title-area div.grid-cd-2{width:80px; display:inline-flex;}
+    .plan-list .title-area div.grid-cd-2 a{width:100%; margin:0;}
+
     .plan-list .title-area select{width:100%; height:44px; padding-left:10px; background:#ededed;}
     .plan-list .title-area div.gird-pt{width:100%; display:flex; margin-bottom:0.5em;}
-    .plan-list .title-area div.grid-cd-1{width:calc(100% - 140px); display:inline-flex;}
-    .plan-list .title-area div.grid-cd-1 select{width:100%;}
-    .plan-list .title-area div.grid-cd-2{width:70px; display:inline-flex; align-items:center;}
-    .plan-list .title-area div.grid-cd-2 a{width:100%; margin:0 0 0 5px;}
-    .plan-list .title-area div.grid-cd-3{width:70px; display:inline-flex; align-items:center;}
-    .plan-list .title-area div.grid-cd-3 a{width:100%; margin:0 0 0 5px;}
+    .plan-list .title-area div.grid-cd-3{width:calc(100% - 80px); display:inline-flex;}
+    .plan-list .title-area div.grid-cd-3 .ui-select{width:100%;}
+    .plan-list .title-area div.grid-cd-3 .ui-select span{text-align:left;}
+    .plan-list .title-area div.grid-cd-4{width:70px; display:inline-flex; align-items:center; margin-left:5px;}
 
     /*List-Summary*/
     .plan-list .summary-list div.plan{display:block; color:#333333; text-shadow: none;}
@@ -22,10 +24,11 @@
 
     /*Project_plan Page*/
     /*Title Area*/
-    .project-list .title-area .gird-pt{width:100%; display:flex; margin-bottom:0.5em;}
+    .project-list .title-area .gird-pt{width:100%; display:flex; margin-bottom:0.5em; align-items:center}
     .project-list .title-area div.grid-cd-1{width:calc(100% - 110px); display:inline-flex;}
     .project-list .title-area div.grid-cd-2{width:110px; display:inline-flex;}
-    .project-list .title-area div.grid-cd-2 a{width:100%; }
+    /*.project-list .title-area div.grid-cd-2 a{width:100%; } */
+    .project-list .title-area div.grid-cd-3{width:110px; display:inline-flex;}
 
      /*Summary List*/
     .project-list .summary-list div.plan{display:block; color:#333333; text-shadow:none;}
@@ -36,10 +39,11 @@
     /*Plan_Detail Page*/
     /*detail-form*/
     .plan-detail .detail-form .ui-field-contain{ display:flex; width:100%;}
-    .plan-detail .detail-form .ui-field-contain label{width:110px; display:flex; align-items:center; margin:0;}
+    .plan-detail .detail-form .ui-field-contain label{width:90px; display:flex; align-items:center; margin:0;}
+    .plan-detail .detail-form .ui-field-contain .ui-select span{text-align:left; font-weight:500;}
     .plan-detail .detail-form .ui-field-contain input{width:100%; display:inline-flex; }
-    .plan-detail .detail-form .ui-field-contain textarea{width:calc(100% - 110px); height:90px !important; display:inline-flex; }
-    .plan-detail .detail-form .ui-field-contain label + div{width:calc(100% - 110px);}
+    .plan-detail .detail-form .ui-field-contain textarea{width:calc(100% - 90px); height:90px !important; display:inline-flex; }
+    .plan-detail .detail-form .ui-field-contain label + div{width:calc(100% - 90px);}
 
     /*btn-area*/
    .plan-detail .btn-area-1 .grid-pt{width:100%; display:flex;}

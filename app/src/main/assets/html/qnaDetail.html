@@ -3,63 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
     <link rel="stylesheet" href="../css/project_plan.css">
     <script src="../js/common.js"></script>
-    <script src="../js/util.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <title></title>
     <script>
+    	$(document).ready(function(){
+
+    		console.log("sessionStorage 값 : " + sessionStorage.getItem('regnum'));
+
+    		if(sessionStorage.getItem('regnum') != null && sessionStorage.getItem('regnum') != '' ) { // 게시물 화면 및 수정 화면
+
+    			// 게시판 내용 가져오기
+    			showQnaDetail();
+    			// 취소 등록 버튼
+    			$(".btn-area-1").hide();
+
+    		}else{ // 등록화면
+
+    			$(".view").hide();
+    			// 취소 삭제 수정 버튼
+    			$(".btn-area-3").hide();
+    		}
+
+    	});// end of $(document).ready()-----------------------------------------------
+
+
+    	// reqnum으로 정보가져오기
+    	function showQnaDetail() {
+
+    		var form_data = { regnum : sessionStorage.getItem('regnum') };
+
+    		navigate(form_data, "qnaDetail.json", successQnaDetail, errorFunction);
+
+    	}// end of showQnaDetail()---------------------------------------
+
+    	// insert update delete 작업을 해주는 함수
+    	function commit(num) {
+
+    	    //null 검사
+    	    if( $("#qna-title").val() == "" || $("#qna-title").val() == null) {
+    	        alert("제목을 입력해주세요");
+    	        $("#qna-title").focus();
+    	        return;
+    	    }
+    	    else if($("#qna-content").val() == "" || $("#qna-content").val() == null) {
+    	        alert("내용을 입력해주세요");
+    	        $("#qna-content").focus();
+    	        return;
+    	    }
+
+            /*
+    		if( checkSpecial($("#qna-title").val()) || checkSpecial($("#qna-content").val()) ){
+    			console.log("특수문자 있어용");
+    			return;
+    		}else{
+    			console.log("특수문자 없어요");
+    		}
+            */
+    		var form_data = {
+    		                  regnum   : sessionStorage.getItem('regnum'),
+    						  id       : "rbgk5868",//sessionStorage.getItem('미정'),
+    						  name     : "임규하", //sessionStorage.getItem('미정')
+    						  subject  : $("#qna-title").val(),
+    						  contents : $("#qna-content").val(),
+    						  bbs_code : $("#qna-part").val()
+    						};
+
+    		switch (num) {
+				case 1: // 등록
+				    navigate(form_data, "qnaInsert.json", successInsert, errorFunction);
+					break;
+
+				case 2: // 수정
+				    navigate(form_data, "qnaUpdate.json", successUpdate, errorFunction);
+					break;
+
+				case 3 : // 삭제
+				    navigate(form_data, "qnaDelete.json", successDelete, errorFunction);
+					break;
+
+			}// end of switch(num)--------------------------
+
+    	}// end of commit(num)-------------------------------------------
+
+
+    	// 특수문자 확인 정규식
+    	function checkSpecial(str) {
+
+    		var special_pattern = /[`<>@#$%^&*|\\\'\";:\/]/gi;
+    		if(special_pattern.test(str) == true) {
+    			return true;
+   			}
+  	 		else {
+   				return false;
+   			}
+
+    	}// end of checkSpecial()---------------------------------------
+
+    	function successQnaDetail(data) {
+
+    	    $("#qna-title").val(data[0].subject);
+            $("#qna-titleText").append(data[0].subject);
+
+            switch (data[0].bbs_code) {
+                case "notice":
+                    $("#qna-part").val("notice").prop("selected", true);
+                    $("#qna-partText").append("알아두세요");
+                    break;
+
+                case "news":
+                    $("#qna-part").val("news").prop("selected", true);
+                    $("#qna-partText").append("공지");
+                    break;
+
+                case "reference":
+                    $("#qna-part").val("reference").prop("selected", true);
+                    $("#qna-partText").append("자료실");
+                    break;
+
+            }// end of switch() --------------------------------
+
+            $("#qna-part").selectmenu("refresh", true);
+
+            $("#qna-content").val(data[0].contents);
+            $("#qna-contentText").val(data[0].contents);
+
+    	}// end of successQnaDetail(data) -------------------------------------------
+
+        function successInsert(data) {
+
+            alert("등록되었습니다.");
+			movePage("qnaList.html");
+
+        }// end of successInsert(data) ---------------------------------------
+
+        function successUpdate(data) {
+
+            alert("수정 완료.");
+            movePage("qnaDetail.html");
+
+        }// end of successInsert(data) ---------------------------------------
+
+        function successDelete(data) {
+
+            alert("삭제하였습니다.");
+            sessionStorage.removeItem('regnum');
+            movePage("qnaList.html");
+
+        }// end of successInsert(data) ---------------------------------------
+
+        function errorFunction(result) {
+            alert("error>>>"+result);
+        }// end of errorFunction(result) ----------------------------
 
     </script>
+
+    <style>
+        .area{
+        	height: 300px;\
+        }
+    </style>
 
 </head>
 
 <body>
-<section id="page1" data-role="page">
+<section id="page1">
     <div data-role="content" class="qna-detail">
         <!--QnA 상세페이지화면-->
-        <div class="gird-pt detail-form">
+        <div>
             <form>
-                <label for="qna-title">• 제목</label>
-                <input type="text" name="qna-title" id="qna-title" value="">
+                <label for="qna-title">• 제목<span>특수문자는 사</span></label>
+                <input type="text" id="qna-title" >
+                <div class="view">
+                    <p id="qna-titleText"></p>
+                </div>
+
 
                 <label for="qna-part" class="select">• 게시영역</label>
-                <select name="qna-part" id="qna-part">
-                    <option value="1">알아두세요</option>
-                    <option value="2">공지</option>
-                    <option value="3">자료실</option>
-                </select>
+                <div>
+                    <select id="qna-part">
+                        <option value="notice">알아두세요</option>
+                        <option value="news">공지</option>
+                        <option value="reference">자료실</option>
+                    </select>
+                </div>
+
+                <div class="ui-btn ui-input-btn ui-corner-all ui-shadow view" >
+                    <div id="qna-partText"></div>
+                </div>
 
                 <label for="qna-content">• 내용</label>
-                <textarea type="text" rows="4" name="qna-content" id="qna-content" value=""placeholder="내용을 입력해주세요."> </textarea>
+                <textarea id="qna-content" class="area" placeholder="내용을 입력해주세요." data-autogrow="false"> </textarea>
+                <textarea id="qna-contentText" class="area view" readonly="readonly" data-autogrow="false"> </textarea>
+
+
+                <div class="btn-area-3">
+                    <div class="grid-pt">
+                        <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(3);">삭제</a></div>
+                        <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(2);">수정</a></div>
+                    </div>
+                </div>
+                <div class="btn-area-1">
+                    <div class="grid-pt">
+                        <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(1);">등록</a></div>
+                    </div>
+                </div>
+                <div class="btn-area-2">
+                    <div class="gird-pt">
+                        <button class="ui-btn ui-corner-all ui-btn-b" onclick="movePage('qnaList.html')" >목록</button>
+                    </div>
+                </div>
             </form>
-
-            <div class="btn-area-3">
-                <div class="grid-pt">
-                    <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
-                    <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">삭제</a></div>
-                    <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">등록</a></div>
-                </div>
-            </div>
-            <div class="btn-area-1">
-                <div class="grid-pt">
-                    <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
-                    <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">등록</a></div>
-                </div>
-            </div>
-            <div class="btn-area-2">
-                <div class="gird-pt">
-                    <button class="ui-btn ui-corner-all ui-btn-b" oonclick="movePage('index.html')" >목록</button>
-                </div>
-            </div>
-
-<style>
-
-</style>
-
+        </div>
+    </div>
 </section>
 </body>
 </html>
