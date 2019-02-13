@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <!--DatePicker--><link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="../css/project_plan.css">
+    <script src="../js/common.js"></script>
+    <script src="../js/datepicker.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <!--DatePicker--><script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <!--DatePicker--><script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <title></title>
+    <script>
+            $(function(){
+                $('#camera').change(function(e){
+                    $('#pic1').attr('src', URL.createObjectURL(e.target.files[0]));
+                });
+                $('#imginput2').change(function(e){
+                    $('#pic2').attr('src', URL.createObjectURL(e.target.files[0]));
+                });
+            });
+    </script>
+
+</head>
+
+<body>
+<section id="page1" data-role="page">
+    <div data-role="content" class="plan-detail">
+        <!--제목-->
+        <div  class="title-area">
+            <div class="gird-pt">
+                <h3>• 사원 상세정보 </h3>
+            </div>
+        </div>
+        <style>
+            div#select-2-button { padding: 7.5px 5px; background:#ffffff;}
+            div#select-2-button span { text-align: left; font-weight: 600;}
+
+        </style>
+
+        <!--사원 상세정보 페이지-->
+        <div class="gird-pt detail-form">
+            <form>
+                <img id="pic1" style="width:47.5%; high:60%; float:left; margin-right:5%;"/>
+                <img id="pic2" style="width:47.5%; high:60%; float:left;"/>
+                <br>
+                <div class="ui-field-contain">
+                    <label for="camera">프로필파일첨부</label>
+                    <input type="file" id="camera" name="camera" capture="camera" accept="image/*" />
+                </div>
+                <div class="ui-field-contain">
+                    <label for="camera">사인파일첨부</label>
+                    <input type="file" id="imginput2" name="imginput2" capture="camera" accept="image/*" />
+                </div>
+
+                <div class="ui-field-contain">
+                    <label for="textinput1">이 름:</label>
+                    <input type="text" name="textinput1" id="textinput1" placeholder="이름을 입력하세요" value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput3">생년월일:</label>
+                    <input type="text" name="textinput3" id="textinput3"placeholder="생년월일을 선택해주세요" value="" readonly>
+                    <script>
+                    $("#textinput3").datepicker();
+                    </script>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="select1">직 급:</label>
+                    <select name="select1" id="select1" class="ui-corner-all">
+                        <option value="projectCode">사원</option>
+                        <option value="projectCode">대리</option>
+                        <option value="projectCode">차장</option>
+                        <option value="projectCode">부장</option>
+                        <option value="projectCode">대표</option>
+                    </select>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput4">입사일자:</label>
+                    <input type="text" name="textinput4" id="textinput4" placeholder="입사일자를 선택해주세요" value="" readonly>
+                    <script>
+                    $("#textinput4").datepicker();
+                    </script>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput5">아이디:</label>
+                    <input type="text" name="textinput5" id="textinput5" placeholder="아이디를 입력하세요" value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput6">비밀번호:</label>
+                    <input type="text" name="textinput6" id="textinput6" placeholder="비밀번호를 입력하세요" value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput7">비밀번호 확인</label>
+                    <input type="text" name="textinput7" id="textinput7" value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput8">이메일</label>
+                    <input type="text" name="textinput8" id="textinput8" placeholder="이메일을 입력하세요" value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput9_1">연락처</label>
+                    <input type="text" name="textinput9_1" id="textinput9_1"  value="" >
+                     - <input type="text" name="textinput9_2" id="textinput9_2"  value="" >
+                     - <input type="text" name="textinput9_3" id="textinput9_3"  value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput10_1">비상연락처</label>
+                    <input type="text" name="textinput10_1" id="textinput10_1"value="" >
+                    - <input type="text" name="textinput10_2" id="textinput10_2"  value="" >
+                    - <input type="text" name="textinput10_3" id="textinput10_3"  value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput11">우편번호</label>
+                    <input type="text" name="textinput11" id="textinput11"  value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput12">주소</label>
+                    <input type="text" name="textinput12" id="textinput12" value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput13">상세주소</label>
+                    <input type="text" name="textinput13" id="textinput13" placeholder="나머지 주소를 입력해주세요" value="" >
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput14">권한</label>
+                    <input type="text" name="textinput14" id="textinput14" value="" >
+                </div>
+
+            </form>
+        </div>
+        <style>
+
+        </style>
+        <div class="btn-area-1">
+            <div class="grid-pt">
+                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">등록</a></div>
+            </div>
+        </div>
+        <div class="btn-area-2">
+            <div class="gird-pt">
+                <button class="ui-btn ui-corner-all ui-btn-b" onclick="common_movePage('index.html')" >목록</button>
+            </div>
+        </div>
+        <div class="btn-area-3">
+            <div class="grid-pt">
+                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="movePage('index.html')">삭제</a></div>
+                <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="movePage('index.html')">등록</a></div>
+            </div>
+        </div>
+    </div>
+
+
+</section>
+</body>
+</html>
