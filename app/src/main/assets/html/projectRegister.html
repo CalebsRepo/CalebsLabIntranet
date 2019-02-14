@@ -17,7 +17,7 @@
         $(document).ready(function(){
             $('.datepicker').datepicker();
             <!--발주회사정보를 db에서 가져와 화면에 뿌려줌-->
-            navigate("getCompany.json", getCompanyInfoSuccess, getDBError);
+            navigate("getCompany.json", getCompanyInfoSuccess);
         });
 
         <!--발주회사 정보 select 성공-->
@@ -130,7 +130,7 @@
             iHTML += '</div>';
 
             $("#listviewArea").append(iHTML);
-            navigate("employee.json", getEmployeeInfoSuccess, getDBError);
+            navigate("getFullemployee.json", getEmployeeInfoSuccess);
             $('.datepicker').datepicker();
         }
          <!--직원정보select 성공-->
@@ -167,10 +167,7 @@
 
             selbox.options.add(op);
         }
-        <!--select 실패-->
-        function getDBError(result) {
-            console.log("getEmployeeInfoError>>>>>>" + JSON.stringify(result));
-        }
+
         <!--memberSel select-->
         function memberSelect(index) {
             var selID = 'memberSel' + index;
@@ -256,16 +253,12 @@
             console.log("projectInfoJSON>>>>>" + JSON.stringify(projectInfoJSON));
             console.log("memerInfoArray>>>>>" + JSON.stringify(memerInfoArray));
 
-            navigate(projectInfoJSON, "projectRegist.json", projectRegistSuccess, projectRegistError);
+            navigate(projectInfoJSON, "projectRegist.json", projectRegistSuccess);
 
         }
 
         function projectRegistSuccess(result) {
             console.log("성공");
-        }
-
-        function projectRegistError(result) {
-            console.log("실패");
         }
     </script>
 </head>

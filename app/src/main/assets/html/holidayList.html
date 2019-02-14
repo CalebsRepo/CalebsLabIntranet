@@ -12,11 +12,14 @@
     <script type="text/javascript">
 
 		var numCnt = 1;
+		var userInfo = JSON.parse(getUserData());
 
 		$(document).ready(function(){
 
 			$('#btMore').hide();
 
+            var test = getUserData();
+            console.log("test : " + test);
 			setDateSelct();
 			totalPageCnt();
 			showHolidayList();
@@ -47,10 +50,12 @@
 			var form_data = {
 			                  pageNum  : $("#pageNum").val(),
 							  checkVal : $("#approvalSel option:selected").val(),
-							  date     : $("#dateSel option:selected").val()
+							  date     : $("#dateSel option:selected").val(),
+							  id       : userInfo.id,
+							  admflag  : userInfo.adm_flag
 							 };
 
-            navigate(form_data, "holidayList.json", successHolidayList, errorFunction);
+            navigate(form_data, "holidayList.json", successHolidayList);
 
 		}// end of showHolidayList()------------------------------------
 
@@ -60,10 +65,12 @@
 			var form_data = {
 			                   pageNum  : $("#pageNum").val(),
 					           checkVal : $("#temp").val(),
-					           date     : $("#dateSel option:selected").val()
+					           date     : $("#dateSel option:selected").val(),
+							   id       : userInfo.id,
+							   admflag  : userInfo.adm_flag
 					        };
 
-            navigate(form_data, "holidayList.json", successMoreList, errorFunction);
+            navigate(form_data, "holidayList.json", successMoreList);
 
 		}// end of moreList() ----------------------------------------
 
@@ -72,11 +79,15 @@
 
 			var form_data = {
 					          checkVal : $("#approvalSel option:selected").val(),
-					          date     : $("#dateSel option:selected").val()
+					          date     : $("#dateSel option:selected").val(),
+					          id       : userInfo.id,
+							  admflag  : userInfo.adm_flag
 					        };
 
 			$.ajax({
-			  	url: "http://calebslab1.cafe24.com/holidayPageCnt.json",
+
+		//	  	url: "http://calebslab1.cafe24.com/holidayPageCnt.json",
+			  	url: "http://192.168.10.239:8080/Caleb/holidayPageCnt.json",
 				type: "POST",
 				async: false,
 				data: form_data,
@@ -266,10 +277,6 @@
             $("#showList").append(html);
 
         }// end of successHolidayList(data)------------------------------------------------
-
-        function errorFunction(result) {
-            alert("error>>>"+result);
-        }// end of errorFunction(result)--------------------------------------------
 
 	</script>
     <style type="text/css">
