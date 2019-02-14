@@ -9,7 +9,7 @@
     function movePage(url, param) {
 		console.log("movePage: "+url);
         if(url !=null && param != null){
-            setStorageItem(param);
+            setStorageItem(temp_key,param);
         }
         location.href=url;
     }
@@ -39,7 +39,9 @@
                         movePage("login.html");
 
                         }else{
-                        alert("통신 중 문제가 발생하였습니다.");
+
+                            alert("통신 중 문제가 발생하였습니다.");
+
                         }
                     }
             });
