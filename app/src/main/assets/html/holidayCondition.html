@@ -22,19 +22,18 @@
         var params = {
             sessionId : selectId
         };
-        navigate(params,"getMyHoliday.json", detailSuccess, detailFailed);
+        navigate(params,"getMyHoliday.json", detailSuccess);
     }
     function detailSuccess(result){
+        console.log(result)
         movePage('holidayConditionDetail.html',result);
     }
-    function detailFailed(result){
-        alert("오류가 발생했습니다. 잠시후 다시 시도해주세요.");
-    }
+
 
     <!-- 휴가현황조회-->
     $(document).ready(function(){
-        navigate("getHolidayCondition.json", sucessFncMyHoliday, errorFncMyHoliday);
-        navigate("getHolidayConditionExcell.json", sucessFncExcel, errorFncExcel);
+        navigate("getHolidayCondition.json", sucessFncMyHoliday );
+        navigate("getHolidayConditionExcell.json", sucessFncExcel);
     });
 
     <!-- 휴가현황조회 ajax통신 성공 -->
@@ -77,10 +76,7 @@
         }
     } // --- End of sucessFncMyHoliday
 
-    <!-- 휴가현황조회 ajax 통신 실패 -->
-    function errorFncMyHoliday(result) {
-        alert("오류가 발생했습니다. 잠시후 다시 시도해주세요.");
-    } // --- End of errorFncMyHoliday
+
 
 
     <!-- 엑셀 ajax통신 성공 -->
@@ -88,10 +84,7 @@
         resultSum += "@" + JSON.stringify(result);
     } // --- End of sucessFncExcel
 
-    <!-- 엑셀 ajax 통신 실패 -->
-    function errorFncExcel(result) {
-        alert("오류가 발생했습니다. 잠시후 다시 시도해주세요.");
-    } // --- End of errorFncExcel
+
 
     function getExcel(){
         console.log(resultSum);
