@@ -19,8 +19,7 @@
     <script>
         <!--상세페이지 데이터 셋팅-->
         $(function(){
-             var ajaxResult="";
-             ajaxResult= JSON.parse(getStorageItem());
+             var ajaxResult=JSON.parse(getStorageItem());
              for(var i=0;i<ajaxResult.length;i++){
                 $('#pic1').attr('src',"http://calebslab1.cafe24.com/images/"+ajaxResult[i].id+""); <!--프로필사진-->
                 $('#pic2').attr('src',"http://calebslab1.cdn3.cafe24.com/test.png"); <!--사인사진-->
@@ -49,16 +48,32 @@
 
              }
         });
-
         <!--사진 첨부파일 미리보기 기능-->
-        $(function(){
+       var imgPathArray="";
+       var newTr = ',';
+       $(function(){
             $('#camera').change(function(e){
-                $('#pic1').attr('src', URL.createObjectURL(e.target.files[0]));
+                 $('#pic1').attr('src', URL.createObjectURL(e.target.files[0]));
+                 imgPathArray+=window.android.imgPath(1);
+                 console.log("오늘저녁은1:"+imgPathArray);
             });
-            $('#imginput2').change(function(e){
-                $('#pic2').attr('src', URL.createObjectURL(e.target.files[0]));
+            $('#camera2').change(function(e){
+                 $('#pic2').attr('src', URL.createObjectURL(e.target.files[0]));
+                 if(imgPathArray==""){
+                    imgPathArray+=window.android.imgPath(2);
+                 }else{
+                    imgPathArray+=','+window.android.imgPath(2);
+                 }
+
+                 console.log("오늘저녁은2:"+imgPathArray);
             });
-        });
+        })
+
+        function employeeUpdate(){
+            console.log("저녁으로 뭐먹을까요:"+imgPathArray);
+            window.android.imgFtpSend(imgPathArray);
+            imgPathArray="";  <!--초기화-->
+        }
 
     </script>
 
@@ -86,12 +101,12 @@
                 <img id="pic2" style="width:47.5%; high:100%; float:left;"/>
                 <br>
                 <div class="ui-field-contain">
-                    <label for="camera">프로필파일첨부</label>
+                    <label for="camera">프로필사진첨부</label>
                     <input type="file" id="camera" name="camera" capture="camera" accept="image/*" />
                 </div>
                 <div class="ui-field-contain">
-                    <label for="camera">사인파일첨부</label>
-                    <input type="file" id="imginput2" name="imginput2" capture="camera" accept="image/*" />
+                    <label for="camera">사인첨부</label>
+                    <input type="file" id="camera2" name="camera2" capture="camera" accept="image/*" />
                 </div>
 
                 <div class="ui-field-contain">
@@ -155,7 +170,7 @@
                         <div class="grid-cd-1"><label for="sample2_postcode">우편번호</label></div>
                         <div class="grid-cd-2"><input type="text" name="sample2_postcode" id="sample2_postcode"  value="" ></div>
                         <div class="grid-cd-3">
-                            <a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="movePage('postcodeAPI.html')">우편번호찾기</a>
+                            <a href="intent:https://play.google.com/store/apps/details?id=com.softdx.zippostweb" class="ui-btn ui-shadow ui-corner-all ui-btn-b">우편번호찾기</a>
                         </div>
                     </div>
                 </div>
@@ -190,7 +205,7 @@
         <div class="btn-area-1">
             <div class="grid-pt">
                 <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
-                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">수정</a></div>
+                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="javascript:employeeUpdate(); return false;">수정</a></div>
             </div>
         </div>
 
