@@ -4,6 +4,10 @@
     .main-warp h2 { margin:0;}
     .info-box { text-align: center; padding: 1.5em; }
 
+    table, th, td { border: 1px solid black; border-collapse: collapse; }
+    table { width:100%; margin-top: 2em;}
+    th { padding:0.5em 0.2em; background-color: #22aadd8a; }
+
      /* 나의연차정보 */
     .holiday-list { margin: 1em 0 3em 0; }
 
@@ -13,13 +17,5 @@
     .holiday-list  li{ margin-bottom:10px; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
 
     #holidayListview { margin: 0.5em 0 1em 0;}
-
-    /*List-Summary*/
-    .project-list  div.plan{display:block; color:#333333; text-shadow: none;}
-    .project-list  a.list-detail {border:none !important; padding:20px; background:#f7f7f7 !important;}
-    .project-list  ul{width:100%; box-shadow:none !important;}
-    .project-list  li{ margin-bottom:10px; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
-
-    #projectListview { margin: 0.5em 0 1em 0;}
 
 </style>
