@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <script src="../js/common.js"></script>
+    <script src="../js/login.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script language="JavaScript">
+
+        function login(){
+
+            var id = $('#id').val().trim();
+            var pwd = $('#pwd').val().trim();
+
+            if(id == null || id ==''){
+                alert("아이디를 입력해주세요");
+                return false;
+            }
+
+            if(pwd == null || pwd ==''){
+                alert("비밀번호를 입력해주세요");
+                return false;
+            }
+
+            var param = {"id" : id, "pwd" : pwd};
+            var result = callLogin(id,pwd);
+
+            if(result != null){
+
+               sessionStorage.setItem("userData",result);
+               movePage("index.html");
+
+            }
+        }
+
+    </script>
+
+    <style>
+        #loginDiv {background-color:white; padding:20% 20% 0 20%; height: 100%;}
+        #logoImg {max-width:100%; max-height:100%; margin:auto; display:block; margin-bottom : 20%}
+        #loginBtn {margin : 30px;}
+    </style>
+</head>
+
+<body bgcolor="#E6E6FA">
+
+<div id="loginDiv" class="container">
+
+    <div id="imgDiv">
+        <img src="../css/images/calebslab_CI_1_upper-300x108.png" id="logoImg">
+        <label for="id">아이디</label>
+        <input type="text" name="id" id="id" value="">
+        <label for="pwd">비밀번호</label>
+        <input type="password" name="pwd" id="pwd" value="">
+        <div id="loginBtn" style="text-align:center" onclick="event.cancelBubble = true;">
+            <button data-role="none" onclick="javascript:login(); return false;">확인</button>
+        </div>
+
+    </div>
+    <div style="text-align:center">
+        <br>
+        <a onclick="">아이디 찾기</a><br>
+        <a onclick="">비밀번호 찾기</a><br>
+    </div>
+</div>
+
+</body>
+</html>

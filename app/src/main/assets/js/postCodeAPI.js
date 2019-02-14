@@ -1,21 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
-    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
-    <!--DatePicker--><link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="../css/project_plan.css">
-    <script src="../js/common.js"></script>
-    <script src="../js/datepicker.js"></script>
-    <script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script> <!--다음 지도 api-->
-    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <!--DatePicker--><script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <!--DatePicker--><script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-
-    <title></title>
-    <script>
 
             // 우편번호 찾기 화면을 넣을 element
             var element_layer = document.getElementById('layer');
@@ -25,12 +7,9 @@
                 element_layer.style.display = 'none';
             }
 
-
             function sample2_execDaumPostcode() {
-
                 new daum.Postcode({
                     oncomplete: function(data) {
-                        alert("테스트 진행중");
                         // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
 
                         // 각 주소의 노출 규칙에 따라 주소를 조합한다.
@@ -105,17 +84,3 @@
                 element_layer.style.left = (((window.innerWidth || document.documentElement.clientWidth) - width)/2 - borderWidth) + 'px';
                 element_layer.style.top = (((window.innerHeight || document.documentElement.clientHeight) - height)/2 - borderWidth) + 'px';
             }
-
-            $(".link_post").click(function(e) {
-                alert("클릭이벤트 스틸");
-            });
-            $(document).click(".link_post", function(e) {
-                alert("클릭이벤트 스틸");
-            });
-    </script>
-
-</head>
-
-<body onload="sample2_execDaumPostcode()">
-</body>
-</html>
