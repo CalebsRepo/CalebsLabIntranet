@@ -24,7 +24,13 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +39,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -295,7 +302,132 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        //로그인 통신
+        // 휴가내역 엑셀 다운로드
+        @JavascriptInterface
+        public void saveExcel(final String result){
+            Log.d("이승환", "result>>>>>>>>>>>>>>>"+result);
+            int idx = result.indexOf("@");
+            String result1 =  "";
+            String result2 =  "";
+            result1 = result.substring(0, idx);
+            result2 = result.substring(idx+1);
+            Log.d("이승환", "result11>>>>>>>>>>>>>>>"+result1);
+            Log.d("이승환", "result22>>>>>>>>>>>>>>>"+result2);
+
+
+
+            Workbook workbook = new HSSFWorkbook();
+
+            Sheet sheet = workbook.createSheet(); // 새로운 시트 생성
+
+            Row row = sheet.createRow(0); // 새로운 행 생성
+            Cell cell;
+
+            cell = row.createCell(0); // 1번 셀 생성
+            cell.setCellValue("No."); // 1번 셀 값 입력
+
+            cell = row.createCell(1); // 2번 셀 생성
+            cell.setCellValue("아이디"); // 2번 셀 값 입력
+
+            cell = row.createCell(2); // 3번 셀 생성
+            cell.setCellValue("이름"); // 3번 셀 값 입력
+
+            cell = row.createCell(3); // 4번 셀 생성
+            cell.setCellValue("직급"); // 4번 셀 값 입력
+
+            cell = row.createCell(4); // 5번 셀 생성
+            cell.setCellValue("입사일"); // 5번 셀 값 입
+
+            cell = row.createCell(5); // 6번 셀 생성
+            cell.setCellValue("근속기간"); // 6번 셀 값 입
+
+            cell = row.createCell(6); // 7번 셀 생성
+            cell.setCellValue("근무년차"); // 7번 셀 값 입
+
+
+            if (result != null) {
+                try {
+
+                    JSONArray arr = new JSONArray(result1);   // 사원정보
+                    Log.d("이승환", "arr1>>>>>>>>>>>>>>>"+arr);
+
+                    JSONArray arr2 = new JSONArray(result2);   // 근무년차별 사용내역
+                    Log.d("이승환", "arr2>>>>>>>>>>>>>>>"+arr2);
+
+                    for(int i=0; i < arr2.length(); i++) {
+
+                        JSONObject jObject = arr.getJSONObject(i);  // JSONObject 추출
+                        JSONObject jObject2 = arr2.getJSONObject(i);  // JSONObject 추출
+
+                        /* 사원정보 관련*/
+                        String name = jObject.getString("name");
+                        String joinYear = jObject.getString("join_year");
+                        String joinMon = jObject.getString("work_mon");
+                        String hsYmd =  jObject.getString("hs_ymd");
+                        String heYmd =  jObject.getString("he_ymd");
+                        String workingDate = "";
+
+                        if (Integer.parseInt(joinYear) > 0) {
+                            workingDate = joinYear +"년" +joinMon + "개월";
+                        }else {
+                            workingDate = joinMon + "개월";
+                        }
+
+                        /*row = sheet.createRow(i+1);*/
+                        if( i < arr.length()){
+
+                            row = sheet.createRow(i+1); // 행추가
+                            cell = row.createCell(0);
+                            cell.setCellValue(i+1);
+                            cell = row.createCell(1);
+                            cell.setCellValue(jObject.getString("id"));
+                            cell = row.createCell(2);
+                            cell.setCellValue(jObject.getString("name"));
+                            cell = row.createCell(3);
+                            cell.setCellValue(jObject.getString("grade"));
+                            cell = row.createCell(4);
+                            cell.setCellValue(jObject.getString("join_ymd"));
+                            cell = row.createCell(5);
+                            cell.setCellValue(workingDate);
+                            cell = row.createCell(6);       // 근무년차 : 연차발생기간 ~
+                            cell.setCellValue(hsYmd+ "~" + heYmd);
+                        }
+
+                        /* 휴가사용내역 반복처리*/
+//                        cell = row.createCell(7);
+//                        cell.setCellValue(jObject2.getString("join_ymd"));
+//                        cell = row.createCell(8);
+//                        cell.setCellValue(jObject2.getString("join_ymd"));
+//                        cell = row.createCell(9);
+//                        cell.setCellValue(jObject2.getString("join_ymd"));
+
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            File xlsFile = new File(getExternalFilesDir(null),"test.xls");
+            try{
+                FileOutputStream os = new FileOutputStream(xlsFile);
+                workbook.write(os); // 외부 저장소에 엑셀 파일 생성
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+            Toast.makeText(getApplicationContext(),xlsFile.getAbsolutePath()+"에 저장되었습니다",Toast.LENGTH_SHORT).show();
+
+            Uri path = Uri.fromFile(xlsFile);
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("application/excel");
+            shareIntent.putExtra(Intent.EXTRA_STREAM,path);
+            startActivity(Intent.createChooser(shareIntent,"엑셀 내보내기"));
+        }
+
+
+
+
+    //로그인 통신
         @JavascriptInterface
         public String callLogin(final String id, final String pwd) throws Exception {
 
