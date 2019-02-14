@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         }
         web.addJavascriptInterface(new WebAppInterface(this), "android");
 
-        web.loadUrl("file:///android_asset/html/index.html"); // 처음 로드할 페이지
+        web.loadUrl("file:///android_asset/html/login.html"); // 처음 로드할 페이지
 
 
         web.setWebViewClient(new android.webkit.WebViewClient() {
@@ -429,7 +429,7 @@ public class MainActivity extends AppCompatActivity {
 
     //로그인 통신
         @JavascriptInterface
-        public String callLogin(final String id, final String pwd) throws Exception {
+        public String callLogin(final String id, final String pwd, final String sndUrl) throws Exception {
 
             userData ="";
 
@@ -441,8 +441,9 @@ public class MainActivity extends AppCompatActivity {
                         URL url;
                         HttpURLConnection conn;
                         DataOutputStream wr;
+                        String callUrl = sndUrl +"/login.json";
 
-                        url = new URL("http://192.168.10.220:8080/Caleb/login.json");
+                        url = new URL(callUrl);
                         conn = (HttpURLConnection) url.openConnection();
                         conn.setDoOutput(true);
                         conn.setConnectTimeout(15000);
@@ -499,7 +500,7 @@ public class MainActivity extends AppCompatActivity {
 
         //로그인 통신
         @JavascriptInterface
-        public String callLogout() throws Exception {
+        public String callLogout(final String sndUrl) throws Exception {
             userData ="";
             Thread t2 = new Thread(new Runnable() {
                 @Override
@@ -510,7 +511,9 @@ public class MainActivity extends AppCompatActivity {
                         HttpURLConnection conn;
                         DataOutputStream wr;
 
-                        url = new URL("http://192.168.10.220:8080/Caleb/logOut.json");
+                        String callUrl = sndUrl +"/logOut.json";
+
+                        url = new URL(callUrl);
                         conn = (HttpURLConnection) url.openConnection();
                         conn.setDoOutput(true);
                         conn.setConnectTimeout(15000);
