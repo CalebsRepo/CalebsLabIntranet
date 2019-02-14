@@ -1,0 +1,21 @@
+<style>
+    /*Common*/
+    h1,h2,h3,h4,h5{margin: 0.5em 0;}
+    .main-warp h2 { margin:0;}
+    .info-box { text-align: center; padding: 1.5em; }
+
+    table, th, td { border: 1px solid black; border-collapse: collapse; }
+    table { width:100%; margin-top: 2em;}
+    th { padding:0.5em 0.2em; background-color: #22aadd8a; }
+
+     /* 나의연차정보 */
+    .holiday-list { margin: 1em 0 3em 0; }
+
+    .holiday-list  div.holiyday{display:block; color:#333333; text-shadow: none;}
+    .holiday-list  a.list-detail {border:none !important; padding:20px; background:#f7f7f7 !important;}
+    .holiday-list  ul{width:100%; box-shadow:none !important;}
+    .holiday-list  li{ margin-bottom:10px; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
+
+    #holidayListview { margin: 0.5em 0 1em 0;}
+
+</style>
