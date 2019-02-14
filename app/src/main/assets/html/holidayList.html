@@ -98,6 +98,7 @@
 
                 for(var i=0; i<data.length-1; i++) {
 
+                    var id            = data[i].id           ;
                     var apply_seq     = data[i].apply_seq    ;
                     var start_ymd     = data[i].start_ymd    ;
                     var end_ymd       = data[i].end_ymd      ;
@@ -113,7 +114,7 @@
                     html += 		"NO."+ numCnt++ +"<br>"+ data[i].apply_date;
                     html += 	 "</li>";
                     html += 	 "<li style='float: left; width: 70%;'>";
-                    html += 		"<a href=javascript:viewApply('" + apply_seq + "')>신청번호 : " + apply_seq + "</a> " + data[i].name + "<br>";
+                    html +=        "<a href=javascript:viewApply('" + apply_seq + '\',\'' + id + "')>신청번호 : " + apply_seq + "</a> " + data[i].name + "<br>";
                     html +=			"휴가종류 : " + data[i].h_type + "<br>";
                     html +=         start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
                     html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + data[i].apply_count +"일)";
@@ -166,12 +167,26 @@
 
         }// end of successHolidayList(data) -------------------------------------
 
+        function viewApply(getApplySeq, getId) {
+
+          console.log("getApplySeq : " + getApplySeq + "          getId : " +getId );
+
+          var params = {
+              getApplySeq : getApplySeq,
+              getId       : getId,
+              gubun       : "1"
+          };
+          movePage("holidayDetail.html", params);
+
+      }// end of viewApply(getApplySeq, getId)---------------------------------------------
+
         function successMoreList(data) {
 
             var html = "";
 
             for(var i=0; i<data.length-1; i++) {
 
+                var id            = data[i].id           ;
                 var apply_seq     = data[i].apply_seq    ;
                 var start_ymd     = data[i].start_ymd    ;
                 var end_ymd       = data[i].end_ymd      ;
@@ -187,7 +202,7 @@
                 html += 		"NO."+ numCnt++ +"<br>"+ data[i].apply_date;
                 html += 	 "</li>";
                 html += 	 "<li style='float: left; width: 70%;'>";
-                html += 		"<a href=javascript:viewApply('" + apply_seq + "')>신청번호 : " + apply_seq + "</a> " + data[i].name + "<br>";
+                html +=        "<a href=javascript:viewApply('" + apply_seq + '\',\'' + id + "')>신청번호 : " + apply_seq + "</a> " + data[i].name + "<br>";
                 html +=			"휴가종류 : " + data[i].h_type + "<br>";
                 html +=         start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
                 html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + data[i].apply_count +"일)";
