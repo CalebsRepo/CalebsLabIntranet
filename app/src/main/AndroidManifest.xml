@@ -5,6 +5,7 @@
     <!-- 인터넷 설정 -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- 갤러리 이미지 사용 권한 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -23,7 +24,13 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />s
+                <category android:name="android.intent.category.LAUNCHER" />
+
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="intent2" android:scheme="market" />
+
             </intent-filter>
         </activity>
     </application>
