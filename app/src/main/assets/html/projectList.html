@@ -64,7 +64,7 @@
             paramJSON.start_num = start_num;
             paramJSON.trigger = trigger;
 
-            navigate(paramJSON, "getProject.json", projectSelectSuccess, projectSelectError);
+            navigate(paramJSON, "getProjectList.json", projectSelectSuccess);
         }
 
         function projectSelectSuccess(result) {
@@ -127,11 +127,6 @@
                 $('#btnMore').show();
             }
         }
-
-        function projectSelectError(result) {
-            console.log("실패");
-        }
-
     </script>
 </head>
 
