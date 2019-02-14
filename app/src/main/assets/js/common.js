@@ -47,7 +47,7 @@
         //ajax 동기로 사용할 때
         //parameter("",url, success함수, async값)
             $.ajax({
-                url : sndUrl + param2, type : "post", dataType: "json", async:param4
+                url : sndUrl + param2, type : "post", dataType: "json", async:param4,
                 beforeSend : function(xmlHttpRequest){
                                     xmlHttpRequest.setRequestHeader("AJAX", "true");
                                     xmlHttpRequest.setRequestHeader("sessionId", sessionId);
