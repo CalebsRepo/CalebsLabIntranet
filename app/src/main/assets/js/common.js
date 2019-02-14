@@ -22,7 +22,7 @@
 
         sessionId = window.android.returnSessionId();
         //JSON 데이터가 없을 시
-        if(param = "") {
+        if(param == "") {
             console.log("JSON 데이터 없음");
             $.ajax({
                 url : sndUrl + urlAddress, type : "post", dataType: "json",
