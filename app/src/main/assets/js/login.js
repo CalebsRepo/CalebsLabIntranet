@@ -5,14 +5,14 @@ document.write('<script type="text/javascript" src="../js/common_util.js"><\/scr
 //로그인
 function callLogin(id, pwd) {
 
-   login_result = window.android.callLogin(id, pwd);
+   login_result = window.android.callLogin(id, pwd, sndUrl);
 
    return login_result;
 }
 //로그아웃
 function callLogout(){
 
-        logout_result = window.android.callLogout();
+        logout_result = window.android.callLogout(sndUrl);
 
         if(logout_result == "success"){
             movePage("login.html");

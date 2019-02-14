@@ -16,16 +16,15 @@
 
         $(document).ready(function(){
             $('.datepicker').datepicker();
-            //var projectCode = getStorageItem();
-            var projectCode = "NHBANK_2019_02_11_1";
+            var projectCode = getStorageItem();
             console.log("projectCode = "+projectCode);
             var selectParam = {
                 projectCode : projectCode
              };
 
             <!--발주회사정보를 db에서 가져와 화면에 뿌려줌-->
-             navigate("getCompany.json", getCompanyInfoSuccess, getDBError);
-             navigate(selectParam, "getProjectInfo.json", projectSelectSuccess, getDBError);
+             navigate("getCompany.json", getCompanyInfoSuccess);
+             navigate(selectParam, "getProjectInfo.json", projectSelectSuccess);
         });
 
         <!--날짜 Formatter(YYYY/mm/dd)-->
@@ -188,7 +187,7 @@
             iHTML += '</div>';
 
             $("#listviewArea").append(iHTML);
-            navigate("getFullemployee.json", getEmployeeInfoSuccess, getDBError);
+            navigate("getFullemployee.json", getEmployeeInfoSuccess);
             $('.datepicker').datepicker();
         }
          <!--직원정보select 성공-->
@@ -224,10 +223,6 @@
             op.text = "직접입력";
 
             selbox.options.add(op);
-        }
-        <!--select 실패-->
-        function getDBError(result) {
-            console.log("getEmployeeInfoError>>>>>>" + JSON.stringify(result));
         }
         <!--memberSel select-->
         function memberSelect(index) {
@@ -314,16 +309,12 @@
             console.log("projectInfoJSON>>>>>" + JSON.stringify(projectInfoJSON));
             console.log("memerInfoArray>>>>>" + JSON.stringify(memerInfoArray));
 
-            navigate(projectInfoJSON, "projectRegist.json", projectRegistSuccess, projectRegistError);
+            navigate(projectInfoJSON, "projectRegist.json", projectRegistSuccess);
 
         }
 
         function projectRegistSuccess(result) {
             console.log("성공");
-        }
-
-        function projectRegistError(result) {
-            console.log("실패");
         }
     </script>
 </head>
