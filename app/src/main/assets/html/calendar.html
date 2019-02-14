@@ -19,9 +19,6 @@
     <script src="../js/fullcalendar/ko.js"></script>
     <script src="../js/bootstrap.min.js"></script>
 
-
-
-
     <script type="text/javascript">
 
        var eventsArr = [];
@@ -31,7 +28,7 @@
        $(document).ready(function() {
 
           // 승인된 휴가정보를 가져오는 함수
-          navigate({}, "calander.json", successFunction, errorFunction);
+           navigate({}, "calander.json", successFunction);
 
       }); // end of $(document).ready()------------------------
 
@@ -67,10 +64,6 @@
          CalendarLoad();
 
       }// end of successFunction(data)-----------------------------------------
-
-      function errorFunction(result) {
-        alert("error>>>"+result);
-      }// end of errorFunction(result)--------------------------------------------
 
       // 달력 만들어주는 함수
       function CalendarLoad() {

@@ -12,10 +12,18 @@
 
     <script type="text/javascript">
 
+        var userInfo = JSON.parse(getUserData());
+
 		$(document).ready(function(){
 
+            $(".addbtn").hide();
 			totalPageCnt();
 			showQnaList();
+
+			// 게시물 쓰기버튼
+			if(userInfo.adm_flag != "U" && userInfo.adm_flag != null) { // 관리자일떄
+                $(".addbtn").show();
+            }
 
 			// 더보기 버튼
 			$("#btMore").click(function(){
@@ -49,7 +57,7 @@
 
 			var form_data = {  pageNum : $("#pageNum").val() };
 
-            navigate(form_data, "qnaList.json", successQnaList, errorFunction);
+            navigate(form_data, "qnaList.json", successQnaList);
 
 		}// end of showQnaList()------------------------------------
 
@@ -59,7 +67,7 @@
 
 			var form_data = { pageNum : $("#pageNum").val() };
 
-			navigate(form_data, "qnaList.json", successMoreList, errorFunction);
+			navigate(form_data, "qnaList.json", successMoreList);
 
 		}// end of moreList() ----------------------------------------
 
@@ -149,9 +157,7 @@
 
         }// end of successMoreList() -------------------------------
 
-         function errorFunction(result) {
-            alert("error>>>"+result);
-        }// end of errorFunction(result) ----------------------------
+
 
 	</script>
 
@@ -204,7 +210,7 @@
                     <h3>• FAQ 목록 </h3>
                 </div>
                 <div class="grid-cd-2">
-                    <a onclick="moveQnaDetail()"  class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b">추가</a>
+                    <a onclick="moveQnaDetail()"  class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b addbtn">추가</a>
                 </div>
             </div>
         </div>
