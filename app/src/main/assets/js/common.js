@@ -9,86 +9,64 @@
     function movePage(url, param) {
 		console.log("movePage: "+url);
         if(url !=null && param != null){
-            setStorageItem(param);
+            setStorageItem(temp_key,param);
         }
         location.href=url;
     }
 
     /**
      * 서버호출
+     parameter(데이터(필수- 없으면 "", url(필수), 성공함수(필수), 실패함수(선택 - 없으면 null이나 ""))
      */
-    function navigate(param1, param2, param3, param4) {
+    function navigate(param, urlAddress, successFunc, errorFunc) {
 
         sessionId = window.android.returnSessionId();
         //JSON 데이터가 없을 시
-        if(arguments.length == 2) {
+        if(param = "") {
+            console.log("JSON 데이터 없음");
             $.ajax({
-                url : sndUrl + param1, type : "post", dataType: "json",
+                url : sndUrl + urlAddress, type : "post", dataType: "json",
                 beforeSend : function(xmlHttpRequest){
                                     xmlHttpRequest.setRequestHeader("AJAX", "true");
                                     xmlHttpRequest.setRequestHeader("sessionId", sessionId);
                                 },
-                success : param2,
+                success : successFunc,
                 error:function(xhr, textStatus, error){
 
                         if(xhr.status=="400")
                         {
-
-                        alert("세션이 만료되었습니다.");
-
-                        movePage("login.html");
-
+                            alert("세션이 만료되었습니다.");
+                            movePage("login.html");
                         }else{
-                        alert("통신 중 문제가 발생하였습니다.");
+                            alert("통신 중 문제가 발생하였습니다.");
+                            if(errorFunc != "" || errorFunc != null) {
+                                errorFunc.call(this, "에러Func 호출임");
+                            }
                         }
                     }
             });
-        } else if(arguments.length == 4){
-        //ajax 동기로 사용할 때
-        //parameter("",url, success함수, async값)
-            $.ajax({
-                url : sndUrl + param2, type : "post", dataType: "json", async:param4,
-                beforeSend : function(xmlHttpRequest){
-                                    xmlHttpRequest.setRequestHeader("AJAX", "true");
-                                    xmlHttpRequest.setRequestHeader("sessionId", sessionId);
-                                },
-                success : param3,
-                error:function(xhr, textStatus, error){
-
-                        if(xhr.status=="400")
-                        {
-
-                        alert("세션이 만료되었습니다.");
-
-                        movePage("login.html");
-
-                        }else{
-                        alert("통신 중 문제가 발생하였습니다.");
-                        }
-                    }
-            });
-          }else {
+         }else {
         //JSON 데이터가 있을 시
+            console.log("JSON 데이터 있음");
             $.ajax({
-                url : sndUrl + param2, type : "post", dataType: "json", data : param1,
+                url : sndUrl + urlAddress, type : "post", dataType: "json", data : param,
                 beforeSend : function(xmlHttpRequest){
                                     xmlHttpRequest.setRequestHeader("AJAX", "true");
                                     xmlHttpRequest.setRequestHeader("sessionId", sessionId);
                                 },
-                success : param3,
+                success : successFunc,
                 error:function(xhr, textStatus, error){
 
                     if(xhr.status=="400")
                     {
-
-                    alert("세션이 만료되었습니다.");
-
-                    movePage("login.html");
+                        alert("세션이 만료되었습니다.");
+                        movePage("login.html");
 
                     }else{
-
                         alert("통신 중 문제가 발생하였습니다.");
-
+                        if(errorFunc != "" || errorFunc != null) {
+                            errorFunc.call(this, "에러Func 호출임");
+                        }
                     }
 
 
