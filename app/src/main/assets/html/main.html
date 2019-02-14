@@ -16,6 +16,10 @@
                 sessionId : sessionId,
                 sessionName : sessionName,
     };
+    var sessionData = JSON.parse(getUserData());
+    console.log(sessionData);
+    console.log(sessionData.id);
+    console.log(sessionData.name);
 
     <!-- 서버통신 실행-->
     $(document).ready(function(){
