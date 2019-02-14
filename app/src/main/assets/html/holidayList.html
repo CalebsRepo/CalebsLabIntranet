@@ -21,8 +21,7 @@
             var test = getUserData();
             console.log("test : " + test);
 			setDateSelct();
-			totalPageCnt();
-			showHolidayList();
+			showHolidayList(1);
 
 			// 조회 버튼
 			$("#btResult").click(function(){
@@ -31,21 +30,20 @@
 				$("#temp").val($("#approvalSel option:selected").val());
 				numCnt = 1;
 
-				totalPageCnt();
-				showHolidayList();
+				showHolidayList(1);
 			});// end of $("#btResult").click()---------
 
 			// 더보기 버튼
 			$("#btMore").click(function(){
-				moreList();
+				showHolidayList(2);
 			});// end of $("#btMore").click()----------
 
 		});// end of $(document).ready()--------------------------------------------
 
 
 
-		// 휴가리스트를 보여주는 함수
-		function showHolidayList(){
+		// 휴가리스트를 보여주는 함수(num 이 1이면 처음조회화면 2이면 더보기)
+		function showHolidayList(num){
 
 			var form_data = {
 			                  pageNum  : $("#pageNum").val(),
@@ -55,54 +53,14 @@
 							  admflag  : userInfo.adm_flag
 							 };
 
-            navigate(form_data, "holidayList.json", successHolidayList);
+            if(num == 1) {
+                navigate(form_data, "holidayList.json", successHolidayList);
+            }
+            else{
+                navigate(form_data, "holidayList.json", successMoreList);
+            }
 
 		}// end of showHolidayList()------------------------------------
-
-		// 더보기 함수
-		function moreList() {
-
-			var form_data = {
-			                   pageNum  : $("#pageNum").val(),
-					           checkVal : $("#temp").val(),
-					           date     : $("#dateSel option:selected").val(),
-							   id       : userInfo.id,
-							   admflag  : userInfo.adm_flag
-					        };
-
-            navigate(form_data, "holidayList.json", successMoreList);
-
-		}// end of moreList() ----------------------------------------
-
-		// 총페이지 수를 가져오는 함수
-		function totalPageCnt() {
-
-			var form_data = {
-					          checkVal : $("#approvalSel option:selected").val(),
-					          date     : $("#dateSel option:selected").val(),
-					          id       : userInfo.id,
-							  admflag  : userInfo.adm_flag
-					        };
-
-			$.ajax({
-
-		//	  	url: "http://calebslab1.cafe24.com/holidayPageCnt.json",
-			  	url: "http://192.168.10.239:8080/Caleb/holidayPageCnt.json",
-				type: "POST",
-				async: false,
-				data: form_data,
-				dataType: "JSON",
-				success: function(data){
-					$("#pageMaxNum").val(data);
-
-				},
-				error: function(request, status, error){
-					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-				}
-
-			});// end of $.ajax()---------------------
-
-		}// end of totalPageCnt() -------------------------------
 
 		// 날짜 조회값을 append 해주는 함수
 		function setDateSelct() {
@@ -132,13 +90,13 @@
                 var html = ""
 
                 //데이터가 없을 시
-                if(data.length < 1) {
+                if(data.length-1 < 1) {
                     html += "<div class='historyline' style='text-align: center;'>";
                     html += "<span color='red'>휴가 조회내역이 없습니다.</span>";
                     html += "</div>";
                 }
 
-                for(var i=0; i<data.length; i++) {
+                for(var i=0; i<data.length-1; i++) {
 
                     var apply_seq     = data[i].apply_seq    ;
                     var start_ymd     = data[i].start_ymd    ;
@@ -187,6 +145,8 @@
 
                 }// end of for-------------------
 
+                // 페이지 총수
+                $("#pageMaxNum").val(data[data.length-1].totalPage);
 
                 var pageNum    = Number($("#pageNum").val()   );
                 var pageMaxNum = Number($("#pageMaxNum").val());
@@ -210,7 +170,7 @@
 
             var html = "";
 
-            for(var i=0; i<data.length; i++) {
+            for(var i=0; i<data.length-1; i++) {
 
                 var apply_seq     = data[i].apply_seq    ;
                 var start_ymd     = data[i].start_ymd    ;
