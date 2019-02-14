@@ -9,7 +9,7 @@
     function movePage(url, param) {
 		console.log("movePage: "+url);
         if(url !=null && param != null){
-            setStorageItem(param);
+            setStorageItem(temp_key,param);
         }
         location.href=url;
     }
