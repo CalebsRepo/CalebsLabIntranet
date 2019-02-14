@@ -27,12 +27,15 @@
 
             var param = {"id" : id, "pwd" : pwd};
             var result = callLogin(id,pwd);
+            alert(result);
 
-            if(result != null){
+            if(result != ""){
 
                sessionStorage.setItem("userData",result);
                movePage("index.html");
 
+            }else{
+                alert("입력한 회원정보가 일치하지 않습니다");
             }
         }
 
