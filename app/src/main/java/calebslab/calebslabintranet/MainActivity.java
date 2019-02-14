@@ -441,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
                         URL url;
                         HttpURLConnection conn;
                         DataOutputStream wr;
-                        String callUrl = sndUrl +"/login.json";
+                        String callUrl = sndUrl +"login.json";
 
                         url = new URL(callUrl);
                         conn = (HttpURLConnection) url.openConnection();
@@ -511,7 +511,7 @@ public class MainActivity extends AppCompatActivity {
                         HttpURLConnection conn;
                         DataOutputStream wr;
 
-                        String callUrl = sndUrl +"/logOut.json";
+                        String callUrl = sndUrl +"logOut.json";
 
                         url = new URL(callUrl);
                         conn = (HttpURLConnection) url.openConnection();
