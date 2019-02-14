@@ -17,8 +17,7 @@
 		$(document).ready(function(){
 
             $(".addbtn").hide();
-			totalPageCnt();
-			showQnaList();
+			showQnaList(1);
 
 			// 게시물 쓰기버튼
 			if(userInfo.adm_flag != "U" && userInfo.adm_flag != null) { // 관리자일떄
@@ -27,49 +26,23 @@
 
 			// 더보기 버튼
 			$("#btMore").click(function(){
-				moreList();
+				showQnaList(2);
 			});// end of $("#btMore").click() ----------
 
 		});
 
-		// 총페이지 수를 가져오는 함수
-		function totalPageCnt() {
-
-			$.ajax({
-			  	url: "http://calebslab1.cafe24.com/qnaPageCnt.json",
-				type: "POST",
-				async: false,
-				dataType: "JSON",
-				success: function(data){
-					$("#pageMaxNum").val(data);
-
-				},
-				error: function(request, status, error){
-					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-				}
-
-			});// end of $.ajax()---------------------
-
-		}// end of totalPageCnt() -------------------------------
-
-		// 게시판 리스트를 보여주는 함수
-		function showQnaList(){
+		// 게시판 리스트를 보여주는 함수(num 이 1이면 처음화면 2이면 더보기)
+		function showQnaList(num){
 
 			var form_data = {  pageNum : $("#pageNum").val() };
 
-            navigate(form_data, "qnaList.json", successQnaList);
+            if(num == 1){
+                navigate(form_data, "qnaList.json", successQnaList);
+            }else {
+                navigate(form_data, "qnaList.json", successMoreList);
+            }
 
-		}// end of showQnaList()------------------------------------
-
-
-		// 더보기 함수
-		function moreList() {
-
-			var form_data = { pageNum : $("#pageNum").val() };
-
-			navigate(form_data, "qnaList.json", successMoreList);
-
-		}// end of moreList() ----------------------------------------
+		}// end of showQnaList(num)------------------------------------
 
 		// 페이지 이동전 sessionStorage 값 넣어주기
 		function addSessionStorage(num) {
@@ -93,13 +66,13 @@
             var html = "<ul data-role='listview' data-inset='true' class='ui-listview ui-listview-inset ui-corner-all ui-shadow'data-theme='b' id='listViewUl'>";
 
             //데이터가 없을 시
-            if(data.length < 1) {
+            if(data.length-1 < 1) {
                 html += "<li class='ui-corner-all'>";
                 html += 	"<div class='qna qna-title'>조회 결과가 없습니다.</div>";
                 html += "</li>";
             }
 
-            for(var i=0; i<data.length; i++) {
+            for(var i=0; i<data.length-1; i++) {
                 html += "<li class='ui-corner-all'>";
                 html += 	"<a href=''#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r'onclick='addSessionStorage(" + data[i].regnum + ")'>";
                 html += 		"<span>" + data[i].subject + "</span>";
@@ -108,6 +81,9 @@
             }// end of for-------------------
 
             html += "</ul>";
+
+            // 페이지 총수
+            $("#pageMaxNum").val(data[data.length-1].totalPage);
 
             var pageNum = Number($("#pageNum").val());
             var pageMaxNum = Number($("#pageMaxNum").val());
@@ -131,7 +107,7 @@
 
             var html = "";
 
-            for(var i=0; i<data.length; i++) {
+            for(var i=0; i<data.length-1; i++) {
                 html += "<li class='ui-corner-all'>";
                 html += 	"<a href=''#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r'onclick='addSessionStorage(" + data[i].regnum + ")'>";
                 html += 		"<span>" + data[i].subject + "</span>";
