@@ -109,7 +109,7 @@
                 }
                 console.log("project_sts = " + project_sts);
                 iHTML += '<li class="ui-corner-all">'
-                iHTML += '	<a href="planList.html" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r">'
+                iHTML += '	<a href="#" class="list-detail ui-btn ui-btn-icon-right ui-icon-carat-r" onclick="movePage(\'projectDetail.html\', \''+project_code+'\')">'
                 iHTML += '	    <div class="plan plan-name">프로젝트명 : '+project_name+'</div>'
                 iHTML += '	    <div class="plan plan-date">기간 : '+YMDFormatter(start_ymd)+' ~ '+YMDFormatter(end_ymd)+'</div>'
                 iHTML += '	    <div class="plan plan-people">참여인원 : '+member_cnt+'명</div>'

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <link rel="stylesheet" href="../css/project_info.css">
+    <script src="../js/common.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script src="../js/jquery.mobile-1.4.5.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <!--DatePicker--><script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <!--DatePicker--><script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="../js/datepicker.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+            $('.datepicker').datepicker();
+            //var projectCode = getStorageItem();
+            var projectCode = "NHBANK_2019_02_11_1";
+            console.log("projectCode = "+projectCode);
+            var selectParam = {
+                projectCode : projectCode
+             };
+
+            <!--발주회사정보를 db에서 가져와 화면에 뿌려줌-->
+             navigate("getCompany.json", getCompanyInfoSuccess, getDBError);
+             navigate(selectParam, "getProjectInfo.json", projectSelectSuccess, getDBError);
+        });
+
+        <!--날짜 Formatter(YYYY/mm/dd)-->
+        function YMDFormatter(num){
+             if(!num) return "";
+             var formatNum = '';
+
+             // 공백제거
+             num=num.replace(/\s/gi, "");
+
+             try{
+                  if(num.length == 8) {
+                       formatNum = num.replace(/(\d{4})(\d{2})(\d{2})/, '$1/$2/$3');
+                  }
+             } catch(e) {
+                  formatNum = num;
+                  console.log(e);
+             }
+             return formatNum;
+        }
+
+            var projectInfoJSON = "";
+            var memberProjectInfoArray = new Array();
+        <!--프로젝트 정보 select-->
+        function projectSelectSuccess(result) {
+            var selectResult="";
+            var parseSelectResult="";
+
+            console.log("성공");
+            console.log("============================================");
+            selectResult=JSON.stringify(result);
+            parseSelectResult=JSON.parse(selectResult);
+            console.log("projectRegistSuccess>>>>>" + selectResult);
+            console.log("============================================");
+
+            // 프로젝트 정보 화면에 Set
+            projectInfoJSON = parseSelectResult[0][0]; // 0번째 인덱스 - 프로젝트 정보
+            document.getElementById('projectName').value = projectInfoJSON.project_name; // 프로젝트 이름
+            $("#projectComp").val(projectInfoJSON.com_code).prop("selected", true); // 프로젝트 코드와 일치하는 옵션을 selected
+            var selectedIndex = document.getElementById('projectComp').selectedIndex; // select 태그에 text를 뿌려주기 위하여 선택된 option의 index값을 구한다.
+            $("#projectComp-button > span").text(document.getElementById('projectComp').options[selectedIndex].text); // 위에서 구한 index의 text로 select 박스에 출력
+            document.getElementById('projectStartDt').value = YMDFormatter(projectInfoJSON.start_ymd); // 시작일
+            document.getElementById('projectEndDt').value = YMDFormatter(projectInfoJSON.end_ymd); // 종료일
+            document.getElementById('projectExplain').value = projectInfoJSON.project_detail; // 상세정보
+
+            // 멤버정보 화면에 Set
+            memberProjectInfoArray  = parseSelectResult[1]; // 1번째 인덱스 - 멤버정보가 배열형태로 담겨있음
+            var iHTML = "";
+
+            console.log("memberProjectInfoArray = " + memberProjectInfoArray[0]);
+        }
+
+        <!--발주회사 정보 select 성공-->
+        function getCompanyInfoSuccess(result) {
+            var companyInfoResult="";
+            var parseCompanyResult="";
+            //console.log("============================================");
+            companyInfoResult=JSON.stringify(result);
+            parseCompanyResult=JSON.parse(companyInfoResult);
+            //console.log("getCompanyInfoSuccess>>>>>" + companyInfoResult);
+            //console.log("============================================");
+
+            <!--ID로 select태그를 찾아 변수에 Mapping-->
+            var selbox = document.getElementById('projectComp');
+
+            for(var i=0; i<parseCompanyResult.length; i++) {
+                //console.log(parseCompanyResult[i].comp_id);
+                //console.log(parseCompanyResult[i].comp_name);
+
+                <!--멤버 id와 이름을 가져와 option에 value, text와 Mapping-->
+                var op = new Option();
+
+                op.value = parseCompanyResult[i].comp_id;
+                op.text = parseCompanyResult[i].comp_name;
+
+                <!--selectBox에 option 추가-->
+                selbox.options.add(op);
+            }
+        }
+        var ind=0;
+
+        <!--참여인원 삭제버튼 클릭 이벤트-->
+        function btnDel() {
+            console.log("btnDel 함수 진입");
+            var checkbox = document.getElementsByName("listChb"); // 체크박스 Element를 배열로 Get
+            var listviewArea = document.getElementById("listviewArea");
+            var checkboxLength = checkbox.length;
+            console.log("checkboxLength = " + checkboxLength);
+            for(var i=0; i<checkbox.length; i++) {
+                console.log("i = " + i);
+                if(checkbox[i].checked == true) {
+                    var checkboxID = checkbox[i].id; // ID 추출
+                    console.log(checkboxID + " is checked");
+                    var index = checkboxID.replace(/[^0-9]/g,''); // list의 index를 찾기 위해 id값에서 숫자만 추출
+                    console.log("index = " + index);
+                    var memberAreaID = "memberArea" + index; // listForm의 ID를 index로 Mapping
+                    console.log("memberAreaID = " + memberAreaID);
+                    var removeArea = document.getElementById(memberAreaID); // Mapping한 ID로 Remove할 division을 Get
+                    listviewArea.removeChild(removeArea); // Division 삭제
+                    i--;
+                } else {
+                    var checkboxID = checkbox[i].id;
+                    console.log(checkboxID + "is not checked");
+                }
+            }
+        }
+        <!--참여인원 추가버튼 클릭 이벤트-->
+        function btnAdd() {
+            var iHTML = "";
+            ind++;
+
+            iHTML += '<div id="memberArea'+ind+'" class="member-area ui-field-contain">';
+            iHTML += '    <label><input type="checkbox" id="listChb'+ind+'" name="listChb"></label>';
+            iHTML += '    <ul data-role="listview" data-inset="true" class="list-area">';
+            iHTML += '        <li class="member-name ui-field-contain">';
+            iHTML += '            <label>참여인원</label>';
+            iHTML += '            <div class="member">';
+            iHTML += '                <select id="memberSel'+ind+'" name="memberSel" class="memberSel" onchange="memberSelect('+ind+')">';
+            iHTML += '                    <option value="">선택하세요</option>';
+            iHTML += '                </select>&nbsp;';
+            iHTML += '                <input type="text" id="memberName'+ind+'" name="memberName" value="" data-clear-btn="true" readonly>';
+            iHTML += '            </div>';
+            iHTML += '        </li>';
+            iHTML += '        <li class="memeber-date ui-field-contain">';
+            iHTML += '            <label>참여기간</label>';
+            iHTML += '            <div class="picker">';
+            iHTML += '                <input type="text" name="putDt" class="datepicker"readonly> ~';
+            iHTML += '                <input type="text" name="withdrawDt" class="datepicker"readonly>';
+            iHTML += '            </div>';
+            iHTML += '        </li>';
+            iHTML += '        <li class="skill ui-field-contain">';
+            iHTML += '            <label>사용기술</label>';
+            iHTML += '            <textarea cols="40" rows="8" id="skillTarea'+ind+'" name="skill"></textarea>';
+            iHTML += '        </li>';
+            iHTML += '        <li class="grade ui-field-contain">';
+            iHTML += '            <label>기술등급</label>';
+            iHTML += '            <select id="gradeSel'+ind+'" name="gradeSel">';
+            iHTML += '                <option value="">선택하세요</option>';
+            iHTML += '                <option value="특급">특급</option>';
+            iHTML += '                <option value="고급">고급</option>';
+            iHTML += '                <option value="중급">중급</option>';
+            iHTML += '                <option value="초급">초급</option>';
+            iHTML += '            </select>';
+            iHTML += '        </li>';
+            iHTML += '        <li class="roll ui-field-contain">';
+            iHTML += '            <label>참여형태</label>';
+            iHTML += '            <div class="rollDiv">';
+            iHTML += '                <select id="rollSel'+ind+'" name="rollSel" onchange="rollSelect('+ind+')">';
+            iHTML += '                    <option value="">선택하세요</option>';
+            iHTML += '                    <option value="PM">PM</option>';
+            iHTML += '                    <option value="PL">PL</option>';
+            iHTML += '                    <option value="참여자">참여자</option>';
+            iHTML += '                    <option value="직접입력">직접입력</option>';
+            iHTML += '                </select>';
+            iHTML += '                &nbsp;';
+            iHTML += '                <input type="text" id="rollTxt'+ind+'" name="memberRoll" value="" data-clear-btn="true" readonly>';
+            iHTML += '            </div>';
+            iHTML += '        </li>';
+            iHTML += '    </ul>';
+            iHTML += '</div>';
+
+            $("#listviewArea").append(iHTML);
+            navigate("getFullemployee.json", getEmployeeInfoSuccess, getDBError);
+            $('.datepicker').datepicker();
+        }
+         <!--직원정보select 성공-->
+        function getEmployeeInfoSuccess(result) {
+            var employeeInfoResult="";
+            var parseEmployeeResult="";
+            //console.log("============================================");
+            employeeInfoResult=JSON.stringify(result);
+            parseEmployeeResult=JSON.parse(employeeInfoResult);
+            //console.log("getEmployeeInfoSuccess>>>>>" + employeeInfoResult);
+            //console.log("============================================");
+
+            <!--name으로 select태그를 찾아 변수에 Mapping-->
+            var selID = "memberSel" + ind;
+            var selbox = document.getElementById(selID);
+
+            for(var i=0; i<parseEmployeeResult.length; i++) {
+                //console.log(parseEmployeeResult[i].ID);
+                //console.log(parseEmployeeResult[i].NAME);
+
+                <!--멤버 id와 이름을 가져와 option에 value, text와 Mapping-->
+                var op = new Option();
+
+                op.value = parseEmployeeResult[i].ID;
+                op.text = parseEmployeeResult[i].NAME;
+
+                <!--selectBox에 option 추가-->
+                selbox.options.add(op);
+            }
+            <!--직접입력 option 추가-->
+            var op = new Option();
+            op.value = "write";
+            op.text = "직접입력";
+
+            selbox.options.add(op);
+        }
+        <!--select 실패-->
+        function getDBError(result) {
+            console.log("getEmployeeInfoError>>>>>>" + JSON.stringify(result));
+        }
+        <!--memberSel select-->
+        function memberSelect(index) {
+            var selID = 'memberSel' + index;
+            var inputID = 'memberName' + index;
+            changeSelect(selID, inputID);
+        }
+        <!--rollSel select-->
+        function rollSelect(index) {
+            var selID = 'rollSel' + index;
+            var inputID = 'rollTxt' + index;
+            changeSelect(selID, inputID);
+        }
+        <!--selectBox 선택 이벤트-->
+        function changeSelect(selID, inputID) {
+            console.log("selID>>>>>" + selID);
+            console.log("inputID>>>>>" + inputID);
+            <!--이벤트가 발생한 selBox 찾기-->
+            var memSelect = document.getElementById(selID);
+            <!--선택한 값을 띄울 input-->
+            var viewInput = document.getElementById(inputID);
+
+            <!--select element에서 선택된 option의 value가 저장된다.-->
+            var selectValue = memSelect.options[memSelect.selectedIndex].value;
+            <!--select element에서 선택된 option의 text가 저장된다.-->
+            var selectText = memSelect.options[memSelect.selectedIndex].text;
+            console.log("selectText>>>>" + selectText);
+
+             if(selectText == '직접입력') {
+                viewInput.readOnly = false;
+                viewInput.value = "";
+             } else {
+                viewInput.value = selectText;
+             }
+        }
+
+        function projectRegist() {
+            <!--프로젝트 정보 get-->
+            var projectInfoJSON = new Object();
+            projectInfoJSON.loginID = "jin4332";
+            projectInfoJSON.name = document.getElementById('projectName').value;
+            projectInfoJSON.company = document.getElementById('projectComp').value;
+            var date = new Date();
+            var year = date.getFullYear();
+            var month = new String(date.getMonth()+1);
+            var day = new String(date.getDate());
+
+            // 한자리수일 경우 0을 채워준다.
+            if(month.length == 1){
+              month = "0" + month;
+            }
+            if(day.length == 1){
+              day = "0" + day;
+            }
+            projectInfoJSON.code = document.getElementById('projectComp').value + "_" + year  + "_" + month + "_" + day;
+            projectInfoJSON.startDt = document.getElementById('projectStartDt').value;
+            projectInfoJSON.endDt = document.getElementById('projectEndDt').value;
+            projectInfoJSON.explain = document.getElementById('projectExplain').value;
+
+            <!--멤버 투입정보 get-->
+            var memerInfoArray = new Array();
+            var memberInfoName = document.getElementsByName('memberName');
+            var memberInfoPutDt = document.getElementsByName('putDt');
+            var memberInfoWithdrawDt = document.getElementsByName('withdrawDt');
+            var memberInfoSkill = document.getElementsByName('skill');
+            var memberInfoGrade = document.getElementsByName('gradeSel');
+            var memberInfoRoll = document.getElementsByName('memberRoll');
+            projectInfoJSON.listIndex = memberInfoName.length;
+            <!--멤버 입력값이 있을때만 멤버정보 추가-->
+            if(memberInfoName.length > 0) {
+                for(var index = 0; index < memberInfoName.length; index++) {
+                    var memberInfoJSON = new Object();
+                    memberInfoJSON.name = memberInfoName[index].value;
+                    memberInfoJSON.putDt = memberInfoPutDt[index].value;
+                    memberInfoJSON.withdrawDt = memberInfoWithdrawDt[index].value;
+                    memberInfoJSON.skill = memberInfoSkill[index].value;
+                    memberInfoJSON.grade = memberInfoGrade[index].value;
+                    memberInfoJSON.roll = memberInfoRoll[index].value;
+                    memerInfoArray.push(memberInfoJSON);
+                }
+            projectInfoJSON.memberList = memerInfoArray;
+            }
+
+            console.log("projectInfoJSON>>>>>" + JSON.stringify(projectInfoJSON));
+            console.log("memerInfoArray>>>>>" + JSON.stringify(memerInfoArray));
+
+            navigate(projectInfoJSON, "projectRegist.json", projectRegistSuccess, projectRegistError);
+
+        }
+
+        function projectRegistSuccess(result) {
+            console.log("성공");
+        }
+
+        function projectRegistError(result) {
+            console.log("실패");
+        }
+    </script>
+</head>
+
+<body>
+<section id="page1" data-role="page">
+    <!-- header -->
+    <header data-role="header">
+        <h1>프로젝트 등록</h1>
+        <a class="ui-btn ui-corner-all ui-btn-inline ui-mini footer-button-left ui-btn-icon-left ui-icon-carat-l" href="javascript:history.back()">back</a>
+        <a href="#menuPanel" data-icon="bars">menu</a>
+    </header>
+    <div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
+        <h2>메뉴</h2>
+        <ul data-role="listview">
+            <p>내정보</p>
+            <li><a href="#">마이페이지</a></li>
+            <p>프로젝트</p>
+            <li><a href="#">프로젝트</a></li>
+            <li><a href="#">프로젝트일정 목록</a></li>
+            <p>휴가</p>
+            <li><a href="#">휴가신청</a></li>
+            <li><a href="#">휴가신청내역</a></li>
+            <li><a href="#">휴가캘린더</a></li>
+            <p>게시판</p>
+            <li><a href="#">FAQ</a></li>
+            <p>관리</p>
+            <li><a href="#">사원등록</a></li>
+            <li><a href="#">사원목록</a></li>
+            <li><a  onclick="movePage('main.html')">휴가현황</a></li>
+        </ul>
+    </div>
+    <!-- //container -->
+    <div data-role="content" class="regist-project">
+        <!--프로젝트 info division-->
+        <div class="pjt-info">
+            <!--제목-->
+            <div class="title_area">
+                <h3>• 프로젝트 기본정보 </h3>
+            </div>
+
+            <!--프로젝트정보-->
+            <div class="gird-pt project-form">
+                <form>
+                    <div class="ui-field-contain">
+                        <label for="projectName">프로젝트명</label>
+                        <input type="text" id="projectName">
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="projectComp">발주회사</label>
+                        <select id="projectComp"></select>
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="datepicker">프로젝트 기간</label>
+                        <div id="datepicker" class="picker">
+                            <input type="text" id="projectStartDt" class="datepicker" readonly> ~
+                            <input type="text" id="projectEndDt" class="datepicker" readonly>
+                        </div>
+                    </div>
+                    <div class="ui-field-contain">
+                        <label for="projectExplain">설명</label>
+                        <textarea cols="40" rows="8" id="projectExplain"></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!--참여인원 info division-->
+        <div class="member_info">
+            <!--제목, 삭제, 추가 버튼-->
+            <div class="title-area">
+                <div class="gird-pt select-area">
+                    <div class="grid-cd-1">
+                        <h3>• 참여인원 </h3>
+                    </div>
+                    <div class="grid-cd-2" id="btnMemberEdit">
+                        <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b" onclick="btnDel()">삭제</a>
+                        <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b" onclick="btnAdd()">추가</a>
+                    </div>
+                </div>
+            </div>
+            <!--인원등록 ListView-->
+            <div class="listview-area" id="listviewArea"></div>
+        </div>
+
+        <!--버튼 Area-->
+        <div class="btn_area">
+            <div class="grid-pt" id="btnEdit">
+                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="projectRegist()">등록</a></div>
+            </div>
+            <div class="gird-pt" id="btnReadonly">
+                <button class="ui-btn ui-corner-all ui-btn-b" id="btnMore" onclick="getProject()">더보기</button>
+            </div>
+        </div>
+    </div>
+    <!-- //container -->
+    <!-- footer -->
+    <div style="overflow: hidden;" data-role="footer" data-position="fixed">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#" data-icon="home">홈</a></li>
+                <li><a href="#" data-icon="shop">프로젝트</a></li>
+                <li><a href="#" data-icon="calendar">휴가신청</a></li>
+                <li><a href="#" data-icon="power">로그아웃</a></li>
+            </ul>
+        </div>
+    </div>
+</section>
+</body>
+</html>
