@@ -17,7 +17,7 @@
         $(document).ready(function(){
             $('.datepicker').datepicker();
             <!--발주회사정보를 db에서 가져와 화면에 뿌려줌-->
-            navigate("getCompany.json", getCompanyInfoSuccess);
+            navigate("", "getCompany.json", getCompanyInfoSuccess);
         });
 
         <!--발주회사 정보 select 성공-->
@@ -109,7 +109,7 @@
             iHTML += '                <option value="특급">특급</option>';
             iHTML += '                <option value="고급">고급</option>';
             iHTML += '                <option value="중급">중급</option>';
-            iHTML += '                <option value="초급">초급</option>';
+            iHTML += '                getFullemployee<option value="초급">초급</option>';
             iHTML += '            </select>';
             iHTML += '        </li>';
             iHTML += '        <li class="roll ui-field-contain">';
@@ -130,7 +130,7 @@
             iHTML += '</div>';
 
             $("#listviewArea").append(iHTML);
-            navigate("getFullemployee.json", getEmployeeInfoSuccess);
+            navigate("", "getFullemployee.json", getEmployeeInfoSuccess);
             $('.datepicker').datepicker();
         }
          <!--직원정보select 성공-->
