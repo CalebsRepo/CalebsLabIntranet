@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     private ValueCallback<Uri[]> filePathCallbackLollipop;
     private Uri mCapturedImageURI;
     private static String userData;
+    private static String pwdTest;
 
     //호출한 이미지들 실제경로 배열로 저장
     private String[] salesTeamArray;
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         webSet.setSaveFormData                          (false); // 폼의 입력값를 저장하지 않는다
         webSet.setSavePassword                          (false); // 암호를 저장하지 않는다.
         webSet.setLayoutAlgorithm                       (WebSettings.LayoutAlgorithm.SINGLE_COLUMN); // 컨텐츠 사이즈 맞추기
+        webSet.setDomStorageEnabled(true); //로컬스토리지 사용 허용
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             web.setWebContentsDebuggingEnabled(true);             //API 레벨 21부터 이용 가능.
@@ -589,17 +591,88 @@ public class MainActivity extends AppCompatActivity {
 
 
         @JavascriptInterface
-        public String returnSessionId(){
+        public String returnSessionId() {
 
-            SharedPreferences pref = myApp.getSharedPreferences("sessionCookie",Context.MODE_PRIVATE);
-            String sessionid = pref.getString("sessionid",null);
+            SharedPreferences pref = myApp.getSharedPreferences("sessionCookie", Context.MODE_PRIVATE);
+            String sessionid = pref.getString("sessionid", null);
             sessionid = sessionid.substring(11);
 
             return sessionid;
         }
 
 
+        //복호화
+        @JavascriptInterface
+        public String pwdTest(final String pwd) throws Exception {
 
+            pwdTest ="";
+
+            Thread t3 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try{
+                        URL url;
+                        HttpURLConnection conn;
+                        DataOutputStream wr;
+                        String callUrl = "http://192.168.10.157:8080/Caleb/pwdDecrypt.json";
+
+                        url = new URL(callUrl);
+                        conn = (HttpURLConnection) url.openConnection();
+                        conn.setDoOutput(true);
+                        conn.setConnectTimeout(15000);
+                        conn.setReadTimeout(10000);
+                        conn.setRequestMethod("POST");
+                        //해더 타입. 호출하려는 곳과 해더 타입이 맞지 않으면 오류가 발생.
+                        // 호출하려는 곳에서 xml,  json, html, text 등 리턴하는 타입을 확인하여 작성해야함
+                        conn.connect();
+                        SessionManager sm = new SessionManager();
+
+                        String param = "pwd=" + pwd;
+
+                        wr = new DataOutputStream(conn.getOutputStream());
+                        wr.writeBytes(param);
+                        wr.flush();
+                        wr.close();
+
+                        Log.d("LOG", url + "로 HTTP 요청 전송");
+
+                        if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) { //이때 요청이 보내짐.
+
+                            Log.d("LOG", "HTTP_OK를 받지 못했습니다.");
+
+                        } else {
+
+                            InputStream in = new BufferedInputStream(conn.getInputStream());
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                            String output = "";
+                            String line;
+                            System.out.println("reader 전");
+                            while ((line = reader.readLine()) != null) {
+                                output += line;
+                            }
+
+                            System.out.println(conn.getHeaderField("Set-Cookie"));
+                            sm.getCookieHeader(conn, myApp);
+
+                            pwdTest = output;
+
+                        }
+                        conn.disconnect();
+                    } catch(MalformedURLException e){
+                        e.printStackTrace();
+                    } catch (IOException e){
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+
+            t3.start();
+            t3.join();
+
+            return pwdTest;
+        }
         //************************************************************************
         //  날짜: 20190212
         //  만든이: HYJ

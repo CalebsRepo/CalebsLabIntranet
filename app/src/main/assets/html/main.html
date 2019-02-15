@@ -7,54 +7,28 @@
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/menu.css">
     <script src="../js/common.js"></script>
+    <script src="../js/login.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <title>갈렙스랩 메인</title>
     <script language = "javascript">
-    var sessionId = "silveragtl";
-    var sessionName = "이은표";
+    var loginUser = JSON.parse(getUserData());
+    var loginUserId = loginUser.id;
+    var loginUserName = loginUser.name;
+    var loginUserAdmFlag = loginUser.adm_flag;
     var params = {
-                sessionId : sessionId,
-                sessionName : sessionName,
+                sessionId : loginUserId,
+                sessionName : loginUserName
     };
-    var sessionData = JSON.parse(getUserData());
-    console.log(sessionData);
-    console.log(sessionData.id);
-    console.log(sessionData.name);
+    console.log(loginUserAdmFlag)
 
-    <!-- 서버통신 실행-->
     $(document).ready(function(){
-        navigate(params, "getMyHoliday.json", sucessFncMyHoliday);
-        navigate(params, "myProject.json", sucessFncMyProject);
-    });
-
-    <!-- 프로젝트 ajax통신 성공 -->
-    function sucessFncMyProject(result) {
-        var ajaxResult=result
-        for(var i=0; i<ajaxResult.length; i++) {
-            var projectListview = document.getElementById('projectListview');
-            if (ajaxResult[i].project_cnt != 0) {
-                $("#projectListview").append("<li class='ui-corner-all'>"
-                                        +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
-                                        +"<div class='plan plan-name'> 프로젝트명 : " + ajaxResult[i].project_name + "</div>"
-                                        +"<div class='plan plan-date'> 기간 : " + ajaxResult[i].start_ymd +" ~ " + ajaxResult[i].end_ymd  + "</div>"
-                                        +"<div class='plan plan-teamCnt'> 참여인원 : " + ajaxResult[i].project_cnt +" 명 </div>"
-                                        +"<div class='plan plan-state'> 상태 : 프로젝트 진행중</div>"
-                                        + "</a>"
-                                    + "<li>");
-            } else {
-                $("#projectListview").append("<li class='ui-corner-all'>"
-                                        +"<span class='list-detail ui-corner-all info-box'>"
-                                        +"<div class='plan plan-state'> 현재 진행중인 프로젝트가 없습니다.</div>"
-                                        + "</span>"
-                                        + "<li>");
-            }
+         if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
+            $(".admMenu").show();
         }
-    } // --- End of sucessFncMyProject
 
-    <!-- 프로젝트 ajax 통신 실패 -->
-    function errorFncMyProject(result) {
-        console.log("errorFncMyProject>>>>>>" + JSON.stringify(result));
-    }// --- End of errorFncMyProject
+        navigate(params, "getMyHoliday.json", sucessFncMyHoliday, "");
+        navigate(params, "myProject.json", sucessFncMyProject, "");
+    });
 
     <!-- 연차정보 ajax통신 성공-->
     function sucessFncMyHoliday(result) {
@@ -90,7 +64,7 @@
             var holidayResult = holidayCnt - usingHolilday;
 
             $("#holidayListview").append("<li class='ui-corner-all'>"
-                                    +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
+                                    +"<a  class='list-detail ui-btn  ui-corner-all'>"
                                     +"<div class='holiyday user-name'> 이름 : " + ajaxResult[i].name + "</div>"
                                     +"<div class='holiyday holidy-date'> 연차 발생기간 : " + ajaxResult[i].hs_ymd +" ~ " + ajaxResult[i].he_ymd  + "</div>"
                                     +"<div class='holiyday holidy-cnt'> 당해연도 발생연차 : " + holidayCnt +" 일 </div>"
@@ -100,10 +74,32 @@
         }
     } // --- End of sucessFncMyHoliday
 
-    <!--연차정보 ajax 통신 실패-->
-    function errorFncMyHoliday(result) {
-        console.log("연차정보 통신 실패");
-    } // --- End of errorFncMyHoliday
+    <!-- 프로젝트 ajax통신 성공 -->
+    function sucessFncMyProject(result) {
+        var ajaxResult=result
+
+        for(var i=0; i<ajaxResult.length; i++) {
+            var projectListview = document.getElementById('projectListview');
+            if (ajaxResult[i].project_cnt != 0) {
+                $("#projectListview").append("<li class='ui-corner-all'>"
+                                        +"<a onclick= movePage('projectList.html') class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
+                                        +"<div class='plan plan-name'> 프로젝트명 : " + ajaxResult[i].project_name + "</div>"
+                                        +"<div class='plan plan-date'> 기간 : " + ajaxResult[i].start_ymd +" ~ " + ajaxResult[i].end_ymd  + "</div>"
+                                        +"<div class='plan plan-teamCnt'> 참여인원 : " + ajaxResult[i].project_cnt +" 명 </div>"
+                                        +"<div class='plan plan-state'> 상태 : 프로젝트 진행중</div>"
+                                        + "</a>"
+                                    + "<li>");
+            } else {
+                $("#projectListview").append("<li class='ui-corner-all'>"
+                                        +"<span class='list-detail ui-corner-all info-box'>"
+                                        +"<div class='plan plan-state'> 현재 진행중인 프로젝트가 없습니다.</div>"
+                                        + "</span>"
+                                        + "<li>");
+            }
+        }
+    } // --- End of sucessFncMyProject
+
+
     </script>
 </head>
 <body>
@@ -117,22 +113,22 @@
 
     <div data-role="panel" class="menuPanel"id="menuPanel" data-position="right"  data-display="overlay" data-theme="a">
         <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
-        <ul data-role="listview">
+        <ul id="menuPanelList"data-role="listview">
             <p>내정보</p>
-            <li><a href="#">마이페이지</a></li>
+            <li><a onclick= "movePage('employeeDetail.html')" >마이페이지</a></li>
             <p>프로젝트</p>
-            <li><a href="#">프로젝트</a></li>
-            <li><a href="#">프로젝트일정 목록</a></li>
+            <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
+            <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
             <p>휴가</p>
-            <li><a href="#">휴가신청</a></li>
-            <li><a href="#">휴가신청내역</a></li>
-            <li><a href="#">휴가캘린더</a></li>
+            <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+            <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
+            <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
             <p>게시판</p>
-            <li><a href="#">FAQ</a></li>
-            <p>관리</p>
-            <li><a href="#">사원등록</a></li>
-            <li><a href="#">사원목록</a></li>
-            <li><a onclick="movePage('holidayCondition.html')">휴가현황</a></li>
+            <li><a onclick= "movePage('qnaList.html')" >FAQ</a></li>
+            <p class="admMenu">관리</p>
+            <li class="admMenu"><a onclick= "movePage('employeeDetail.html')" >사원등록</a></li>
+            <li class="admMenu"><a onclick= "movePage('employeeInfo.html')" >사원목록</a></li>
+            <li class="admMenu"><a onclick= "movePage('holidayCondition.html')">휴가현황</a></li>
         </ul>
     </div>
 
@@ -143,7 +139,6 @@
             <ul id="holidayListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a">
             </ul>
         </div>
-
         <div class="gird-pt project-list ">
             <h2>· 나의 프로젝트 정보</h2>
             <ul id="projectListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a">
@@ -156,9 +151,9 @@
         <div data-role="navbar">
             <ul>
                 <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
-                <li><a href="#" data-icon="shop">프로젝트</a></li>
+                <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
                 <li><a href="#" data-icon="calendar">휴가신청</a></li>
-                <li><a href="#" data-icon="power">로그아웃</a></li>
+                <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
             </ul>
         </div>
     </div>

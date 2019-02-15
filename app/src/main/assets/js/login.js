@@ -15,6 +15,7 @@ function callLogout(){
         logout_result = window.android.callLogout(sndUrl);
 
         if(logout_result == "success"){
+            sessionStorage.removeItem("userData");
             movePage("login.html");
         }else{
             alert("로그아웃 실패!");
