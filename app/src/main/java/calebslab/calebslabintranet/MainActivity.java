@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         webSet.setSaveFormData                          (false); // 폼의 입력값를 저장하지 않는다
         webSet.setSavePassword                          (false); // 암호를 저장하지 않는다.
         webSet.setLayoutAlgorithm                       (WebSettings.LayoutAlgorithm.SINGLE_COLUMN); // 컨텐츠 사이즈 맞추기
+        webSet.setDomStorageEnabled(true); //로컬스토리지 사용 허용
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             web.setWebContentsDebuggingEnabled(true);             //API 레벨 21부터 이용 가능.

@@ -10,10 +10,28 @@
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script language="JavaScript">
 
+        $(document).ready(function(){
+
+            var chkSaveId = localStorage.getItem("chkSave");
+
+            if(chkSaveId == "Y"){
+
+                $("input:checkbox[id='saveIdIpt']").prop("checked", true);
+                var savedId = localStorage.getItem("savedId");
+
+                $('#id').val(savedId);
+            }
+
+
+
+        });
+
+
+
         function login(){
 
-            var id = $('#id').val().trim();
-            var pwd = $('#pwd').val().trim();
+            var id = $('#id').val();
+            var pwd = $('#pwd').val();
 
             if(id == null || id ==''){
                 alert("아이디를 입력해주세요");
@@ -26,10 +44,19 @@
             }
 
             var param = {"id" : id, "pwd" : pwd};
+            //아이디 저장 체크 여부
+            var saveChk = $("input:checkbox[id='saveIdIpt']").is(':checked');
             var result = callLogin(id,pwd);
 
             if(result != ""){
 
+                if(saveChk == true){
+                    localStorage.setItem("chkSave","Y");
+                    localStorage.setItem("savedId",id);
+                }else{
+                    localStorage.setItem("chkSave","N");
+                    localStorage.removeItem("savedId");
+                }
                sessionStorage.setItem("userData",result);
                movePage("index.html");
 
@@ -43,7 +70,10 @@
     <style>
         #loginDiv {background-color:white; padding:20% 20% 0 20%; height: 100%;}
         #logoImg {max-width:100%; max-height:100%; margin:auto; display:block; margin-bottom : 20%}
-        #loginBtn {margin : 30px;}
+        #loginBtn {margin-top : 20px;}
+        #saveIdIpt {left:0em; position:relative; margin-top:0px; top:5px}
+        .ui-checkbox {display:inline}
+        #findId {margin-left:28%}
     </style>
 </head>
 
@@ -57,15 +87,15 @@
         <input type="text" name="id" id="id" value="">
         <label for="pwd">비밀번호</label>
         <input type="password" name="pwd" id="pwd" value="">
-        <div id="loginBtn" style="text-align:center" onclick="event.cancelBubble = true;">
-            <button data-role="none" onclick="javascript:login(); return false;">확인</button>
-        </div>
-
     </div>
-    <div style="text-align:center">
-        <br>
-        <a onclick="">아이디 찾기</a><br>
-        <a onclick="">비밀번호 찾기</a><br>
+    <div id="loginBtn" onclick="event.cancelBubble = true;">
+        <button class="ui-btn ui-corner-all" onclick="login();">확인</button>
+    </div>
+    <div>
+        <input type="checkbox" id="saveIdIpt">
+        <a id="saveId">ID 저장</a>
+        <a id="findId">ID</a> /
+        <a id="findPw">PW</a> 찾기
     </div>
 </div>
 
