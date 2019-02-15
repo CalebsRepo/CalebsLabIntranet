@@ -32,7 +32,8 @@
        var params = {
             "employeeId": employeeId
         };
-        navigate(params,"employeeDetail.json", detailSuccess, detailError);
+        navigate(params, "employeeDetail.json", detailSuccess);
+        <!--navigate(params,"employeeDetail.json", detailSuccess, detailError);-->
     }
 
     function detailSuccess(result){
@@ -71,7 +72,7 @@
                 rowNum : rowNum,
         };
         rowNum+=5; <!--5건씩 보여주기 원한다면 플러스5씩 전역변수에 저장-->
-        navigate(params,"employee.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+        navigate(params, "employee.json", successFncMultiSndSample);
     }
 
      // 정규식 : 이름
@@ -84,6 +85,18 @@
          }
      }
 
+    function caleb(hi) {
+        console.log("lab>>>>>" + hi);
+        var params = {
+            "pwd": hi
+            };
+        navigate(params, "pwdDecrypt.json", lab,"");
+    }
+
+    function lab(result) {
+        alert("허");
+    }
+
     <!--이름으로 검색-->
     function nameSearch(){
         var employeeName= document.getElementById('nameWrite').value;
@@ -91,7 +104,7 @@
              var params = {
                     employeeName : employeeName,
                  };
-            navigate(params, "employeeName.json", sucessFncMultiSndSample, errorFncMultiSndSample);
+            navigate(params, "employeeName.json", successFncMultiSndSample);
             $("#my-tbody").children().remove();
             <!--이름검색시 더보기버튼 다시 활성화-->
             $("#searchMore").show();
@@ -101,7 +114,7 @@
     }
 
     <!--ajax통신 성공-->
-    function sucessFncMultiSndSample(result) {
+    function successFncMultiSndSample(result) {
         console.log("sucessFncMultiSndSample>>>>>" + JSON.stringify(result));
         ajaxResult=JSON.stringify(result);
         ajaxResult2=JSON.parse(ajaxResult);
