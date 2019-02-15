@@ -20,34 +20,39 @@
         <!--상세페이지 데이터 셋팅-->
         $(function(){
              var ajaxResult=JSON.parse(getStorageItem());
-             for(var i=0;i<ajaxResult.length;i++){
-                $('#pic1').attr('src',"http://calebslab1.cafe24.com/images/"+ajaxResult[i].id+""); <!--프로필사진-->
+                $('#pic1').attr('src',"http://calebslab1.cafe24.com/images/"+ajaxResult[0].id+""); <!--프로필사진-->
                 $('#pic2').attr('src',"http://calebslab1.cdn3.cafe24.com/test.png"); <!--사인사진-->
-                $('#employeeName').val(ajaxResult[i].name); <!--이름-->
-                $('#birth_ymd').val(ajaxResult[i].birth_ymd); <!--생년월일-->
+                $('#employeeName').val(ajaxResult[0].name); <!--이름-->
+                $('#birth_ymd').val(ajaxResult[0].birth_ymd); <!--생년월일-->
 
-                $("#selGrade option:contains('"+ajaxResult[i].grade+"')").prop('selected', 'selected'); <!--직급-->
+                $("#selGrade option:contains('"+ajaxResult[0].grade+"')").prop('selected', 'selected'); <!--직급-->
                 $("#selGrade").selectmenu("refresh", true);
 
-                $('#join_ymd').val(ajaxResult[i].join_ymd); <!--입사일자-->
-                $('#employeeId').val(ajaxResult[i].id); <!--아이디-->
+                $('#join_ymd').val(ajaxResult[0].join_ymd); <!--입사일자-->
+                $('#employeeId').val(ajaxResult[0].id); <!--아이디-->
 
-                $('#employeeName').val(ajaxResult[i].name); <!--비밀번호-->
-                $('#employeeName').val(ajaxResult[i].name); <!--비밀번호 확인-->
+                $('#employeePwd').val(ajaxResult[0].pwd); <!--비밀번호-->
+                $('#employeePwd2').val(ajaxResult[0].pwd); <!--비밀번호 확인-->
 
-                $('#employeeEmail').val(ajaxResult[i].email); <!--이메일-->
-                $('#hp_num').val(ajaxResult[i].hp_num); <!--연락처-->
-                $('#contact_num').val(ajaxResult[i].contact_num); <!--비상연락처-->
+                $('#employeeEmail').val(ajaxResult[0].email); <!--이메일-->
+                $('#hp_num').val(ajaxResult[0].hp_num); <!--연락처-->
+                $('#contact_num').val(ajaxResult[0].contact_num); <!--비상연락처-->
 
-                $('#sample2_postcode').val(ajaxResult[i].zip_code); <!--우편번호-->
-                $('#sample2_address').val(ajaxResult[i].address1); <!--주소-->
-                $('#sample2_detailAddress').val(ajaxResult[i].address2); <!--상세주소-->
+                $('#sample2_postcode').val(ajaxResult[0].zip_code); <!--우편번호-->
+                $('#sample2_address').val(ajaxResult[0].address1); <!--주소-->
+                $('#sample2_detailAddress').val(ajaxResult[0].address2); <!--상세주소-->
 
-                $("#adm_flag option:contains('"+ajaxResult[i].adm_flag+"')").prop('selected', 'selected'); <!--권한->
+                $("#adm_flag option:contains('"+ajaxResult[0].adm_flag+"')").prop('selected', 'selected'); <!--권한->
                 $("#adm_flag").selectmenu("refresh", true);
+                var pwd=ajaxResult[0].pwd;
+                var param = {"pwd" : pwd};
+                var result= sessionStorage.getItem("userData");
+                <!--var result = caleb(pwd);-->
+                alert(result);
 
-             }
         });
+
+
         <!--사진 첨부파일 미리보기 기능-->
        var imgPathArray="";
        var newTr = ',';
@@ -75,6 +80,14 @@
             imgPathArray="";  <!--초기화-->
         }
 
+        function caleb(pwd) {
+           var test = window.android.pwdTest(pwd);
+           return test;
+        }
+
+        function lab(result) {
+            alert("허");
+        }
     </script>
 
 </head>
@@ -145,12 +158,12 @@
                     <input type="text" name="employeeId" id="employeeId" placeholder="아이디를 입력하세요" value="" >
                 </div>
                 <div class="ui-field-contain">
-                    <label for="employeePw">비밀번호:</label>
-                    <input type="text" name="employeePw" id="employeePw" placeholder="비밀번호를 입력하세요" value="" >
+                    <label for="employeePwd">비밀번호:</label>
+                    <input type="text" name="employeePwd" id="employeePwd" placeholder="비밀번호를 입력하세요" value="" >
                 </div>
                 <div class="ui-field-contain">
-                    <label for="employeePw2">비밀번호 확인</label>
-                    <input type="text" name="employeePw2" id="employeePw2" value="" >
+                    <label for="employeePwd2">비밀번호 확인</label>
+                    <input type="text" name="employeePwd2" id="employeePwd2" value="" >
                 </div>
                 <div class="ui-field-contain">
                     <label for="employeeEmail">이메일</label>
