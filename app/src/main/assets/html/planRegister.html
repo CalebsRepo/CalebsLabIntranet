@@ -5,23 +5,110 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
     <!--DatePicker--><link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/project_plan.css">
     <script src="../js/common.js"></script>
-    <script src="../js/datepicker.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <!--DatePicker--><script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <!--DatePicker--><script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <!--DatePicker--><script src="../js/datepicker.js"></script>
 
     <title></title>
     <script>
+      var trigger = "";
+      var paramJSON = new Object();
+        $(document).ready(function(){
+            getProject();
+            $('.datepicker').datepicker();
+            //일정명 글자수 제한
+            $("#select-1").on('keyup',function(){
+                if($(this).val().length > 25){
+                    $(this).val($(this).val().substring(0,25));
+                }
+            });
+        });
 
+      function getProject() {
+            trigger = "during";
+            paramJSON.trigger = trigger;
+            navigate(paramJSON, "getAllProjectList.json", projectSelectSuccess, "" );
+       }
+      function projectSelectSuccess(result) {
+            console.log("성공");
+            var projectSelectResult="";
+            var parseProjectResult="";
+            console.log("============================================");
+            projectSelectResult=JSON.stringify(result);
+            parseProjectResult=JSON.parse(projectSelectResult);
+            console.log("projectSelectSuccess>>>>>" + projectSelectResult);
+            console.log("============================================");
+
+            if (parseProjectResult.length != 0) {
+                for(var i=0; i<parseProjectResult.length; i++) {
+                    $("#select-1").append(
+                           "<option value='"+parseProjectResult[i].project_code + "'>" + parseProjectResult[i].project_name + "</option>"
+                      );
+                    $("#select-1").selectmenu("refresh", true);
+                    }
+                } else {
+                $("#select-1").append(
+                           "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
+                   );
+            }
+       }
     </script>
+    <style type="text/css">
 
+		.underline {
+			padding-top: 20px;
+		    padding-bottom: 3px;
+		    border-bottom: 1px solid #eee;
+		    margin: 0px 0 20px 0;
+		}
+        .ui-btn-icon-top { padding-top : 3em;}
+        .ui-bar { text-align: center; }
+        .ui-bar .header-menu { float: right; }
+        .ui-bar .header-back { float: left; }
+        .ui-panel { width : 20em;}
+        #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
+    .ui-select{display:block;}
+	</style>
 </head>
 
 <body>
-<section id="page1" data-role="page">
+<section id="page1" data-role="page" class="container">
+
+
+    <header data-role="header">
+        <div class="ui-bar">
+            <button class="header-back"><span>back</span></button>
+            <h1>프로젝트 일정</h1>
+            <a href="#menuPanel" class="btn header-menu">Menu</a>
+        </div>
+    </header>
+
+    <div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
+        <h2>메뉴</h2>
+        <ul data-role="listview">
+            <p>내정보</p>
+            <li><a href="#">마이페이지</a></li>
+            <p>프로젝트</p>
+            <li><a href="#">프로젝트</a></li>
+            <li><a href="#">프로젝트일정 목록</a></li>
+            <p>휴가</p>
+            <li><a href="#">휴가신청</a></li>
+            <li><a href="#">휴가신청내역</a></li>
+            <li><a href="#">휴가캘린더</a></li>
+            <p>게시판</p>
+            <li><a href="#">FAQ</a></li>
+            <p>관리</p>
+            <li><a href="#">사원등록</a></li>
+            <li><a href="#">사원목록</a></li>
+            <li><a  onclick="movePage('main.html')">휴가현황</a></li>
+        </ul>
+    </div>
+
     <div data-role="content" class="plan-detail">
         <!--제목-->
         <div  class="title-area">
@@ -41,38 +128,33 @@
                 <div class="ui-field-contain">
                     <label for="select-1">프로젝트명:</label>
                     <select name="select-1" id="select-1" class="ui-corner-all">
-                        <option value="projectName">프로젝트명1</option>
-                        <option value="projectName">프로젝트명2</option>
-                        <option value="projectName">프로젝트명3</option>
-                        <option value="projectName">프로젝트명4</option>
+                        <!--진행중 프로젝트 리스트-->
                     </select>
                 </div>
                <div class="ui-field-contain">
                    <label for="textinput-2">일정명:</label>
-                   <input type="text" name="textinput-2" id="textinput-2" placeholder="일정명을 입력하세요" value="NH 통합스마트뱅킹 구축">
+                   <input type="text" name="textinput-2" id="textinput-2" placeholder="25자 이내로 입력해주세요." value="">
                </div>
                 <div class="ui-field-contain">
                     <label for="select-3">구분:</label>
                     <select name="select-3" id="select-3" class="ui-corner-all">
-                        <option value="projectCode">업무</option>
-                        <option value="projectCode">휴가</option>
-                        <option value="projectCode">회사</option>
-                        <option value="projectCode">기타</option>
+                        <option value="업무">업무</option>
+                        <option value="휴가">휴가</option>
+                        <option value="회사">회사</option>
+                        <option value="기타">기타</option>
                     </select>
                 </div>
                 <div class="ui-field-contain">
                     <label for="textinput-4">시작일:</label>
-                    <input type="text" name="textinput-4" id="textinput-4" placeholder="시작일을 선택해주세요" value="" readonly>
-                    <script>
-                    $("#textinput-3").datepicker();
-                    </script>
+                        <div id="textinput-4 datepicker" class="picker">
+                            <input type="text" name="textinput-4" id="textinput-4" class="datepicker" placeholder="시작일을 선택해주세요" value="" readonly>
+                        </div>
                 </div>
                 <div class="ui-field-contain">
                     <label for="textinput-5">종료일:</label>
-                    <input type="text" name="textinput-5" id="textinput-5" placeholder="종료일을 선택해주세요" value="" readonly>
-                    <script>
-                    $("#textinput-4").datepicker();
-                    </script>
+                        <div id="textinput-5 datepicker" class="picker">
+                            <input type="text" name="textinput-5" id="textinput-5" class="datepicker" placeholder="종료일을 선택해주세요" value="" readonly>
+                        </div>
                 </div>
                 <div class="ui-field-contain">
                     <label for="textarea-6">설명:</label>
@@ -104,6 +186,17 @@
         </div>
     </div>
 
+    <!-- footer -->
+    <div style="overflow: hidden;" data-role="footer" data-position="fixed">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#" data-icon="home">홈</a></li>
+                <li><a href="#" data-icon="shop">프로젝트</a></li>
+                <li><a href="#" data-icon="calendar">휴가신청</a></li>
+                <li><a href="#" data-icon="power">로그아웃</a></li>
+            </ul>
+        </div>
+    </div>
 
 </section>
 </body>

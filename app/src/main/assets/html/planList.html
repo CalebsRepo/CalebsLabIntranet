@@ -20,8 +20,6 @@
         var selProject;
        // var today = todayFormat();
 
-
-
         $(document).ready(function(){
             $("#plan-summary").empty();
             getProject();
@@ -152,11 +150,6 @@
 	</style>
 </head>
 <body>
-<style>
-        .ui-btn-icon-top { padding-top : 3em;}
-        .ui-panel { width : 20em;}
-        #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
-    </style>
 
 <section id="page1" data-role="page" class="container">
 
@@ -197,7 +190,7 @@
                     <h3>• 프로젝트 일정 </h3>
                 </div>
                 <div class="grid-cd-2">
-                    <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b">추가</a>
+                    <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b" onclick="movePage('planRegister.html')">추가</a>
                 </div>
             </div>
             <div class="gird-pt">
