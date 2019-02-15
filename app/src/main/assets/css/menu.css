@@ -4,7 +4,10 @@
     .menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
     .menuPanel img { margin: 1em; width:85%;}
 
+    .admMenu {display:none;}
+    .ui-listview > li.admMenu {display:none;}
+
     /*푸터*/
     .footer { overflow: hidden; }
-    .footer .ui-btn-icon-top { padding-top : 3em; }
+    /*.footer .ui-btn-icon-top { padding-top : 3em; }*/
 </style>
