@@ -17,26 +17,25 @@
         var trigger = "";
         var start_num = 0;
         var paramJSON = new Object();
+        var selProject;
        // var today = todayFormat();
 
 
-        var selectedProject;
-        var proSelect = document.getElementById("select-choice-1");
 
         $(document).ready(function(){
             $("#plan-summary").empty();
-           getProject();
+            getProject();
         });
 
       function getProject() {
             var flip = document.getElementById('flip');
-            if(flip.checked == true) {
+            if(flip.options[flip.selectedIndex].value == "on") {
                 trigger = "during";
             } else {
-                trigger = "all";
+                trigger = "end";
             }
             paramJSON.trigger = trigger;
-            navigate(paramJSON, "getProjectList.json", projectSelectSuccess);
+            navigate(paramJSON, "getAllProjectList.json", projectSelectSuccess, "" );
        }
 
        function projectSelectSuccess(result) {
@@ -48,11 +47,12 @@
             parseProjectResult=JSON.parse(projectSelectResult);
             console.log("projectSelectSuccess>>>>>" + projectSelectResult);
             console.log("============================================");
+            $("#select-choice-1").empty();
 
-            if (ajaxResult2[i].length != 0) {
-                for(var i=0; i<ajaxResult2.length; i++) {
+            if (parseProjectResult.length != 0) {
+                for(var i=0; i<parseProjectResult.length; i++) {
                     $("#select-choice-1").append(
-                           "<option value='"+ajaxResult2[i].project_code + "'>" + ajaxResult2[i].project_name + "</option>"
+                           "<option value='"+parseProjectResult[i].project_code + "'>" + parseProjectResult[i].project_name + "</option>"
                       );
                     $("#select-choice-1").selectmenu("refresh", true);
                     }
@@ -61,62 +61,46 @@
                            "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
                    );
             }
+            start_num = 0;
+            getPlanList();
         }
-
-
-
-/*
-     function getProjectList(param){
-        var proSelect;
-
-        if(param =="select-choice-1"){
-            proSelect = document.getElementById(param);
-        }else if(param == "select-choice-2"){
-            proSelect = document.getElementById(param);
+        function flipChange() {
+            $("#select-choice-1").empty();
+            //$("#plan-summary").empty();
+            getProject();
         }
-            var sel = proSelect.options[proSelect.selectedIndex].value;
-            selectedProject = { project_name : sel }
-            navigate(selectedProject,"getPlanSummary.json", successFncPlanSummary, errorFncPlanSummary);
+        function getPlanList(){
+             var project_name = document.getElementById("select-choice-1");
+             var param =  project_name.options[project_name.selectedIndex].value;
 
-            for(var i=0; i<ajaxResult2.length; i++) {
-            var projectListview = document.getElementById('select-choice-1');
-            if (ajaxResult2[i].length != 0) {
-                //진행중_ 플젝 마지막 날이 오늘보다 크거나 같을 때, 시작날이 오늘보다 작을 때
-                if(ajaxResult2[i].end_ymd > today || ajaxResult2[i].end_ymd == today){
-                   $("#select-choice-1").append(
-                       "<option value='"+ajaxResult2[i].project_code + "'>" + ajaxResult2[i].project_name + "</option>"
-                          );
-                        $("#select-choice-1").selectmenu("refresh", true);
-                // 종료_ 플젝 마지막 날이 오늘보다 작을 때
-                }else if(ajaxResult2[i].end_ymd < today){
-                    $("#select-choice-2").append(
-                       "<option value='"+ajaxResult2[i].project_code + "'>" + ajaxResult2[i].project_name + "</option>"
-                          );
-                    $("#select-choice-2").selectmenu("refresh", true);
-                }
-            } else {
-                $("#select-choice-1").append(
-                                "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
-                   );
+             console.log("넘길값이다아아아 >>>>>>>>>> "+ param)
+            if(start_num < 10){
+                 $("#plan-summary").empty();
             }
-        }
-     }
-    //프로젝트 리스트 ajax 통신 성공
-    function successFncPlanSummary(result){
-        console.log("successFncMultiSndSample>>>>>" + JSON.stringify(result));
-        console.log("============================================");
-        console.log("============================================");
-        ajaxResult=JSON.stringify(result);
-        ajaxResult2=JSON.parse(ajaxResult);
-        console.log("successFncMultiSndSample>>>>>" + ajaxResult);
-        console.log("successFncMultiSndSample>>>>>" + ajaxResult2);
-        console.log("============================================");
 
-        for(var i=0; i<ajaxResult2.length; i++) {
-        var projectListview = document.getElementById('plan-summary');
-         $("#plan-summary").empty();
-            console.log("append된 것 지우기 ")
-            if (ajaxResult2[i].length != 0) {
+            //선택한 프로젝트, 시작넘버 보내기
+            paramJSON.project_name = param;
+            paramJSON.start_num = start_num;
+            navigate(paramJSON, "getPlanList.json", planListSuccess, "" );
+        }
+
+        function planListSuccess(result){
+
+            console.log("planListSuccess 실행")
+            var ajaxResult="";
+            var ajaxResult2="";
+
+            console.log("successFncMultiSndSample>>>>>" + JSON.stringify(result));
+            console.log("============================================");
+            console.log("============================================");
+            ajaxResult=JSON.stringify(result);
+            ajaxResult2=JSON.parse(ajaxResult);
+            console.log("successFncMultiSndSample>>>>>" + ajaxResult);
+            console.log("successFncMultiSndSample>>>>>" + ajaxResult2);
+            console.log("============================================");
+
+            if (ajaxResult2.length != 0) {
+            for(var i=0; i<ajaxResult2.length; i++) {
                $("#plan-summary").append(
                     "<li class='ui-corner-all'>"
                         +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r'>"
@@ -126,6 +110,7 @@
                         +"</a>"
                     +"</li>"
                  );
+               }
             } else {
                 $("#plan-summary").append(
                      "<li class='ui-corner-all'>"
@@ -135,75 +120,18 @@
                     +"</li>"
                   );
             }
-        }
-    }
-    //프로젝트 일정 ajax 통신 실패
-    function errorFncPlanSummary(result){
-        console.log("errorFncProjectList>>>>>>" + JSON.stringify(result));
-    }
-
-    //프로젝트 상태 선택
-    function getProjectStatus(){
-        var projectStatus = $("a.ui-slider-handle").attr("aria-valuenow");
-        if(projectStatus == "on"){
-            console.log("진행중인 프로젝트 리스트다 임마.");
-            $(".grid-cd-3").children().eq(1).hide();
-            $(".grid-cd-3").children().eq(0).show();
-            $("#select-choice-1").selectmenu("refresh", true);
-            $("#select-choice-2").removeClass("selectedProject");
-            $("#select-choice-1").addClass("selectedProject");
-        }else if(projectStatus == "off"){
-            console.log("종료된 프로젝트 리스트다 임마.");
-            $(".grid-cd-3").children().eq(0).hide();
-            $(".grid-cd-3").children().eq(1).show();
-            $("#select-choice-2").selectmenu("refresh", true);
-            $("#select-choice-1").removeClass("selectedProject");
-            $("#select-choice-2").addClass("selectedProject");
-        }
-    }
-    //프로젝트 리스트 ajax통신 성공
-    function successFncAllProjectList(result) {
-        console.log("successFncMultiSndSample>>>>>" + JSON.stringify(result));
-        console.log("============================================");
-        console.log("============================================");
-        ajaxResult=JSON.stringify(result);
-        ajaxResult2=JSON.parse(ajaxResult);
-        console.log("successFncMultiSndSample>>>>>" + ajaxResult);
-        console.log("============================================");
-
-        for(var i=0; i<ajaxResult2.length; i++) {
-            var projectListview = document.getElementById('select-choice-1');
-            if (ajaxResult2[i].length != 0) {
-                //진행중_ 플젝 마지막 날이 오늘보다 크거나 같을 때, 시작날이 오늘보다 작을 때
-                if(ajaxResult2[i].end_ymd > today || ajaxResult2[i].end_ymd == today){
-                   $("#select-choice-1").append(
-                       "<option value='"+ajaxResult2[i].project_code + "'>" + ajaxResult2[i].project_name + "</option>"
-                          );
-                        $("#select-choice-1").selectmenu("refresh", true);
-                // 종료_ 플젝 마지막 날이 오늘보다 작을 때
-                }else if(ajaxResult2[i].end_ymd < today){
-                    $("#select-choice-2").append(
-                       "<option value='"+ajaxResult2[i].project_code + "'>" + ajaxResult2[i].project_name + "</option>"
-                          );
-                    $("#select-choice-2").selectmenu("refresh", true);
-                }
+            start_num = start_num + 10;
+            if(ajaxResult2.length < 10){
+                $('#btnMore').hide();
             } else {
-                $("#select-choice-1").append(
-                                "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
-                   );
+                $('#btnMore').show();
             }
+
         }
-    }
-    //프로젝트 리스트 ajax 통신 실패
-    function errorFncAllProjectList(result) {
-        console.log("errorFncAllProjectList>>>>>>" + JSON.stringify(result));
-    }
-    //오늘날짜 포맷 리턴
-    function todayFormat(){
-        var now = new Date();
-        var todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
-        return todayUTC.toISOString().slice(0, 10).replace(/-/g, '');
-    } */
+        function selectChange(){
+        start_num = 0;
+        getPlanList();
+        }
     </script>
 
     <style type="text/css">
@@ -274,12 +202,12 @@
             </div>
             <div class="gird-pt">
                 <div class="grid-cd-3">
-                    <select name="select-choice-1" id="select-choice-1" class="ui-corner-all" onchange="getProjectList()">
+                    <select name="select-choice-1" id="select-choice-1" class="ui-corner-all" onchange="selectChange()">
                         //select box options
                     </select>
                 </div>
                 <div class="grid-cd-4">
-                    <select name="flip" id="flip" data-role="slider"data-mini="true" onchange="getProjectStatus()">
+                    <select name="flip" id="flip" data-role="slider"data-mini="true" onchange="flipChange()">
                         <option value="on">진행중</option>
                         <option value="off">종료</option>
                     </select>
@@ -295,7 +223,7 @@
         </div>
 
         <div class="gird-pt">
-         <button class="ui-btn ui-corner-all ui-btn-b" onclick="movePage('index.html')" >더보기</button>
+         <button class="ui-btn ui-corner-all ui-btn-b" id="btnMore" onclick="getPlanList()" >더보기</button>
         </div>
     </div>
 
