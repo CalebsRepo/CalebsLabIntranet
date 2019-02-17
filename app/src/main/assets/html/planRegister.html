@@ -27,6 +27,11 @@
                     $(this).val($(this).val().substring(0,25));
                 }
             });
+           $("#textarea-6").on('keyup',function(){
+                if($(this).val().length > 200){
+                    $(this).val($(this).val().substring(0,200));
+                }
+            });
         });
 
       function getProject() {
@@ -124,6 +129,14 @@
 
         <!--프로젝트 리스트화면-->
         <div class="gird-pt detail-form">
+            <form id="data-form">
+                <input type="hidden" name="project_code" id="project_code" value="">
+                <input type="hidden" name="schedule_name" id="schedule_name" value="">
+                <input type="hidden" name="kind_code" id="kind_code" value="">
+                <input type="hidden" name="start_dt" id="start_dt" value="">
+                <input type="hidden" name="end_dt" id="end_dt" value="">
+                <textarea type="hidden" name="end_dt" id="contents" value="">
+            </form>
             <form>
                 <div class="ui-field-contain">
                     <label for="select-1">프로젝트명:</label>
@@ -158,7 +171,7 @@
                 </div>
                 <div class="ui-field-contain">
                     <label for="textarea-6">설명:</label>
-                    <textarea type="textarea" name="textarea-6" id="textarea-6" placeholder="요구사항 및 내용을 입력해주세요(200자 이내)" value="NH 통합스마트뱅킹 구축 (퇴직연금 단독 구축)"> </textarea>
+                    <textarea type="textarea" name="textarea-6" id="textarea-6" placeholder="요구사항 및 내용을 입력해주세요(200자 이내)" value="" ></textarea>
                 </div>
 
             </form>

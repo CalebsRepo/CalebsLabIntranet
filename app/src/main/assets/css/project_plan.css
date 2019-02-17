@@ -42,7 +42,7 @@
     .plan-detail .detail-form .ui-field-contain label{width:90px; display:flex; align-items:center; margin:0;}
     .plan-detail .detail-form .ui-field-contain .ui-select span{text-align:left; font-weight:500;}
     .plan-detail .detail-form .ui-field-contain input{width:100%; display:inline-flex; }
-    .plan-detail .detail-form .ui-field-contain textarea{width:calc(100% - 90px); height:90px !important; display:inline-flex; }
+    .plan-detail .detail-form .ui-field-contain textarea{width:calc(100% - 90px); height:120px !important; display:inline-flex; }
     .plan-detail .detail-form .ui-field-contain label + div{width:calc(100% - 90px);}
 
     /*btn-area*/
