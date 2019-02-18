@@ -30,16 +30,20 @@
     <script>
       var trigger = "";
       var paramJSON = new Object();
+      var projectTerm = new Object();
+
         $(document).ready(function(){
             getProject();
             $('.datepicker').datepicker();
-            //일정명 글자수 제한
-            $("#select-1").on('keyup',function(){
+
+            //일정명 글자수 25자 제한
+            $("#textinput-3").on('keyup',function(){
                 if($(this).val().length > 25){
                     $(this).val($(this).val().substring(0,25));
                 }
             });
-           $("#textarea-6").on('keyup',function(){
+            //일정 설명 글자수 200자 제한
+           $("#textarea-7").on('keyup',function(){
                 if($(this).val().length > 200){
                     $(this).val($(this).val().substring(0,200));
                 }
@@ -64,8 +68,13 @@
             if (parseProjectResult.length != 0) {
                 for(var i=0; i<parseProjectResult.length; i++) {
                     $("#select-1").append(
-                           "<option value='"+parseProjectResult[i].project_code + "'>" + parseProjectResult[i].project_name + "</option>"
+                           "<option value='"+parseProjectResult[i].project_code + "'>" + parseProjectResult[i].project_name +"</option>"
                       );
+                    $(".project-term-container").append(
+                            "<div style='display:none; text-align:center; width:100%;' id='"
+                            + parseProjectResult[i].project_code  + "'>"
+                            + parseProjectResult[i].start_ymd +  " ~ " + parseProjectResult[i].end_ymd  + "</div>"
+                        )
                     $("#select-1").selectmenu("refresh", true);
                     }
                 } else {
@@ -73,24 +82,24 @@
                            "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
                    );
             }
+            //프로젝트 기간
+            getProjectTerm();
       }
       function doPlanRegister(){
 
             //값 가져오기
             var projectCode = document.getElementById('select-1');
-            var kindSelect  = document.getElementById('select-3');
+            var kindSelect  = document.getElementById('select-4');
 
             var id             = loginUser.id;
             var project_code   = projectCode.options[projectCode.selectedIndex].value;
-            var schedule_name  = $("#textinput-2").val();
+            var schedule_name  = $("#textinput-3").val();
             var kind_code      = kindSelect.options[kindSelect.selectedIndex].value;
-            var start_dt       = ($("#textinput-4").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
-            var end_dt         = ($("#textinput-5").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
-            var contents       = $("#textarea-6").val();
+            var start_dt       = ($("#textinput-5").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
+            var end_dt         = ($("#textinput-6").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
+            var contents       = $("#textarea-7").val();
 
-            //valueCheck 값 체크 함수 호출
-            //schedule_name 글씨 길이? 특수문자 안됨
-            //start_dt 일정이 프로젝트 시작일보다
+            //DateCheck 값 체크 함수 호출
 
             // paramJSON.에 태우기
             paramJSON.id              = id;
@@ -107,20 +116,40 @@
 
         }
         function planRegisterSuccess(result){
-            //ok면 alert 정상적으로 등록되었습니다. + 목록으로(목록) or 다른 일정 등록(현재 페이지 네비게이트)
-            //아니면 일정이 정상적으로 등록되지 않았습니다. 다시 시도해주세요. (현재 페이지 네비게이트)
-            alert("성공");
-            if(confirm(‘진짜?’)) {
-            document.write(“네”)
-            } else {
-            document.write(“아니오”)
-            }
+            //DB 수행 반환값 체크
+            console.log("등록 후 반환 값 >>>>>>> "+ result);
+            alert('등록 성공');
+            //목록 으로
+            movePage('planList.html');
 
+           /* if( 반환값 == ok ){
+                if(confirm('일정이 정상적으로 추가되었습니다. '){
+                    document.write("목록으로 이동");
+                    navigate(목록화면으로);
+                }else{
+                    document.write("다른 일정 등록");
+                    navigate(일정등록화면으로);
+                }
+            }else{
+                alert(일정이 정상적으로 추가되지 않았습니다. );
+                navigate(일정목록 화면으로);
+            }*/
         }
-        function valueCheck(){
-
+        function DateCheck(){
+            //날짜 체크하기
+            /*if(시작일 =< 종료일 || 시작일 =< 프로젝트 시작일 || 종료일 =< 프로젝트 종료일){
+                // 일정 날짜 정상
+            }else{
+                alert('일정일을 확인해주세요.');
+            }*/
         }
-
+        //프로젝트 기간 나오게
+        function getProjectTerm(){
+            $(".project-term-container div").css('display','none');
+            var projectCode = document.getElementById('select-1');
+            project_code = projectCode.options[projectCode.selectedIndex].value;
+            $(`div[id="${project_code}"]`).css('display','block');
+        }
     </script>
 </head>
 
@@ -133,6 +162,27 @@
         <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
     </header>
 
+    <div data-role="panel" class="menuPanel"id="menuPanel" data-position="right"  data-display="overlay" data-theme="a">
+        <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
+        <ul id="menuPanelList"data-role="listview">
+            <p>내정보</p>
+            <li><a onclick= "movePage('employeeDetail.html')" >마이페이지</a></li>
+            <p>프로젝트</p>
+            <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
+            <li><a onclick= "movePage('planList.html')" >프로젝트일정<br> 목록</a></li>
+            <p>휴가</p>
+            <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+            <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
+            <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
+            <p>게시판</p>
+            <li><a onclick= "movePage('qnaList.html')" >FAQ</a></li>
+            <p class="admMenu">관리</p>
+            <li class="admMenu"><a onclick= "movePage('employeeDetail.html')" >사원등록</a></li>
+            <li class="admMenu"><a onclick= "movePage('employeeInfo.html')" >사원목록</a></li>
+            <li class="admMenu"><a onclick= "movePage('holidayCondition.html')">휴가현황</a></li>
+        </ul>
+    </div>
+
     <div data-role="content" class="plan-detail">
         <!--제목-->
         <div  class="title-area">
@@ -140,32 +190,29 @@
                 <h3>• 프로젝트 일정 등록 </h3>
             </div>
         </div>
-        <style>
-            div#select-2-button { padding: 7.5px 5px; background:#ffffff;}
-            div#select-2-button span { text-align: left; font-weight: 600;}
-
-        </style>
 
         <!--프로젝트 리스트화면-->
         <div class="gird-pt detail-form">
             <form>
                 <div class="ui-field-contain">
                     <label for="select-1">프로젝트명:</label>
-                    <select name="select-1" id="select-1" class="ui-corner-all">
+                    <select name="select-1" id="select-1" class="ui-corner-all" onchange="getProjectTerm()">
                         <!--진행중 프로젝트 리스트-->
                     </select>
                 </div>
-                <div class="ui-field-contain">
-                    <label for="textinput-project-term">프로젝트 기간:</label>
-                    <input type="text" name="textinput-project-term" id="textinput-project-term" placeholder="" value="2018/11/16 ~ 2018/12/30" readonly>
+                <div class="ui-field-contain project-term-container" >
+                    <label for="textdiv-2">프로젝트</br>기간:</label>
+                    <input type="hidden" name="textdiv-2" id="textdiv-2" >
+                    <!--프로젝트 기간-->
+
                 </div>
                <div class="ui-field-contain">
-                   <label for="textinput-2">일정명:</label>
-                   <input type="text" name="textinput-2" id="textinput-2" placeholder="25자 이내로 입력해주세요." value="">
+                   <label for="textinput-3">일정명:</label>
+                   <input type="text" name="textinput-3" id="textinput-3" placeholder="25자 이내로 입력해주세요." value="">
                </div>
                 <div class="ui-field-contain">
-                    <label for="select-3">구분:</label>
-                    <select name="select-3" id="select-3" class="ui-corner-all">
+                    <label for="select-4">구분:</label>
+                    <select name="select-4" id="select-4" class="ui-corner-all">
                         <option value="업무">업무</option>
                         <option value="휴가">휴가</option>
                         <option value="회사">회사</option>
@@ -173,47 +220,30 @@
                     </select>
                 </div>
                 <div class="ui-field-contain">
-                    <label for="textinput-4">시작일:</label>
-                        <div id="textinput-4 datepicker" class="picker">
-                            <input type="text" name="textinput-4" id="textinput-4" class="datepicker" placeholder="시작일을 선택해주세요" value="" readonly>
-                        </div>
-                </div>
-                <div class="ui-field-contain">
-                    <label for="textinput-5">종료일:</label>
+                    <label for="textinput-5">시작일:</label>
                         <div id="textinput-5 datepicker" class="picker">
-                            <input type="text" name="textinput-5" id="textinput-5" class="datepicker" placeholder="종료일을 선택해주세요" value="" readonly>
+                            <input type="text" name="textinput-5" id="textinput-5" class="datepicker" placeholder="시작일을 선택해주세요" value="" readonly>
                         </div>
                 </div>
                 <div class="ui-field-contain">
-                    <label for="textarea-6">설명:</label>
-                    <textarea type="textarea" name="textarea-6" id="textarea-6" placeholder="요구사항 및 내용을 입력해주세요(200자 이내)" value="" ></textarea>
+                    <label for="textinput-6">종료일:</label>
+                        <div id="textinput-6 datepicker" class="picker">
+                            <input type="text" name="textinput-6" id="textinput-6" class="datepicker" placeholder="종료일을 선택해주세요" value="" readonly>
+                        </div>
                 </div>
-
+                <div class="ui-field-contain">
+                    <label for="textarea-7">설명:</label>
+                    <textarea type="textarea" name="textarea-7" id="textarea-7" placeholder="요구사항 및 내용을 입력해주세요(200자 이내)" value="" ></textarea>
+                </div>
             </form>
         </div>
-        <style>
 
-        </style>
         <div class="btn-area-1">
             <div class="grid-pt">
                 <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
                 <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="doPlanRegister()">등록</a></div>
             </div>
         </div>
-        <div class="btn-area-2">
-            <div class="gird-pt">
-                <button class="ui-btn ui-corner-all ui-btn-b" onclick="common_movePage('index.html')" >목록</button>
-            </div>
-        </div>
-        <div class="btn-area-3">
-            <div class="grid-pt">
-                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
-                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="movePage('index.html')">삭제</a></div>
-                <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="movePage('index.html')">등록</a></div>
-            </div>
-        </div>
-    </div>
-
     <!-- footer -->
     <div class="footer" data-role="footer" data-position="fixed">
         <div data-role="navbar">
@@ -224,6 +254,7 @@
                 <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
             </ul>
         </div>
+    </div>
     </div>
 </section>
 </body>
