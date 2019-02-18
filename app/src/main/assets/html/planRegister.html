@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
     <!--DatePicker--><link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/menu.css">
     <link rel="stylesheet" href="../css/project_plan.css">
     <script src="../js/common.js"></script>
+    <script src="../js/login.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <!--DatePicker--><script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <!--DatePicker--><script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -15,6 +16,17 @@
     <!--DatePicker--><script src="../js/datepicker.js"></script>
 
     <title></title>
+    <!--로그인 세션 공통-->
+    <script>
+    var loginUser = JSON.parse(getUserData());
+    var loginUserAdmFlag = loginUser.adm_flag;
+    $(document).ready(function(){
+         if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
+            $(".admMenu").show();
+        }
+    });
+    </script>
+
     <script>
       var trigger = "";
       var paramJSON = new Object();
@@ -61,58 +73,65 @@
                            "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
                    );
             }
-       }
-    </script>
-    <style type="text/css">
+      }
+      function doPlanRegister(){
 
-		.underline {
-			padding-top: 20px;
-		    padding-bottom: 3px;
-		    border-bottom: 1px solid #eee;
-		    margin: 0px 0 20px 0;
-		}
-        .ui-btn-icon-top { padding-top : 3em;}
-        .ui-bar { text-align: center; }
-        .ui-bar .header-menu { float: right; }
-        .ui-bar .header-back { float: left; }
-        .ui-panel { width : 20em;}
-        #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
-    .ui-select{display:block;}
-	</style>
+            //값 가져오기
+            var projectCode = document.getElementById('select-1');
+            var kindSelect  = document.getElementById('select-3');
+
+            var id             = loginUser.id;
+            var project_code   = projectCode.options[projectCode.selectedIndex].value;
+            var schedule_name  = $("#textinput-2").val();
+            var kind_code      = kindSelect.options[kindSelect.selectedIndex].value;
+            var start_dt       = ($("#textinput-4").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
+            var end_dt         = ($("#textinput-5").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
+            var contents       = $("#textarea-6").val();
+
+            //valueCheck 값 체크 함수 호출
+            //schedule_name 글씨 길이? 특수문자 안됨
+            //start_dt 일정이 프로젝트 시작일보다
+
+            // paramJSON.에 태우기
+            paramJSON.id              = id;
+            paramJSON.project_code    = project_code;
+            paramJSON.schedule_name   = schedule_name;
+            paramJSON.kind_code       = kind_code;
+            paramJSON.start_dt        = start_dt
+            paramJSON.end_dt          = end_dt;
+            paramJSON.contents        = contents;
+
+            //중복 추가되지 않게 함수
+
+            navigate(paramJSON, "planRegister.json", planRegisterSuccess, "" );
+
+        }
+        function planRegisterSuccess(result){
+            //ok면 alert 정상적으로 등록되었습니다. + 목록으로(목록) or 다른 일정 등록(현재 페이지 네비게이트)
+            //아니면 일정이 정상적으로 등록되지 않았습니다. 다시 시도해주세요. (현재 페이지 네비게이트)
+            alert("성공");
+            if(confirm(‘진짜?’)) {
+            document.write(“네”)
+            } else {
+            document.write(“아니오”)
+            }
+
+        }
+        function valueCheck(){
+
+        }
+
+    </script>
 </head>
 
 <body>
 <section id="page1" data-role="page" class="container">
 
-
     <header data-role="header">
-        <div class="ui-bar">
-            <button class="header-back"><span>back</span></button>
-            <h1>프로젝트 일정</h1>
-            <a href="#menuPanel" class="btn header-menu">Menu</a>
-        </div>
+        <h1>프로젝트 일정</h1>
+        <a class="ui-btn ui-corner-all ui-btn-inline ui-mini footer-button-left ui-btn-icon-left ui-icon-carat-l" href="javascript:history.back()">back</a>
+        <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
     </header>
-
-    <div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
-        <h2>메뉴</h2>
-        <ul data-role="listview">
-            <p>내정보</p>
-            <li><a href="#">마이페이지</a></li>
-            <p>프로젝트</p>
-            <li><a href="#">프로젝트</a></li>
-            <li><a href="#">프로젝트일정 목록</a></li>
-            <p>휴가</p>
-            <li><a href="#">휴가신청</a></li>
-            <li><a href="#">휴가신청내역</a></li>
-            <li><a href="#">휴가캘린더</a></li>
-            <p>게시판</p>
-            <li><a href="#">FAQ</a></li>
-            <p>관리</p>
-            <li><a href="#">사원등록</a></li>
-            <li><a href="#">사원목록</a></li>
-            <li><a  onclick="movePage('main.html')">휴가현황</a></li>
-        </ul>
-    </div>
 
     <div data-role="content" class="plan-detail">
         <!--제목-->
@@ -129,20 +148,16 @@
 
         <!--프로젝트 리스트화면-->
         <div class="gird-pt detail-form">
-            <form id="data-form">
-                <input type="hidden" name="project_code" id="project_code" value="">
-                <input type="hidden" name="schedule_name" id="schedule_name" value="">
-                <input type="hidden" name="kind_code" id="kind_code" value="">
-                <input type="hidden" name="start_dt" id="start_dt" value="">
-                <input type="hidden" name="end_dt" id="end_dt" value="">
-                <textarea type="hidden" name="end_dt" id="contents" value="">
-            </form>
             <form>
                 <div class="ui-field-contain">
                     <label for="select-1">프로젝트명:</label>
                     <select name="select-1" id="select-1" class="ui-corner-all">
                         <!--진행중 프로젝트 리스트-->
                     </select>
+                </div>
+                <div class="ui-field-contain">
+                    <label for="textinput-project-term">프로젝트 기간:</label>
+                    <input type="text" name="textinput-project-term" id="textinput-project-term" placeholder="" value="2018/11/16 ~ 2018/12/30" readonly>
                 </div>
                <div class="ui-field-contain">
                    <label for="textinput-2">일정명:</label>
@@ -182,7 +197,7 @@
         <div class="btn-area-1">
             <div class="grid-pt">
                 <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
-                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">등록</a></div>
+                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="doPlanRegister()">등록</a></div>
             </div>
         </div>
         <div class="btn-area-2">
@@ -200,17 +215,16 @@
     </div>
 
     <!-- footer -->
-    <div style="overflow: hidden;" data-role="footer" data-position="fixed">
+    <div class="footer" data-role="footer" data-position="fixed">
         <div data-role="navbar">
             <ul>
-                <li><a href="#" data-icon="home">홈</a></li>
-                <li><a href="#" data-icon="shop">프로젝트</a></li>
+                <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
+                <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
                 <li><a href="#" data-icon="calendar">휴가신청</a></li>
-                <li><a href="#" data-icon="power">로그아웃</a></li>
+                <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
             </ul>
         </div>
     </div>
-
 </section>
 </body>
 </html>

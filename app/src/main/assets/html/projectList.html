@@ -3,13 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
-
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <link rel="stylesheet" href="../css/menu.css">
     <link rel="stylesheet" href="../css/project_plan.css">
     <script src="../js/common.js"></script>
+    <script src="../js/login.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
+    <title></title>
+    <!--로그인 세션 공통-->
+    <script>
+    var loginUser = JSON.parse(getUserData());
+    var loginUserAdmFlag = loginUser.adm_flag;
+    $(document).ready(function(){
+         if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
+            $(".admMenu").show();
+        }
+    });
+    </script>
     <script type="text/javascript">
         var trigger = "";
         var start_num = 0;
@@ -144,28 +156,9 @@
     <header data-role="header">
         <h1>프로젝트 목록</h1>
         <a class="ui-btn ui-corner-all ui-btn-inline ui-mini footer-button-left ui-btn-icon-left ui-icon-carat-l" href="javascript:history.back()">back</a>
-        <a href="#menuPanel" data-icon="bars">menu</a>
+        <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
     </header>
-    <div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
-        <h2>메뉴</h2>
-        <ul data-role="listview">
-            <p>내정보</p>
-            <li><a href="#">마이페이지</a></li>
-            <p>프로젝트</p>
-            <li><a href="#">프로젝트</a></li>
-            <li><a href="#">프로젝트일정 목록</a></li>
-            <p>휴가</p>
-            <li><a href="#">휴가신청</a></li>
-            <li><a href="#">휴가신청내역</a></li>
-            <li><a href="#">휴가캘린더</a></li>
-            <p>게시판</p>
-            <li><a href="#">FAQ</a></li>
-            <p>관리</p>
-            <li><a href="#">사원등록</a></li>
-            <li><a href="#">사원목록</a></li>
-            <li><a  onclick="movePage('main.html')">휴가현황</a></li>
-        </ul>
-    </div>
+
     <!--container-->
     <div data-role="content" class="project-list">
         <!--제목, flip(진행중, 전체)추가버튼-->
@@ -225,15 +218,14 @@
          <button class="ui-btn ui-corner-all ui-btn-b" id="btnMore" onclick="getProject()">더보기</button>
         </div>
     </div>
-    <!--//container-->
     <!-- footer -->
-    <div style="overflow: hidden;" data-role="footer" data-position="fixed">
+    <div class="footer" data-role="footer" data-position="fixed">
         <div data-role="navbar">
             <ul>
-                <li><a href="#" data-icon="home">홈</a></li>
-                <li><a href="#" data-icon="shop">프로젝트</a></li>
+                <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
+                <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
                 <li><a href="#" data-icon="calendar">휴가신청</a></li>
-                <li><a href="#" data-icon="power">로그아웃</a></li>
+                <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
             </ul>
         </div>
     </div>
