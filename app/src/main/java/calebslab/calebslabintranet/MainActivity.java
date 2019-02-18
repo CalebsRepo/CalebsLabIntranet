@@ -332,19 +332,17 @@ public class MainActivity extends AppCompatActivity {
         @JavascriptInterface
         public void saveExcel(final String result){
             Log.d("이승환", "result>>>>>>>>>>>>>>>"+result);
-            int idx = result.indexOf("@");
-            String result1 =  "";
-            String result2 =  "";
-            result1 = result.substring(0, idx);
-            result2 = result.substring(idx+1);
-            Log.d("이승환", "result11>>>>>>>>>>>>>>>"+result1);
-            Log.d("이승환", "result22>>>>>>>>>>>>>>>"+result2);
-
-
+//            int idx = result.indexOf("@");
+//            String result1 =  "";
+//            String result2 =  "";
+//            result1 = result.substring(0, idx);
+//            result2 = result.substring(idx+1);
+//            Log.d("이승환", "result11>>>>>>>>>>>>>>>"+result1);
+//            Log.d("이승환", "result22>>>>>>>>>>>>>>>"+result2);
 
             Workbook workbook = new HSSFWorkbook();
 
-            Sheet sheet = workbook.createSheet(); // 새로운 시트 생성
+            Sheet sheet = workbook.createSheet("휴가현황"); // 새로운 시트 생성
 
             Row row = sheet.createRow(0); // 새로운 행 생성
             Cell cell;
@@ -373,34 +371,27 @@ public class MainActivity extends AppCompatActivity {
 
             if (result != null) {
                 try {
+                    JSONArray arr = new JSONArray(result);   // 사원정보
+                    Log.d("이승환", "arr>>>>>>>>>>>>>>>"+arr);
+                    for(int i=0; i < arr.length(); i++) {
+                        JSONObject jObject = arr.getJSONObject(i);
+                        Log.d("이승환", "arr>>>>>>>>>>>>>>>"+jObject);
 
-                    JSONArray arr = new JSONArray(result1);   // 사원정보
-                    Log.d("이승환", "arr1>>>>>>>>>>>>>>>"+arr);
+                        // 직원수 2번데이터에만 있는컬럼 값 null아닐경우로 해도 될듯
+                        if(i< 11){
+                            String id = jObject.getString("id");
+                            String name = jObject.getString("name");
+                            String joinYear = jObject.getString("join_year");
+                            String joinMon = jObject.getString("work_mon");
+                            String hsYmd =  jObject.getString("hs_ymd");
+                            String heYmd =  jObject.getString("he_ymd");
+                            String workingDate = "";
 
-                    JSONArray arr2 = new JSONArray(result2);   // 근무년차별 사용내역
-                    Log.d("이승환", "arr2>>>>>>>>>>>>>>>"+arr2);
-
-                    for(int i=0; i < arr2.length(); i++) {
-
-                        JSONObject jObject = arr.getJSONObject(i);  // JSONObject 추출
-                        JSONObject jObject2 = arr2.getJSONObject(i);  // JSONObject 추출
-
-                        /* 사원정보 관련*/
-                        String name = jObject.getString("name");
-                        String joinYear = jObject.getString("join_year");
-                        String joinMon = jObject.getString("work_mon");
-                        String hsYmd =  jObject.getString("hs_ymd");
-                        String heYmd =  jObject.getString("he_ymd");
-                        String workingDate = "";
-
-                        if (Integer.parseInt(joinYear) > 0) {
-                            workingDate = joinYear +"년" +joinMon + "개월";
-                        }else {
-                            workingDate = joinMon + "개월";
-                        }
-
-                        /*row = sheet.createRow(i+1);*/
-                        if( i < arr.length()){
+                            if (Integer.parseInt(joinYear) > 0) {
+                                workingDate = joinYear +"년" +joinMon + "개월";
+                            }else {
+                                workingDate = joinMon + "개월";
+                            }
 
                             row = sheet.createRow(i+1); // 행추가
                             cell = row.createCell(0);
@@ -417,22 +408,70 @@ public class MainActivity extends AppCompatActivity {
                             cell.setCellValue(workingDate);
                             cell = row.createCell(6);       // 근무년차 : 연차발생기간 ~
                             cell.setCellValue(hsYmd+ "~" + heYmd);
+                        } else {
+                            // 아이디 비교
+                            // 기간
+
+
+
                         }
 
-                        /* 휴가사용내역 반복처리*/
-//                        cell = row.createCell(7);
-//                        cell.setCellValue(jObject2.getString("join_ymd"));
-//                        cell = row.createCell(8);
-//                        cell.setCellValue(jObject2.getString("join_ymd"));
-//                        cell = row.createCell(9);
-//                        cell.setCellValue(jObject2.getString("join_ymd"));
-
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
+//
+//                    JSONArray arr = new JSONArray(result1);   // 사원정보
+//                    Log.d("이승환", "arr1>>>>>>>>>>>>>>>"+arr);
+//
+//                    JSONArray arr2 = new JSONArray(result2);   // 근무년차별 사용내역
+//                    Log.d("이승환", "arr2>>>>>>>>>>>>>>>"+arr2);
+//
+//                    for(int i=0; i < arr.length(); i++) {
+//
+//                        JSONObject jObject = arr.getJSONObject(i);  // JSONObject 추출
+//                        JSONObject jObject2 = arr2.getJSONObject(i);  // JSONObject 추출
+//
+//                        /* 사원정보 관련*/
+//                        String id = jObject.getString("id");
+//                        String name = jObject.getString("name");
+//                        String joinYear = jObject.getString("join_year");
+//                        String joinMon = jObject.getString("work_mon");
+//                        String hsYmd =  jObject.getString("hs_ymd");
+//                        String heYmd =  jObject.getString("he_ymd");
+//                        String workingDate = "";
+//
+//                        if (Integer.parseInt(joinYear) > 0) {
+//                            workingDate = joinYear +"년" +joinMon + "개월";
+//                        }else {
+//                            workingDate = joinMon + "개월";
+//                        }
+//
+//                        row = sheet.createRow(i+1); // 행추가
+//                        cell = row.createCell(0);
+//                        cell.setCellValue(i+1);
+//                        cell = row.createCell(1);
+//                        cell.setCellValue(jObject.getString("id"));
+//                        cell = row.createCell(2);
+//                        cell.setCellValue(jObject.getString("name"));
+//                        cell = row.createCell(3);
+//                        cell.setCellValue(jObject.getString("grade"));
+//                        cell = row.createCell(4);
+//                        cell.setCellValue(jObject.getString("join_ymd"));
+//                        cell = row.createCell(5);
+//                        cell.setCellValue(workingDate);
+//                        cell = row.createCell(6);       // 근무년차 : 연차발생기간 ~
+//                        cell.setCellValue(hsYmd+ "~" + heYmd);
+//
+//
+//
+//                    }
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
 
             File xlsFile = new File(getExternalFilesDir(null),"test.xls");
             try{
