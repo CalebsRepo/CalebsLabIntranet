@@ -88,21 +88,22 @@
 		function successHolidayList(data) {
             $("#showList").empty();
                 var html = "";
+                var holidayList = data.holidayList;
 
                 //데이터가 없을 시
-                if(data.length-1 < 1) {
+                if(holidayList.length < 1) {
                     html += "<div class='historyline' style='text-align: center;'>";
                     html += "<span color='red'>휴가 조회내역이 없습니다.</span>";
                     html += "</div>";
                 }
 
-                for(var i=0; i<data.length-1; i++) {
+                for(var i=0; i<holidayList.length; i++) {
 
-                    var id            = data[i].id           ;
-                    var apply_seq     = data[i].apply_seq    ;
-                    var start_ymd     = data[i].start_ymd    ;
-                    var end_ymd       = data[i].end_ymd      ;
-                    var apply_content = data[i].apply_content;
+                    var id            = holidayList[i].id           ;
+                    var apply_seq     = holidayList[i].apply_seq    ;
+                    var start_ymd     = holidayList[i].start_ymd    ;
+                    var end_ymd       = holidayList[i].end_ymd      ;
+                    var apply_content = holidayList[i].apply_content;
 
                     apply_content = apply_content.replace('\r\n\r\n', '\r\n');
                     apply_content = apply_content.replace('\r\n'    , '<br>');
@@ -111,16 +112,16 @@
                     html += "<div class='historyline'>";
                     html +=   "<ul style='list-style: none; height: 140px;'>";
                     html +=      "<li style='float: left; width: 30%;'>";
-                    html += 		"NO."+ numCnt++ +"<br>"+ data[i].apply_date;
+                    html += 		"NO."+ numCnt++ +"<br>"+ holidayList[i].apply_date;
                     html += 	 "</li>";
                     html += 	 "<li style='float: left; width: 70%;'>";
-                    html +=        "<a href=javascript:viewApply('" + apply_seq + '\',\'' + id + "')>신청번호 : " + apply_seq + "</a> " + data[i].name + "<br>";
-                    html +=			"휴가종류 : " + data[i].h_type + "<br>";
+                    html +=        "<a href=javascript:viewApply('" + apply_seq + '\',\'' + id + "')>신청번호 : " + apply_seq + "</a> " + holidayList[i].name + "<br>";
+                    html +=			"휴가종류 : " + holidayList[i].h_type + "<br>";
                     html +=         start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
-                    html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + data[i].apply_count +"일)";
+                    html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + holidayList[i].apply_count +"일)";
                     html += 		"<br>"+ apply_content +"<br>";
 
-                    switch (data[i].approval_flag) {
+                    switch (holidayList[i].approval_flag) {
                         case "신청":
                             html += 	"<font color='#bdb76b'>신청 상태입니다.</font><br>";  // #bdb76b : DarkKhaki
                             break;
@@ -131,7 +132,7 @@
 
                         case "반려":
                             html +=		"<font color='red'>반려되었습니다. 반려사유를 확인하세요.</font><br>";
-                            html +=		"<font color='#bdb76b'>" + data[i].approval_comment + "</font><br>"
+                            html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font><br>"
                             break;
 
                         case "승인":
@@ -147,7 +148,7 @@
                 }// end of for-------------------
 
                 // 페이지 총수
-                $("#pageMaxNum").val(data[data.length-1].totalPage);
+                $("#pageMaxNum").val(data.totalPage);
 
                 var pageNum    = Number($("#pageNum").val()   );
                 var pageMaxNum = Number($("#pageMaxNum").val());
@@ -169,8 +170,6 @@
 
         function viewApply(getApplySeq, getId) {
 
-          console.log("getApplySeq : " + getApplySeq + "          getId : " +getId );
-
           var params = {
               getApplySeq : getApplySeq,
               getId       : getId,
@@ -183,14 +182,15 @@
         function successMoreList(data) {
 
             var html = "";
+            var holidayList = data.holidayList;
 
-            for(var i=0; i<data.length-1; i++) {
+            for(var i=0; i<holidayList.length; i++) {
 
-                var id            = data[i].id           ;
-                var apply_seq     = data[i].apply_seq    ;
-                var start_ymd     = data[i].start_ymd    ;
-                var end_ymd       = data[i].end_ymd      ;
-                var apply_content = data[i].apply_content;
+                var id            = holidayList[i].id           ;
+                var apply_seq     = holidayList[i].apply_seq    ;
+                var start_ymd     = holidayList[i].start_ymd    ;
+                var end_ymd       = holidayList[i].end_ymd      ;
+                var apply_content = holidayList[i].apply_content;
 
                 apply_content = apply_content.replace('\r\n\r\n', '\r\n');
                 apply_content = apply_content.replace('\r\n'    , '<br>');
@@ -199,16 +199,16 @@
                 html += "<div class='historyline'>";
                 html +=   "<ul style='list-style: none; height: 140px;'>";
                 html +=      "<li style='float: left; width: 30%;'>";
-                html += 		"NO."+ numCnt++ +"<br>"+ data[i].apply_date;
+                html += 		"NO."+ numCnt++ +"<br>"+ holidayList[i].apply_date;
                 html += 	 "</li>";
                 html += 	 "<li style='float: left; width: 70%;'>";
-                html +=        "<a href=javascript:viewApply('" + apply_seq + '\',\'' + id + "')>신청번호 : " + apply_seq + "</a> " + data[i].name + "<br>";
-                html +=			"휴가종류 : " + data[i].h_type + "<br>";
+                html +=        "<a href=javascript:viewApply('" + apply_seq + '\',\'' + id + "')>신청번호 : " + apply_seq + "</a> " + holidayList[i].name + "<br>";
+                html +=			"휴가종류 : " + holidayList[i].h_type + "<br>";
                 html +=         start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
-                html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + data[i].apply_count +"일)";
+                html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + holidayList[i].apply_count +"일)";
                 html += 		"<br>"+ apply_content +"<br>";
 
-                switch (data[i].approval_flag) {
+                switch (holidayList[i].approval_flag) {
 
                     case "신청":
                         html += 	"<font color='#bdb76b'>신청 상태입니다.</font><br>";  // #bdb76b : DarkKhaki
@@ -220,7 +220,7 @@
 
                     case "반려":
                         html +=		"<font color='red'>반려되었습니다. 반려사유를 확인하세요.</font><br>";
-                        html +=		"<font color='#bdb76b'>" + data[i].approval_comment + "</font><br>"
+                        html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font><br>"
                         break;
 
                     case "승인":
