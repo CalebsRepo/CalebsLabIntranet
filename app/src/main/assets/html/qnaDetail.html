@@ -156,14 +156,15 @@
             alert("등록되었습니다.");
 
              var sendPushMessage = {
-                title   : '새로운 공지',
+                title   : '새로 등록된 공지가 있습니다',
                 body    : $("#qna-title").val(),
-                token   : tokenArray
+                token   : tokenArray,
+                notiId  : data.regnum
             };
             // 전체 알림
             sendFirebase(sendPushMessage, "multi");
 
-			movePage("qnaList.html");
+	//		movePage("qnaList.html");
 
         }// end of successInsert(data) ---------------------------------------
 

@@ -138,9 +138,9 @@
         var data = "";
 
         if(flag == "single") {  // 단건 push
-            data = JSON.stringify({"to": params.token, "data": {"title" : params.title, "body" : params.body }});
+            data = JSON.stringify({"to": params.token, "data": {"title" : params.title, "body" : params.body, "notiId" : params.notiId }});
         }else if(flag == "multi") { // 다건 push
-            data = JSON.stringify({"registration_ids": params.token, "data": {"title" : params.title, "body" : params.body }});
+            data = JSON.stringify({"registration_ids": params.token, "data": {"title" : params.title, "body" : params.body, "notiId" : params.notiId }});
         }
 
 
