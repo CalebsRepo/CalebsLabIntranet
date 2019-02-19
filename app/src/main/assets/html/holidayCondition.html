@@ -21,12 +21,15 @@
 
     <!-- 휴가현황조회-->
     $(document).ready(function(){
-        navigate("","getMyHoliday.json", sucessFncMyHoliday,"" );
+        var workingYear = "0";
+        var param = {workingYear : workingYear}
+        navigate(param,"getMyHoliday.json", sucessFncMyHoliday,"" );
         navigate("","getHolidayConditionExcell.json", sucessFncExcel,"");
     });
 
     <!-- 휴가현황조회 ajax통신 성공 -->
     function sucessFncMyHoliday(result) {
+        console.log (JSON.stringify(result));
         resultSum += JSON.stringify(result);
         var ajaxResult=result
         for(var i=0; i<ajaxResult.length; i++) {
@@ -68,21 +71,26 @@
     <!-- 휴가현황상세 페이지 이동 -->
     function getHolidayDetail(obj){
         var selectId = $(obj).children('.detailID').val();
-        var params = { sessionId : selectId };
+        var workingYear = 0;
+        var params = {
+            sessionId : selectId,
+            workingYear : workingYear
+        };
         navigate(params,"getMyHoliday.json", detailSuccess, "");
     }
     function detailSuccess(result){
         movePage('holidayConditionDetail.html',result);
     }
-
+    var newResult = "";
     <!-- 엑셀 ajax통신 성공 -->
     function sucessFncExcel(result) {
         resultSum += "@" + JSON.stringify(result);
+        newResult = JSON.stringify(result);
     } // --- End of sucessFncExcel
 
     function getExcel(){
-        console.log(resultSum);
-        window.android.saveExcel(resultSum);
+        console.log(newResult);
+        window.android.saveExcel(newResult);
     }
     </script>
 </head>

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../css/holidayCondition.css">
     <link rel="stylesheet" href="../css/menu.css">
     <script src="../js/common.js"></script>
+    <script src="../js/login.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <title>휴가현황상세</title>
     <script language = "javascript">
@@ -20,15 +21,56 @@
     <!-- 페이지 넘어올때 -->
     $(function(){
         ajaxResult = JSON.parse(getStorageItem());
-        console.log(ajaxResult)
+        console.log("페이지로딩시" + JSON.stringify( ajaxResult))
         for(var i=0; i<ajaxResult.length; i++) {
             var holidayListview = document.getElementById('holidayListview');
 
             var join_year       = ajaxResult[i].join_year;          //  근무년수
+            var join_mon       = ajaxResult[i].join_mon;          //  근무년수
             var join_day        = ajaxResult[i].join_day;           //  근무일수
-            var usingHolilday   = ajaxResult[i].use_holiday_cnt     //  사용휴가일수
-            var workingYear     = join_year + 1;
             var workingDate     = ""                                // 근무기간( 'x년x개월x일')
+            <!-- 넘어올때는 무조건 0 값이라 셀렉트 벨류값 계산안해도 됨 수정 ㄱㄱ -->
+            var usingHolilday   = ajaxResult[i].use_holiday_cnt         //  사용휴가일수
+            var usingHolilday2   = ajaxResult[i].c_use_holiday_cnt     //  사용휴가일수
+
+            var workingYear = join_year+1 - parseInt($('#workYear option:selected').val());
+            var workingYear2 = join_year - parseInt($('#workYear option:selected').val());
+
+            var holidayCnt      =  calculationHoliday(workingYear,join_mon, join_day)
+            var holidayCnt2      =  calculationHoliday(workingYear2,join_mon, join_day)
+
+            var holidayResult = holidayCnt - usingHolilday;
+            var holidayResult2 = holidayCnt2 - usingHolilday2;
+
+            if(usingHolilday == 0 ) {
+                $('#selectYearList').before( "<div class='info-text'><h3 style='margin: 0; text-align:center;'>휴가사용내역이 없습니다.</h3></div>");
+                $('#selectYearList').hide();
+            }
+            if (usingHolilday2 == 0) {
+                $('#compareYearList').hide();
+                $('#compareYearList').before( "<div class='info-text2'><h3 style='margin: 0; text-align:center;'>휴가사용내역이 없습니다.</h3></div>");
+            }
+
+
+            var holidayInfo = document.getElementById("info-banner");
+            holidayInfo.innerHTML = "<div><h3 style='margin: 0;'>"+ workingYear +" 년차</h3></div>"
+                                +"<div> 연차 발생기간 : " + ajaxResult[i].hs_ymd +" ~ " + ajaxResult[i].he_ymd  + "</div>"
+                                +"<div> 연차 발생 일수 : " + holidayCnt +" 일 </div>"
+                                +"<div> 연차 사용 일수 : " + usingHolilday +" 일 </div>"
+                                +"<div> 남은 연차일수 : " + holidayResult + " 일</div>"
+
+            var holidayInfo2 = document.getElementById("info-banner2");
+            if (workingYear2 != 0) {
+                holidayInfo2.innerHTML ="<div><h3 style='margin: 0;'>"+ workingYear2 +" 년차</h3></div>"
+                                        +"<div> 연차 발생기간 : " + ajaxResult[i].chs_ymd +" ~ " + ajaxResult[i].che_ymd  + "</div>"
+                                        +"<div> 연차 발생 일수 : " + holidayCnt2 +" 일 </div>"
+                                        +"<div> 연차 사용 일수 : " + usingHolilday2 +" 일 </div>"
+                                        +"<div> 남은 연차일수 : " + holidayResult2 + " 일</div>"
+            }else {
+                $(".divider").hide();
+                $(".info-text2").children().remove();
+            }
+
 
             <!-- 근무기간 계산 -->
             if(join_day < 30) {
@@ -73,6 +115,7 @@
         var selectId    = $(".detailID").val();
         var selectYear  = - $("#workYear option:selected").val();
         var compareYear = selectYear -1;
+
         var params = {
                 selectId : selectId,
                 selectYear : selectYear,
@@ -95,11 +138,16 @@
             var params = {
                 selectId : selectId,
                 selectYear : selectYear,
+                workingYear : selectYear
             }
+            console.log(params)
             var compareParams = {
                 selectId : selectId,
                 compareYear : compareYear
             }
+            $(".info-text").children().remove();
+            $(".info-text2").children().remove();
+
             $("#my-tbody").children().remove();
             $("#info-banner").children().remove();
             navigate( params,"getHolidayConditionDetail.json", sucessFncMyHoliday);
@@ -107,8 +155,80 @@
             $("#my-tbody2").children().remove();
             $("#info-banner2").children().remove();
             navigate( compareParams,"getHolidayConditionDetail.json", sucessFncMyHoliday);
+            navigate( params, "getMyHoliday.json", getMyHoliday);
         });
     });
+    <!-- 연차정보 뿌리기 -->
+    function getMyHoliday(result) {
+        ajaxResult = result;
+       var usingHolilday = 0;
+
+        console.log("newnewnewnewnew " +  JSON.stringify(result))
+        for(var i=0; i<ajaxResult.length; i++) {
+            var join_year       = ajaxResult[i].join_year;          //  근무년수
+            var join_mon       = ajaxResult[i].join_mon;          //  근무년수
+            var join_day        = ajaxResult[i].join_day;           //  근무일수
+            var workingDate     = ""                                // 근무기간( 'x년x개월x일')
+            <!-- 넘어올때는 무조건 0 값이라 셀렉트 벨류값 계산안해도 됨 수정 ㄱㄱ -->
+            var usingHolilday   = ajaxResult[i].use_holiday_cnt         //  사용휴가일수
+            var usingHolilday2   = ajaxResult[i].c_use_holiday_cnt     //  사용휴가일수
+
+            var workingYear = join_year+1 - parseInt($('#workYear option:selected').val());
+            var workingYear2 = join_year - parseInt($('#workYear option:selected').val());
+
+            var holidayCnt      =  calculationHoliday(workingYear,join_mon, join_day)
+            var holidayCnt2      =  calculationHoliday(workingYear2,join_mon, join_day)
+
+            var holidayResult = holidayCnt - usingHolilday;
+            var holidayResult2 = holidayCnt2 - usingHolilday2;
+
+            var holidayInfo = document.getElementById("info-banner");
+            var holidayInfo2 = document.getElementById("info-banner2");
+
+            $('#selectYearList').show();
+            $('#compareYearList').show();
+
+            if(usingHolilday == 0 ) {
+                $('#selectYearList').before( "<div class='info-text'><h3 style='margin: 0; text-align:center;'>휴가사용내역이 없습니다.</h3></div>");
+                $('#selectYearList').hide();
+            }
+            if (usingHolilday2 == 0) {
+                $('#compareYearList').hide();
+                $('#compareYearList').before( "<div class='info-text2'><h3 style='margin: 0; text-align:center;'>휴가사용내역이 없습니다.</h3></div>");
+            }
+
+
+            holidayInfo.innerHTML = "<div><h3 style='margin: 0;'>"+ workingYear +" 년차</h3></div>"
+                                +"<div> 연차 발생기간 : " + ajaxResult[i].hs_ymd +" ~ " + ajaxResult[i].he_ymd  + "</div>"
+                                +"<div> 연차 발생 일수 : " + holidayCnt +" 일 </div>"
+                                +"<div> 연차 사용 일수 : " + usingHolilday +" 일 </div>"
+                                +"<div> 남은 연차일수 : " + holidayResult + " 일</div>"
+
+            if (workingYear2 != 0) {
+                holidayInfo2.innerHTML ="<div><h3 style='margin: 0;'>"+ workingYear2 +" 년차</h3></div>"
+                                        +"<div> 연차 발생기간 : " + ajaxResult[i].chs_ymd +" ~ " + ajaxResult[i].che_ymd  + "</div>"
+                                        +"<div> 연차 발생 일수 : " + holidayCnt2 +" 일 </div>"
+                                        +"<div> 연차 사용 일수 : " + usingHolilday2 +" 일 </div>"
+                                        +"<div> 남은 연차일수 : " + holidayResult2 + " 일</div>"
+            }else {
+                $(".divider").hide();
+                $(".info-text2").children().remove();
+            }
+        }
+    }
+    function calculationHoliday(joinYear,joinMon,joinDay) {
+        var holidayCnt = 15;
+        var wd_80 = 292;                                     //  입사 후 1년 80% 근무일수
+        if(joinYear == 3) {
+            holidayCnt = holidayCnt + 1;
+        }else if(joinYear > 3) {
+            holidayCal = holidayCnt + 1 + Math.floor(( joinYear - 3)/2);
+            holidayCnt = (holidayCal > 25) ? 25 : holidayCal;
+        }else if(joinDay < wd_80) {
+            holidayCnt = joinMon * 1;
+        };
+        return holidayCnt;
+    }
 
     <!--휴가사용내역 ajax통신 성공-->
     function sucessFncMyHoliday(result) {
@@ -128,23 +248,8 @@
             var workingYear = join_year+1 - parseInt($('#workYear option:selected').val());
             var c_join_year = join_year - parseInt($('#workYear option:selected').val());
 
-            console.log("sucessFncMyHoliday>2222222>>>>>" + ajaxResult[i].chs_ymd);
             if (ajaxResult[i].chs_ymd == ajaxResult[i].hs_ymd) {
-                if(workingYear == 3) {
-                    holidayCnt = holidayCnt + 1;
-                }else if(workingYear > 3) {
-                    holidayCal = holidayCnt + 1 + Math.floor(( workingYear - 3)/2);
-                    holidayCnt = (holidayCal > 25) ? 25 : holidayCal;
-                }else if(join_day < wd_80) {
-                    holidayCnt = join_mon * 1;
-                };
-                var holidayResult = holidayCnt - usingHolilday;
-                var holidayInfo = document.getElementById("info-banner");
-                holidayInfo.innerHTML = "<div><h3 style='margin: 0;'>"+ $('#workYear option:selected').text() +"</h3></div>"
-                                    +"<div> 연차 발생기간 : " + ajaxResult[i].hs_ymd +" ~ " + ajaxResult[i].he_ymd  + "</div>"
-                                    +"<div> 연차 발생 일수 : " + holidayCnt +" 일 </div>"
-                                    +"<div> 연차 사용 일수 : " + usingHolilday +" 일 </div>"
-                                    +"<div> 남은 연차일수 : " + holidayResult + " 일</div>"
+
 
 
                 var my_tbody = document.getElementById('my-tbody');
@@ -160,22 +265,7 @@
                     cell3.innerHTML = ajaxResult[i].h_type +"/"+ ajaxResult[i].h_flag
                     cell4.innerHTML = ajaxResult[i].start_ymd +"<br/> ~ <br/>" + ajaxResult[i].end_ymd
             } else {
-                if(c_join_year == 3) {
-                    holidayCnt = holidayCnt + 1;
-                }else if(c_join_year > 3) {
-                    holidayCal = holidayCnt + 1 + Math.floor(( c_join_year - 3)/2);
-                    holidayCnt = (holidayCal > 25) ? 25 : holidayCal;
-                }else if(join_day < wd_80) {
-                    holidayCnt = join_mon * 1;
-                };
-                var holidayResult = holidayCnt - usingHolilday;
 
-                var holidayInfo2 = document.getElementById("info-banner2");
-                holidayInfo2.innerHTML ="<div><h3 style='margin: 0;'>"+ c_join_year +" 년차</h3></div>"
-                                        +"<div> 연차 발생기간 : " + ajaxResult[i].chs_ymd +" ~ " + ajaxResult[i].che_ymd  + "</div>"
-                                        +"<div> 연차 발생 일수 : " + holidayCnt +" 일 </div>"
-                                        +"<div> 연차 사용 일수 : " + usingHolilday +" 일 </div>"
-                                        +"<div> 남은 연차일수 : " + holidayResult + " 일</div>"
 
                 var my_tbody2 = document.getElementById('my-tbody2');
                 var row = my_tbody2.insertRow( my_tbody2.rows.length );

@@ -3,13 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
-
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <link rel="stylesheet" href="../css/menu.css">
     <link rel="stylesheet" href="../css/project_plan.css">
     <script src="../js/common.js"></script>
+    <script src="../js/login.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
+    <title></title>
+    <!--로그인 세션 공통-->
+    <script>
+    var loginUser = JSON.parse(getUserData());
+    var loginUserAdmFlag = loginUser.adm_flag;
+    $(document).ready(function(){
+         if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
+            $(".admMenu").show();
+        }
+    });
+    </script>
     <script type="text/javascript">
         var trigger = "";
         var start_num = 0;
@@ -64,7 +76,11 @@
             paramJSON.start_num = start_num;
             paramJSON.trigger = trigger;
 
-            navigate(paramJSON, "getProjectList.json", projectSelectSuccess);
+            navigate(paramJSON, "getProjectList.json", projectSelectSuccess, dbSelectError);
+        }
+
+        function dbSelectError(result) {
+            console.log("실패");
         }
 
         function projectSelectSuccess(result) {
@@ -79,22 +95,22 @@
 
             var iHTML = "";
             //데이터가 없을 시
-            if(parseProjectResult.length < 1) {
+            if(parseProjectResult.data.length < 1) {
                 iHTML += "<div class='ui-corner-all' style='text-align: center;'>";
                 iHTML += "<span color='red'>조회내역이 없습니다.</span>";
                 iHTML += "</div>";
             }
 
-            for(var i=0; i<parseProjectResult.length; i++) {
-                var member_cnt = parseProjectResult[i].member_cnt;
+            for(var i=0; i<parseProjectResult.data.length; i++) {
+                var member_cnt = parseProjectResult.data[i].member_cnt;
                 console.log("member_cnt = " + member_cnt);
-                var end_ymd = parseProjectResult[i].end_ymd;
+                var end_ymd = parseProjectResult.data[i].end_ymd;
                 console.log("end_ymd = " + end_ymd);
-                var start_ymd = parseProjectResult[i].start_ymd;
+                var start_ymd = parseProjectResult.data[i].start_ymd;
                 console.log("start_ymd = " + start_ymd);
-                var project_code = parseProjectResult[i].project_code;
+                var project_code = parseProjectResult.data[i].project_code;
                 console.log("project_code = " + project_code);
-                var project_name = parseProjectResult[i].project_name;
+                var project_name = parseProjectResult.data[i].project_name;
                 console.log("project_name = " + project_name);
                 var project_sts = "";
                 // 프로젝트 상태를 현재날짜와 시작,종료일을 이용하여 구한다.
@@ -121,10 +137,14 @@
             $("#listArea").append(iHTML);
             start_num = start_num + 10;
 
-            if(parseProjectResult.length < 10){
+            if(parseProjectResult.data.length < 10){
                 $('#btnMore').hide();
             } else {
-                $('#btnMore').show();
+                if(parseProjectResult.ttcn.ttcn == start_num) {
+                    $('#btnMore').hide();
+                } else {
+                    $('#btnMore').show();
+                }
             }
         }
     </script>
@@ -135,36 +155,37 @@
     <!-- header -->
     <header data-role="header">
         <h1>프로젝트 목록</h1>
-        <a class="ui-btn ui-corner-all ui-btn-inline ui-mini footer-button-left ui-btn-icon-left ui-icon-carat-l" href="javascript:history.back()">back</a>
-        <a href="#menuPanel" data-icon="bars">menu</a>
+        <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
     </header>
-    <div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
-        <h2>메뉴</h2>
-        <ul data-role="listview">
+
+    <div data-role="panel" class="menuPanel"id="menuPanel" data-position="right"  data-display="overlay" data-theme="a">
+        <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
+        <ul id="menuPanelList"data-role="listview">
             <p>내정보</p>
-            <li><a href="#">마이페이지</a></li>
+            <li><a onclick= "movePage('employeeDetail.html')" >마이페이지</a></li>
             <p>프로젝트</p>
-            <li><a href="#">프로젝트</a></li>
-            <li><a href="#">프로젝트일정 목록</a></li>
+            <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
+            <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
             <p>휴가</p>
-            <li><a href="#">휴가신청</a></li>
-            <li><a href="#">휴가신청내역</a></li>
-            <li><a href="#">휴가캘린더</a></li>
+            <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+            <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
+            <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
             <p>게시판</p>
-            <li><a href="#">FAQ</a></li>
-            <p>관리</p>
-            <li><a href="#">사원등록</a></li>
-            <li><a href="#">사원목록</a></li>
-            <li><a  onclick="movePage('main.html')">휴가현황</a></li>
+            <li><a onclick= "movePage('qnaList.html')" >FAQ</a></li>
+            <p class="admMenu">관리</p>
+            <li class="admMenu"><a onclick= "movePage('employeeDetail.html')" >사원등록</a></li>
+            <li class="admMenu"><a onclick= "movePage('employeeInfo.html')" >사원목록</a></li>
+            <li class="admMenu"><a onclick= "movePage('holidayCondition.html')">휴가현황</a></li>
         </ul>
     </div>
+
     <!--container-->
     <div data-role="content" class="project-list">
         <!--제목, flip(진행중, 전체)추가버튼-->
         <div  class="title-area">
             <div class="gird-pt">
                 <div class="grid-cd-1">
-                    <h3>• 프로젝트 일정 </h3>
+                    <h3>• 프로젝트 목록 </h3>
                 </div>
 
                 <div class="grid-cd-2">
@@ -179,7 +200,7 @@
                     </style>
                 </div>
                 <div class="grid-cd-3">
-                    <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b">추가</a>
+                    <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b" onclick="movePage('projectRegister.html')">추가</a>
                 </div>
             </div>
         </div>
@@ -217,15 +238,14 @@
          <button class="ui-btn ui-corner-all ui-btn-b" id="btnMore" onclick="getProject()">더보기</button>
         </div>
     </div>
-    <!--//container-->
     <!-- footer -->
-    <div style="overflow: hidden;" data-role="footer" data-position="fixed">
+    <div class="footer" data-role="footer" data-position="fixed">
         <div data-role="navbar">
             <ul>
-                <li><a href="#" data-icon="home">홈</a></li>
-                <li><a href="#" data-icon="shop">프로젝트</a></li>
+                <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
+                <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
                 <li><a href="#" data-icon="calendar">휴가신청</a></li>
-                <li><a href="#" data-icon="power">로그아웃</a></li>
+                <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
             </ul>
         </div>
     </div>

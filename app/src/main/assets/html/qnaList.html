@@ -6,6 +6,8 @@
 
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
     <link rel="stylesheet" href="../css/project_plan.css">
+    <link rel="stylesheet" href="../css/menu.css">
+
     <script src="../js/common.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
@@ -63,19 +65,21 @@
         function successQnaList(data) {
 
             $("#qnaList").empty();
+
             var html = "<ul data-role='listview' data-inset='true' class='ui-listview ui-listview-inset ui-corner-all ui-shadow'data-theme='b' id='listViewUl'>";
+            var qnaList = data.qnaList;
 
             //데이터가 없을 시
-            if(data.length-1 < 1) {
+            if(qnaList.length < 1) {
                 html += "<li class='ui-corner-all'>";
                 html += 	"<div class='qna qna-title'>조회 결과가 없습니다.</div>";
                 html += "</li>";
             }
 
-            for(var i=0; i<data.length-1; i++) {
+            for(var i=0; i<qnaList.length; i++) {
                 html += "<li class='ui-corner-all'>";
-                html += 	"<a href=''#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r'onclick='addSessionStorage(" + data[i].regnum + ")'>";
-                html += 		"<span>" + data[i].subject + "</span>";
+                html += 	"<a href=''#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r'onclick='addSessionStorage(" + qnaList[i].regnum + ")'>";
+                html += 		"<span>" + qnaList[i].subject + "</span>";
                 html += 	"</a>";
                 html += "</li>";
             }// end of for-------------------
@@ -83,7 +87,7 @@
             html += "</ul>";
 
             // 페이지 총수
-            $("#pageMaxNum").val(data[data.length-1].totalPage);
+            $("#pageMaxNum").val(data.totalPage);
 
             var pageNum = Number($("#pageNum").val());
             var pageMaxNum = Number($("#pageMaxNum").val());
@@ -106,11 +110,12 @@
         function successMoreList(data) {
 
             var html = "";
+            var qnaList = data.qnaList;
 
-            for(var i=0; i<data.length-1; i++) {
+            for(var i=0; i<qnaList.length; i++) {
                 html += "<li class='ui-corner-all'>";
-                html += 	"<a href=''#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r'onclick='addSessionStorage(" + data[i].regnum + ")'>";
-                html += 		"<span>" + data[i].subject + "</span>";
+                html += 	"<a href=''#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r'onclick='addSessionStorage(" + qnaList[i].regnum + ")'>";
+                html += 		"<span>" + qnaList[i].subject + "</span>";
                 html += 	"</a>";
                 html += "</li>";
             }// end of for() -------------------
@@ -137,44 +142,33 @@
 
 	</script>
 
-    <style type="text/css">
-        .ui-btn-icon-top { padding-top : 3em;}
-        .ui-bar { text-align: center; }
-        .ui-bar .header-menu { float: right; }
-        .ui-bar .header-back { float: left; }
-        .ui-panel { width : 20em;}
-        #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
-
-    </style>
-
 </head>
 
 <body>
+<!-- header -->
 <header data-role="header">
-    <div class="ui-bar">
-        <button class="header-back"><span>back</span></button>
-        <h1>CalebsLab</h1>
-        <a href="#menuPanel" class="btn header-menu">Menu</a>
-    </div>
+    <h1>CalebsLab</h1>
+    <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
 </header>
-<div data-role="panel" id="menuPanel" data-position="right" data-display="overlay" data-theme="a">
-    <h2>메뉴</h2>
-    <ul data-role="listview">
+
+<div data-role="panel" class="menuPanel"id="menuPanel" data-position="right"  data-display="overlay" data-theme="a">
+    <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
+    <ul id="menuPanelList"data-role="listview">
         <p>내정보</p>
-        <li><a href="#">마이페이지</a></li>
+        <li><a onclick= "movePage('employeeDetail.html')" >마이페이지</a></li>
         <p>프로젝트</p>
-        <li><a href="#">프로젝트</a></li>
-        <li><a href="#">프로젝트일정 목록</a></li>
+        <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
+        <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
         <p>휴가</p>
-        <li><a href="#">휴가신청</a></li>
-        <li><a href="#">휴가신청내역</a></li>
-        <li><a href="#">휴가캘린더</a></li>
+        <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+        <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
+        <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
         <p>게시판</p>
-        <li><a href="#">FAQ</a></li>
-        <p>관리</p>
-        <li><a href="#">사원등록</a></li>
-        <li><a href="#">사원목록</a></li>
-        <li><a  onclick="movePage('main.html')">휴가현황</a></li>
+        <li><a onclick= "movePage('qnaList.html')" >FAQ</a></li>
+        <p class="admMenu">관리</p>
+        <li class="admMenu"><a onclick= "movePage('employeeDetail.html')" >사원등록</a></li>
+        <li class="admMenu"><a onclick= "movePage('employeeInfo.html')" >사원목록</a></li>
+        <li class="admMenu"><a onclick= "movePage('holidayCondition.html')">휴가현황</a></li>
     </ul>
 </div>
 <section id="page1">
@@ -207,13 +201,13 @@
 
 </section>
 <!-- footer -->
-<div style="overflow: hidden;" data-role="footer" data-position="fixed">
+<div class="footer" data-role="footer" data-position="fixed">
     <div data-role="navbar">
         <ul>
-            <li><a href="#" data-icon="home">홈</a></li>
-            <li><a href="#" data-icon="shop">프로젝트</a></li>
+            <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
+            <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
             <li><a href="#" data-icon="calendar">휴가신청</a></li>
-            <li><a href="#" data-icon="power">로그아웃</a></li>
+            <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
         </ul>
     </div>
 </div>

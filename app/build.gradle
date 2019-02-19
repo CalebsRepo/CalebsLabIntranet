@@ -27,4 +27,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation files('libs/poi-3.17.jar')
     implementation files('libs/ftp4j-1.7.2.jar')
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-messaging:17.3.4'
 }
+apply plugin: 'com.google.gms.google-services'

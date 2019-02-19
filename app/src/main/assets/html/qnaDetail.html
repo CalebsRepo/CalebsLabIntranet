@@ -6,6 +6,8 @@
 
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
     <link rel="stylesheet" href="../css/project_plan.css">
+    <link rel="stylesheet" href="../css/menu.css">
+
     <script src="../js/common.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
@@ -13,6 +15,7 @@
     <title></title>
     <script>
         var userInfo = JSON.parse(getUserData());
+        var tokenArray = new Array();               // 토큰 배열
 
     	$(document).ready(function(){
 
@@ -36,6 +39,8 @@
     			// 취소 삭제 수정 버튼
     			$(".btn-area-3").hide();
     		}
+            // 토큰값 가져와서 tokenArray에 넣어주기
+    		navigate({}, "getMemberAllToken.json", succesGetTokens);
 
     	});// end of $(document).ready()-----------------------------------------------
 
@@ -50,7 +55,11 @@
     	}// end of showQnaDetail()---------------------------------------
 
     	// insert update delete 작업을 해주는 함수
-    	function commit(num) {
+    	function commit(num, str) {
+
+           if( confirm(str + "하시겠습니까?") == false ) {
+                return;
+           }
 
     	    //null 검사
     	    if( $("#qna-title").val() == "" || $("#qna-title").val() == null) {
@@ -145,6 +154,15 @@
         function successInsert(data) {
 
             alert("등록되었습니다.");
+
+             var sendPushMessage = {
+                title   : '새로운 공지',
+                body    : $("#qna-title").val(),
+                token   : tokenArray
+            };
+            // 전체 알림
+            sendFirebase(sendPushMessage, "multi");
+
 			movePage("qnaList.html");
 
         }// end of successInsert(data) ---------------------------------------
@@ -164,6 +182,14 @@
 
         }// end of successInsert(data) ---------------------------------------
 
+        function succesGetTokens(data) {
+
+            for(var i=0; i<data.length; i++){
+                tokenArray[i] = data[i].push_token;
+            }
+
+        }// end of succesGetTokens(data) ------------------------------------------
+
     </script>
 
     <style>
@@ -175,6 +201,32 @@
 </head>
 
 <body>
+<!-- header -->
+<header data-role="header">
+    <h1>CalebsLab</h1>
+    <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
+</header>
+
+<div data-role="panel" class="menuPanel"id="menuPanel" data-position="right"  data-display="overlay" data-theme="a">
+    <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
+    <ul id="menuPanelList"data-role="listview">
+        <p>내정보</p>
+        <li><a onclick= "movePage('employeeDetail.html')" >마이페이지</a></li>
+        <p>프로젝트</p>
+        <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
+        <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
+        <p>휴가</p>
+        <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+        <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
+        <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
+        <p>게시판</p>
+        <li><a onclick= "movePage('qnaList.html')" >FAQ</a></li>
+        <p class="admMenu">관리</p>
+        <li class="admMenu"><a onclick= "movePage('employeeDetail.html')" >사원등록</a></li>
+        <li class="admMenu"><a onclick= "movePage('employeeInfo.html')" >사원목록</a></li>
+        <li class="admMenu"><a onclick= "movePage('holidayCondition.html')">휴가현황</a></li>
+    </ul>
+</div>
 <section id="page1">
     <div data-role="content" class="qna-detail">
         <!--QnA 상세페이지화면-->
@@ -211,14 +263,14 @@
                 <div class="btn-area-3">
                     <div class="grid-pt">
                         <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
-                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(3);">삭제</a></div>
-                        <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(2);">수정</a></div>
+                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(3,'삭제');">삭제</a></div>
+                        <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(2,'수정');">수정</a></div>
                     </div>
                 </div>
                 <div class="btn-area-1">
                     <div class="grid-pt">
                         <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
-                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(1);">등록</a></div>
+                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(1,'등록');">등록</a></div>
                     </div>
                 </div>
                 <div class="btn-area-2">
@@ -230,5 +282,16 @@
         </div>
     </div>
 </section>
+<!-- footer -->
+<div class="footer" data-role="footer" data-position="fixed">
+    <div data-role="navbar">
+        <ul>
+            <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
+            <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
+            <li><a href="#" data-icon="calendar">휴가신청</a></li>
+            <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
+        </ul>
+    </div>
+</div>
 </body>
 </html>
