@@ -132,3 +132,36 @@
 
         return userData;
     }
+
+    // push 보내기 추가
+    function sendFirebase(params, flag) {
+        var data = "";
+
+        if(flag == "single") {  // 단건 push
+            data = JSON.stringify({"to": params.token, "data": {"title" : params.title, "body" : params.body }});
+        }else if(flag == "multi") { // 다건 push
+            data = JSON.stringify({"registration_ids": params.token, "data": {"title" : params.title, "body" : params.body }});
+        }
+
+
+        $.ajax({
+            type : 'POST',
+            url : "https://fcm.googleapis.com/fcm/send",
+            headers : {
+                Authorization : 'key=' + 'AAAAkYFS9DQ:APA91bE8wpd2UMMs3a5hs5CUPuB66ibSRNJgTnyxKXAmZPegtessyPpokztLHppj9Hy2kaE22SLGHd7C79kdnDuUdjj6CGTMSnu5EFzJut9wE8q9K8e07AqNezkTlaZdX8ya1OUKbffg'
+            },
+            contentType : 'application/json',
+            dataType: 'json',
+            //data: JSON.stringify({"to": params.token, "notification": {"title" : params.title, "body" : params.body }}),
+            //data: JSON.stringify({"to": params.token, "data": {"title" : params.title, "body" : params.body }}),    // background에서 sendNotification()함수를 타기 위하여 notification대신 data를 사용한다.
+            //data: JSON.stringify({"registration_ids": params.token, "data": {"title" : params.title, "body" : params.body }}),
+            data :  data,
+
+            success : function(response) {
+                console.log(response);
+            },
+            error : function(xhr, status, error) {
+                console.log(xhr.error);
+             }
+        });
+    }

@@ -10,6 +10,8 @@
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script language="JavaScript">
 
+       var newToken = "";
+
         $(document).ready(function(){
 
             var chkSaveId = localStorage.getItem("chkSave");
@@ -22,10 +24,13 @@
                 $('#id').val(savedId);
             }
 
-
+            window.android.pushToken(); // PUSH 토큰 가져오기
 
         });
 
+        function getToken(token) {
+            newToken = token;
+        }
 
 
         function login(){
@@ -57,12 +62,39 @@
                     localStorage.setItem("chkSave","N");
                     localStorage.removeItem("savedId");
                 }
-               sessionStorage.setItem("userData",result);
-               movePage("index.html");
 
+               sessionStorage.setItem("userData",result);
+
+               /* push 토큰 비교 및 업데이트 */
+               var value        = JSON.parse(sessionStorage.getItem("userData"));
+               var sessionToken = "";
+
+               sessionToken = value.push_token;
+
+               console.log("sessionToken : " + sessionToken);
+
+               if((sessionToken != newToken) || sessionToken == "" || sessionToken == null) {
+
+                    push_token = newToken;
+
+                    var params = {
+                        id         : id,
+                        push_token : push_token
+                    };
+                    navigate(params, "tokenUpdate.json", tokenUpdateSuccess);
+                }else {
+                    movePage("index.html");
+                }
             }else{
                 alert("입력한 회원정보가 일치하지 않습니다");
             }
+
+            /* push토큰 업데이트 완료 후*/
+            function tokenUpdateSuccess() {
+                movePage("index.html");
+            }
+
+
         }
 
     </script>

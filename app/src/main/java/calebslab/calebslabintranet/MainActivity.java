@@ -22,6 +22,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.JsonToken;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebBackForwardList;
@@ -59,6 +60,9 @@ import component.Contacts;
 import it.sauronsoftware.ftp4j.FTPClient;
 import it.sauronsoftware.ftp4j.FTPDataTransferListener;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -85,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList imgRealPath = new ArrayList();
 
     private final Handler handler = new Handler();
+    private Object JsonToken;
 
 
     @SuppressLint("JavascriptInterface")
@@ -766,6 +771,30 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+
+        /* getNativePushToken() 호출 */
+        @JavascriptInterface
+        public void pushToken() {
+            Log.d("GWNAM", "Web JS에서 MainActivity쪽 function 호출");
+            getNativePushToken();
+        }
+
+        /* PUSH 토큰 보내기 */
+        public void getNativePushToken() {
+            Log.d("GWNAM", "Native영역 Token 정보 가져오기");
+            JsonToken = FirebaseInstanceId.getInstance().getToken();
+
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    String args = null;
+                    if(JsonToken != null) args = JsonToken.toString();
+                    Log.d("GWNAM", "jsonContacts = "+ args);
+                    web.loadUrl("javascript:getToken('" + args + "')"); // 해당 url의 자바스크립트 함수 호출
+                }
+            });
+        }
+
     }
 
 

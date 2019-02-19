@@ -18,6 +18,16 @@
             $(".admMenu").show();
         }
     });
+
+    function viewHolidayDetail() {
+
+		    var params = {
+		        gubun       : "2"           // 휴가신청페이지 구분 값
+		    };
+
+		    movePage('holidayDetail.html', params);
+        }
+
     </script>
 </head>
 
@@ -95,6 +105,9 @@
     </div>
     <div class="content" data-role="content" onclick="movePage('main.html')">
         <button type="button" id="btMainPage" >메인페이지</button>
+    </div>
+    <div class="content" data-role="content" onclick="viewHolidayDetail()">
+        <button type="button" id="btHolidayDetail">휴가 신청</button>
     </div>
 
     <!-- footer -->
