@@ -15,6 +15,7 @@
     <title></title>
     <script>
         var userInfo = JSON.parse(getUserData());
+        var tokenArray = new Array();               // 토큰 배열
 
     	$(document).ready(function(){
 
@@ -38,6 +39,8 @@
     			// 취소 삭제 수정 버튼
     			$(".btn-area-3").hide();
     		}
+            // 토큰값 가져와서 tokenArray에 넣어주기
+    		navigate({}, "getMemberAllToken.json", succesGetTokens);
 
     	});// end of $(document).ready()-----------------------------------------------
 
@@ -52,7 +55,11 @@
     	}// end of showQnaDetail()---------------------------------------
 
     	// insert update delete 작업을 해주는 함수
-    	function commit(num) {
+    	function commit(num, str) {
+
+           if( confirm(str + "하시겠습니까?") == false ) {
+                return;
+           }
 
     	    //null 검사
     	    if( $("#qna-title").val() == "" || $("#qna-title").val() == null) {
@@ -147,6 +154,15 @@
         function successInsert(data) {
 
             alert("등록되었습니다.");
+
+             var sendPushMessage = {
+                title   : '새로운 공지',
+                body    : $("#qna-title").val(),
+                token   : tokenArray
+            };
+            // 전체 알림
+            sendFirebase(sendPushMessage, "multi");
+
 			movePage("qnaList.html");
 
         }// end of successInsert(data) ---------------------------------------
@@ -165,6 +181,14 @@
             movePage("qnaList.html");
 
         }// end of successInsert(data) ---------------------------------------
+
+        function succesGetTokens(data) {
+
+            for(var i=0; i<data.length; i++){
+                tokenArray[i] = data[i].push_token;
+            }
+
+        }// end of succesGetTokens(data) ------------------------------------------
 
     </script>
 
@@ -239,14 +263,14 @@
                 <div class="btn-area-3">
                     <div class="grid-pt">
                         <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
-                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(3);">삭제</a></div>
-                        <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(2);">수정</a></div>
+                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(3,'삭제');">삭제</a></div>
+                        <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(2,'수정');">수정</a></div>
                     </div>
                 </div>
                 <div class="btn-area-1">
                     <div class="grid-pt">
                         <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
-                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(1);">등록</a></div>
+                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(1,'등록');">등록</a></div>
                     </div>
                 </div>
                 <div class="btn-area-2">

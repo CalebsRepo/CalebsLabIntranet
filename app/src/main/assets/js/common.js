@@ -156,7 +156,7 @@
             //data: JSON.stringify({"to": params.token, "data": {"title" : params.title, "body" : params.body }}),    // background에서 sendNotification()함수를 타기 위하여 notification대신 data를 사용한다.
             //data: JSON.stringify({"registration_ids": params.token, "data": {"title" : params.title, "body" : params.body }}),
             data :  data,
-
+            async : false,
             success : function(response) {
                 console.log(response);
             },
