@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+    <script src="../js/common.js"></script>
+    <script src="../js/login.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script language="JavaScript">
+
+        $(document).ready(function(){
+
+            var resultId = getStorageItem();
+            var id = JSON.parse(resultId);
+            $('#resultId').html(id);
+
+        });
+    </script>
+
+    <style>
+        #title{border-bottom: 1px solid #ddd; font-size: 1.6em; padding-bottom: .2em;}
+        #findIdDiv {background-color:white; padding:10% 10% 0 10%; height: 100%;}
+        #okDiv {margin-top: 20%}
+        #okBtn {margin:0 auto; width: 49%;}
+    </style>
+</head>
+
+<body bgcolor="#E6E6FA">
+<div id="findIdDiv" class="container">
+    <h2 id="title">아이디 찾기</h2>
+    <div style="text-align:center; margin-top: 40%">
+        <p><h3>갈렙스랩 계정 아이디는 <br/><strong id="resultId"></strong> 입니다</h3></p>
+    </div>
+    <div id="okDiv" onclick="event.cancelBubble = true;">
+        <button class="ui-btn ui-corner-all" id="okBtn" onclick="movePage('login.html')">확인</button>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -14,9 +14,15 @@
 
             var email = $('#email').val();
             var birth = $('#birth').val();
+            var id = $('#id').val();
 
             if(email == null || email ==''){
                 alert("이메일 입력해주세요");
+                return false;
+            }
+
+            if(id == null || id ==''){
+                alert("아이디를 입력해주세요");
                 return false;
             }
 
@@ -25,14 +31,15 @@
                 return false;
             }
 
-            var param = {"email" : email, "birth" : birth};
+            var param = {"email" : email, "id" : id , "birth" : birth};
 
-            navigate(param,"findId.json",successFindId);
+            navigate(param,"mailSender",successFindId);
 
         }
 
         function successFindId(result){
-            movePage("resultId.html",result.result);
+            alert("메일전송 : "+result.result);
+            //movePage("resultPw.html",result.result);
         }
 
     </script>
@@ -44,14 +51,16 @@
 
 <body bgcolor="#E6E6FA">
 <header data-role="header">
-    <h1>아이디 찾기</h1>
+    <h1>비밀번호 찾기</h1>
 </header>
 <div id="findIdDiv" class="container">
 
     <div>
-        <p>아이디 조회를 위해 생년월일과 가입시 등록한 이메일주소를 정확히 입력하여주시기 바랍니다.</p>
+        <p>비밀번호 찾기를 위해 생년월일, 아이디, 가입시 등록한 이메일주소를 정확히 입력하여주시기 바랍니다.</p>
         <label for="email">이메일</label>
         <input type="text" name="email" id="email" value="">
+        <label for="id">아이디</label>
+        <input type="text" name="id" id="id" value="">
         <label for="birth">생년월일</label>
         <input type="text" name="birth" id="birth" value="">
 
