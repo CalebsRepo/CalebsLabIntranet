@@ -724,19 +724,39 @@ public class MainActivity extends AppCompatActivity {
         //************************************************************************
         /* 이미지 Array 찾아오기 */
         @JavascriptInterface
-        public String imgPath(final int imgNum) {
+        public String imgPath(final int imgNum, final String imageInfo) {
+            Log.d("현재 올리고자하는 이미지 정보는용:",imageInfo);
             if(imgNum==1) {
-                return imgRealPath.get(0).toString();
-            }else {
-                return imgRealPath.get(1).toString();
+                /*첫 호출시 imageInfo(프로필,사인여부)를 저장해놓는다*/
+                imgRealPath.set(0,imgRealPath.get(0).toString()+":"+imageInfo);
+                return imgRealPath.get(0).toString()+":"+imageInfo;
+            }else if((imgNum==2)) {
+                /*만약에 첫번째 index의 imageInfo(프로필인지, 사인인지 여부)가
+                  두번째 index의 imageInfo와 똑같다면, 이는 갤러리를 한번 더 요청해서 이미지를 바꾸려고한것이다
+                  그러므로, 두번째 index를 지우고 해당 정보를 첫번째 index에 넣는다*/
+                if(imgRealPath.get(0).toString().matches(".*:.*")){
+                    imgRealPath.set(0,imgRealPath.get(1).toString()+":"+imageInfo);
+                    imgRealPath.remove(1);
+                    return imgRealPath.get(0).toString()+":"+imageInfo;
+                }else {
+                    return imgRealPath.get(1).toString() + ":" + imageInfo;
+                }
+            }else{
+                if(imgRealPath.get(0).toString().matches(".*:.*")) {
+                    imgRealPath.set(0,imgRealPath.get(2).toString()+":"+imageInfo);
+                    imgRealPath.remove(2);
+                    return imgRealPath.get(0).toString()+":"+imageInfo;
+                }else{
+                    imgRealPath.set(1,imgRealPath.get(2).toString()+":"+imageInfo);
+                    imgRealPath.remove(2);
+                    return imgRealPath.get(1).toString()+":"+imageInfo;
+                }
             }
         }
 
         @JavascriptInterface
         public void imgFtpSend(final String imgPathArray) {
             salesTeamArray = imgPathArray.split(",");
-            Log.d("저녁으로 뭐먹지:", salesTeamArray[0]);
-            Log.d("저녁으로 뭐먹지2:", salesTeamArray[1]);
             checkPermissions();
             NThread nThread = new NThread();
             nThread.start();
@@ -897,16 +917,20 @@ public class MainActivity extends AppCompatActivity {
             //현재 이것은 내장메모리 루트폴더에 있는 것.
             Log.d("FTP보내지기 디렉토리+이름:",imgRealPath.get(0).toString());
             Log.d("FTP보내지기전 실제 저장되야할 파일이름:","아직안넣음");
+            String filePathOrg=salesTeamArray[i].toString();
 
-            File f = new File(salesTeamArray[i]);
+            String filePath=filePathOrg.substring(1,filePathOrg.lastIndexOf(":"));
+            String fileInfo=filePathOrg.substring(filePathOrg.lastIndexOf(":")+1);
+
+            File f = new File(filePath);
             Log.d("파일 존재하는 디렉토리:",f.getParent().toString());
             Log.d("파일 이름",f.getName());;
             // Upload file
-            uploadFile(f);
+            uploadFile(f, fileInfo);
         }
     }
 
-    public void uploadFile(File fileName){
+    public void uploadFile(File fileName,String fileInfo){
 
         FTPClient client = new FTPClient();
 
@@ -914,7 +938,7 @@ public class MainActivity extends AppCompatActivity {
             client.connect(FTP_HOST,21);//ftp 서버와 연결, 호스트와 포트를 기입
             client.login(FTP_USER, FTP_PASS);//로그인을 위해 아이디와 패스워드 기입
             client.setType(FTPClient.TYPE_BINARY);//2진으로 변경
-            client.changeDirectory("/www/imployeeInfo");//서버에서 넣고 싶은 파일 경로를 기입
+            client.changeDirectory("/www/imployeeInfo/"+fileInfo);//서버에서 넣고 싶은 파일 경로를 기입
 
             client.upload(fileName, new MyTransferListener());//업로드 시작
 
@@ -924,6 +948,8 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"성공",Toast.LENGTH_SHORT).show();
                 }
             });
+            imgRealPath.remove(0);
+            imgRealPath.remove(1);
 
         } catch (Exception e) {
 
@@ -1009,7 +1035,6 @@ public class MainActivity extends AppCompatActivity {
   */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.d("파일이 가지고온 경로:", intent.getData().getPath());
         if (requestCode == FILECHOOSER_RESULTCODE) {
             if (null == mUploadMessage) {
                 return;
@@ -1026,9 +1051,10 @@ public class MainActivity extends AppCompatActivity {
             filePathCallbackLollipop = null;
         }
         Uri urlTest;
-        urlTest = intent.getData();
-        getPath(urlTest);
-
+        if(intent!=null) {
+            urlTest = intent.getData();
+            getPath(urlTest);
+        }
     }
 
     /*실제경로 구하기*/
