@@ -23,7 +23,7 @@
         ajaxResult = JSON.parse(getStorageItem());
         console.log("페이지로딩시" + JSON.stringify( ajaxResult))
         for(var i=0; i<ajaxResult.length; i++) {
-            var holidayListview = document.getElementById('holidayListview');
+            var holidayDetailListview = document.getElementById('holidayDetailListview');
 
             var join_year       = ajaxResult[i].join_year;          //  근무년수
             var join_mon       = ajaxResult[i].join_mon;          //  근무년수
@@ -87,7 +87,7 @@
                 workingDate =  year + '년 ' + month + '개월 ' + day + '일';
             }
             <!-- 사원정보 -->
-            $("#holidayListview").append("<li class='ui-corner-all'>"
+            $("#holidayDetailListview").append("<li class='ui-corner-all'>"
                                     +"<a class='list-detail ui-btn ui-corner-all'>"
                                     +"<input class='detailID' name='detailID' type='hidden' value='" + ajaxResult[i].id + "'> "
                                     +"<div class='holiday user-name'> 이름 : " + ajaxResult[i].name + "</div>"
@@ -319,7 +319,7 @@
     <div data-role="content" class="main-warp">
         <div class="gird-pt info-area">
             <h2>휴가현황 상세</h2>
-            <ul id="holidayListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a">
+            <ul id="holidayDetailListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a">
             </ul>
             <div class="ui-field-contain">
                 <label id="workYearLabel"for="workYear">연차검색</label>

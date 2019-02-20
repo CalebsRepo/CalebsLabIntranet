@@ -16,12 +16,19 @@
     .holiday-list  ul{width:100%; box-shadow:none !important;}
     .holiday-list  li{ margin-bottom:10px; box-shadow: 0 1px 3px rgba(0,0,0,.4);}
 
-    #holidayListview { margin: 0.5em 0 1em 0;}
+    #holidayListview { margin: 0.5em 0 1em 0;display:inline-block; }
+    #holidayDetailListview { margin: 0.5em 0 1em 0; }
 
 
 
     .info-text {margin-top: 1em;}
     .info-text2 {margin-top: 1em;}
+
+    .page-title { width: auto; float: left;}
+    .page-title h2{ padding:0.5em 0;}
+    .excel-btn { float : right;}
+    .excel-btn  #btExcel{ padding:0.3em 2.5em;}
+
 
 
 
