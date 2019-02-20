@@ -23,8 +23,85 @@
     <!--ajax통신 후 가지온 값 저장용 변수-->
     var ajaxResult="";
     var ajaxResult2="";
+    var ajaxCount;
     <!--페이징할때 필요한 변수:보여주고자하는 row의 시작넘버-->
     var rowNum=0;
+    <!--전체검색: 더보기 누르면 append로 더 붙여져야함-->
+    function searchMore(){
+        var employeeName= document.getElementById('nameWrite').value;
+        var params = {
+                rowNum : rowNum,
+                employeeName : employeeName
+        };
+        rowNum+=5; <!--5건씩 보여주기 원한다면 플러스5씩 전역변수에 저장-->
+        navigate(params, "employee.json", successFncMultiSndSample);
+    }
+
+    <!--이름으로 검색-->
+    function nameSearch(){
+        var employeeName= document.getElementById('nameWrite').value;
+        if(chkName(employeeName)==true){
+            rowNum=0;
+            ajaxCount=0;
+            $("#my-tbody").children().remove();
+            $("#searchMore").show();
+            searchMore();
+        }else{
+          alert("검색어를 다시 한번 확인해주세요");
+        }
+    }
+
+    <!--ajax통신 성공-->
+    function successFncMultiSndSample(data) {
+        var ajaxCount=JSON.parse(data.count); <!--리스트 count-->
+        ajaxResult=JSON.stringify(data.result); <!--리스트내용-->
+        ajaxResult2=JSON.parse(ajaxResult);
+
+    <!--더보기에서 데이터없을때-->
+        if(rowNum>=ajaxCount){ <!--리스트 count의 갯수가 같거나 rowNumber보다 작을때-->
+            $("#searchMore").hide();
+        }
+
+
+        <!--결과값이 없을 경우-->
+        if(ajaxCount==0){
+            $("#my-table").hide();
+            $("#resultMsg").attr('style', "display:inline;");
+        }else{
+            <!--결과값이 있을 경우 동적테이블만들기-->
+            $("#my-table").show();
+            $("#resultMsg").attr('style', "display:none;");
+            for(var i=0;i<ajaxResult2.length;i++){
+                console.log('******************************');
+                console.log("사원이름:"+ajaxResult2[i].NAME);
+                console.log("직급:"+ajaxResult2[i].GRADE);
+                console.log("전화번호:"+ajaxResult2[i].HP_NUM);
+                console.log("이메일:"+ajaxResult2[i].EMAIL);
+                console.log('******************************');
+
+                var my_tbody = document.getElementById('my-tbody');
+                // var row = my_tbody.insertRow(0); // 상단에 추가
+                var row = my_tbody.insertRow( my_tbody.rows.length ); // 하단에 추가
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+
+                cell1.innerHTML = "<input type=checkbox id='"+ajaxResult2[i].ID+"' data-value1='"+ajaxResult2[i].NAME+"' data-value2='"+ajaxResult2[i].HP_NUM+"' data-value3='"+ajaxResult2[i].EMAIL+"'>";
+                cell2.innerHTML = "아이디:"+ajaxResult2[i].ID+
+                                  "<br>"+"이름:"+"<a href='#' onclick='getEmployeeDetail(this)' data-value='"+ajaxResult2[i].ID+"'>"+ajaxResult2[i].NAME+"</a>"+
+                                  "<br>"+"직급:"+ajaxResult2[i].GRADE+
+                                  "<br>"+"전화번호:"+"<a href='tel:"+ajaxResult2[i].HP_NUM+"'>"+ajaxResult2[i].HP_NUM+"</a>"+
+                                  "<br>"+"이메일:"+"<a href='mailto:"+ajaxResult2[i].EMAIL+"'>"+ajaxResult2[i].EMAIL+"</a>"+
+                                  "<br>";
+
+
+            }
+        }
+    }
+    <!--ajax 통신 실패-->
+    function errorFncMultiSndSample(result) {
+        console.log("errorFncMultiSndSample>>>>>>" + JSON.stringify(result));
+    }
+
 
     <!--사원 상세보기 : 바꿀내용=>먼저 권한 체크 하고 난 다음에 조회해서 result값을 넘겨줘야함-->
     function getEmployeeDetail(obj){
@@ -44,35 +121,30 @@
         alert("권한이 없소!");
     }
 
-
     <!--주소록 내보내기:해당체크박스의 이름, 전화번호,이메일로 이루어진 id를  subString해서 사용-->
     function addressGet(){
-        var addName="";
-        var addCellPhone="";
-        var addEmail="";
+        var addName;
+        var addCellPhone;
+        var addEmail;
+        var num=$("input:checked").length;
 
-      $("input:checked").each(function() {
-        addName=$(this).attr('data-value1');
-        addCellPhone=$(this).attr('data-value2');
-        addEmail=$(this).attr('data-value3');
-      });
-        var jsonDataTest={
-            "name":addName,
-            "cellPhone":addCellPhone,
-            "email":addEmail
-        };
-
-        window.android.saveToOldContact(JSON.stringify(jsonDataTest));
-    }
-
-
-    <!--더보기: 더보기 누르면 append로 더 붙여져야함-->
-    function searchMore(){
-        var params = {
-                rowNum : rowNum,
-        };
-        rowNum+=5; <!--5건씩 보여주기 원한다면 플러스5씩 전역변수에 저장-->
-        navigate(params, "employee.json", successFncMultiSndSample);
+        if(num==0){
+           alert("사원을 선택해주세요");
+        }else if(num>1){
+           alert("사원을 한명만 선택해주세요");
+        }else{
+            $("input:checked").each(function() {
+                addName=$(this).attr('data-value1');
+                addCellPhone=$(this).attr('data-value2');
+                addEmail=$(this).attr('data-value3');
+            });
+            var jsonDataTest={
+                "name":addName,
+                "cellPhone":addCellPhone,
+                "email":addEmail
+            };
+            window.android.saveToOldContact(JSON.stringify(jsonDataTest));
+        }
     }
 
      // 정규식 : 이름
@@ -85,73 +157,6 @@
          }
      }
 
-    function caleb(hi) {
-        console.log("lab>>>>>" + hi);
-        var params = {
-            "pwd": hi
-            };
-        navigate(params, "pwdDecrypt.json", lab,"");
-    }
-
-    function lab(result) {
-        alert("허");
-    }
-
-    <!--이름으로 검색-->
-    function nameSearch(){
-        var employeeName= document.getElementById('nameWrite').value;
-        if(chkName(employeeName)==true){
-             var params = {
-                    employeeName : employeeName,
-                 };
-            navigate(params, "employeeName.json", successFncMultiSndSample);
-            $("#my-tbody").children().remove();
-            <!--이름검색시 더보기버튼 다시 활성화-->
-            $("#searchMore").show();
-        }else{
-          alert("검색어를 다시 한번 확인해주세요");
-        }
-    }
-
-    <!--ajax통신 성공-->
-    function successFncMultiSndSample(result) {
-        console.log("sucessFncMultiSndSample>>>>>" + JSON.stringify(result));
-        ajaxResult=JSON.stringify(result);
-        ajaxResult2=JSON.parse(ajaxResult);
-
-    <!--페이징에서 데이터없을때-->
-        if(ajaxResult2==null || ajaxResult2==""){
-            alert("더이상 조회할 데이터가 없습니다");
-            $("#searchMore").hide();
-        }
-    <!--동적테이블만들기-->
-        for(var i=0;i<ajaxResult2.length;i++){
-            console.log('******************************');
-            console.log("사원이름:"+ajaxResult2[i].NAME);
-            console.log("직급:"+ajaxResult2[i].GRADE);
-            console.log("전화번호:"+ajaxResult2[i].HP_NUM);
-            console.log("이메일:"+ajaxResult2[i].EMAIL);
-            console.log('******************************');
-
-            var my_tbody = document.getElementById('my-tbody');
-            // var row = my_tbody.insertRow(0); // 상단에 추가
-            var row = my_tbody.insertRow( my_tbody.rows.length ); // 하단에 추가
-            var cell1 = row.insertCell(0);
-            var cell2 = row.insertCell(1);
-
-            cell1.innerHTML = "<input type=checkbox id='"+ajaxResult2[i].ID+"' data-value1='"+ajaxResult2[i].NAME+"' data-value2='"+ajaxResult2[i].HP_NUM+"' data-value3='"+ajaxResult2[i].EMAIL+"'>";
-            cell2.innerHTML = "아이디:"+ajaxResult2[i].ID+
-                              "<br>"+"이름:"+"<a href='#' onclick='getEmployeeDetail(this)' data-value='"+ajaxResult2[i].ID+"'>"+ajaxResult2[i].NAME+"</a>"+
-                              "<br>"+"직급:"+ajaxResult2[i].GRADE+
-                              "<br>"+"전화번호:"+"<a href='tel:"+ajaxResult2[i].HP_NUM+"'>"+ajaxResult2[i].HP_NUM+"</a>"+
-                              "<br>"+"이메일:"+"<a href='mailto:"+ajaxResult2[i].EMAIL+"'>"+ajaxResult2[i].EMAIL+"</a>"+
-                              "<br>";
-        }
-    }
-    <!--ajax 통신 실패-->
-    function errorFncMultiSndSample(result) {
-        console.log("errorFncMultiSndSample>>>>>>" + JSON.stringify(result));
-    }
 
    </script>
 
@@ -189,13 +194,14 @@
                 </div>
         </div>
     <button id="addressGet" onclick="javascript:addressGet(); return false;">가져오기</button>
-    <table>
+    <table id="my-table">
         <thead>
-        <th>선택</th>
-        <th>사용자번호</th>
+            <th>선택</th>
+            <th>사용자번호</th>
         </thead>
         <tbody id="my-tbody"></tbody>
     </table>
+        <span id="resultMsg" style="display:none;">검색 결과가 없습니다</span>
         <div class="gird-pt" id>
             <button class="ui-btn ui-corner-all ui-btn-b" id="searchMore" onclick="javascript:searchMore();return false;" >더보기</button>
         </div>
