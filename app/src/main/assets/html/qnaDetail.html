@@ -74,10 +74,10 @@
     	    }
 
             /*
-    		if( checkSpecial($("#qna-title").val()) || checkSpecial($("#qna-content").val()) ){
+    		if( checkSpecial($("#qna-title").val()) || checkSpecial($("#qna-content").val()) ) {
     			console.log("특수문자 있어용");
     			return;
-    		}else{
+    		}else {
     			console.log("특수문자 없어요");
     		}
             */
@@ -157,7 +157,7 @@
 
              var sendPushMessage = {
                 title   : '새로 등록된 공지가 있습니다',
-                body    : $("#qna-title").val(),
+                body    : $("#qna-title").val() + "\n ",
                 token   : tokenArray,
                 notiId  : data.regnum
             };
