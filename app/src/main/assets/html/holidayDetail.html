@@ -57,7 +57,6 @@
     var ajaxResult      = "";
     var ajaxResult2     = "";
 
-    var newToken        = ""; // 네이티브에서 받는 토큰
     var adminToken      = ""; // 관리자 토큰
     var setToken        = ""; // 전송 토큰
 
@@ -67,7 +66,10 @@
     var sessionAdm_flag  = ""; // 세션관리자권한
     var AdminCheck       = ""; // 접속자 관리자 체크
 
-    var testId="";
+    var pushTitle        = ""; // push 제목
+    var pushBody         = ""; // push 내용
+
+    var emailSubject     = ""; // 이메일 제목
 
     $(document).ready(function() {
 
@@ -79,8 +81,6 @@
         if(sessionStorage.getItem(temp_key) != undefined && sessionStorage.getItem(temp_key) != null && sessionStorage.getItem(temp_key) != "") {
 
             var value       = JSON.parse(sessionStorage.getItem(temp_key));
-
-            console.log("value.gubun : " + value.gubun);
 
             gubun = value.gubun;
 
@@ -126,7 +126,6 @@
 
             if(value.getId != "silveragtl") { // 부장님 아닌 경우
                 getTokenId = "silveragtl";
-                console.log("getTokenId : " + getTokenId)
 
                 var params = {
                     id : getTokenId
@@ -138,87 +137,77 @@
 
         }
 
-
-
-        window.android.pushToken(); // PUSH 토큰 가져오기 및 업데이트
-
         $("#start_ymd"  ).val(getDate("-"));
         $("#end_ymd"    ).val(getDate("-"));
 
-        /*
-        var tempHtml = "";
-        var len = 5;
-
-        for(var i = 0; i< len; i++) {
-            tempHtml += "<input type='text' value ='" + i + "' id = '"+ i + "'/>";
-        }
-
-        $("#h_flag_id").append(tempHtml);
-        */
 
     });
-
-    function getToken(token) {
-        newToken = token;
-    }
-
 
     /* 휴가신청 사원정보 가져오기 */
     function getHolidayForm(result) {
 
+        var date                = "";
+        var year                = "";
+        var toYear0101          = "";
+        var holidayCountParams  = {};
+
         ajaxResult  = JSON.stringify(result);
         ajaxResult2 = JSON.parse(ajaxResult);
 
-        for(var i=0; i < ajaxResult2.length; i++){
-          id          = ajaxResult2[0].id;            // 아이디
-         name        = ajaxResult2[0].name;          // 이름
-         grade       = ajaxResult2[0].grade;         // 직급
-         email       = ajaxResult2[0].email;         // 이메일
-         hp_num      = ajaxResult2[0].hp_num;        // 전화번호
-         contact_num = ajaxResult2[0].contact_num;   // 비상연락처
-         join_ymd    = ajaxResult2[0].join_ymd;      // 입사일
-         resign_ymd  = ajaxResult2[0].resign_ymd;    // 퇴사일
-         join_year   = ajaxResult2[0].join_year;     // 입사년도
-         join_mon    = ajaxResult2[0].join_mon;      // 입사월
-         join_day    = ajaxResult2[0].join_day;      // 입사일
-         push_token  = ajaxResult2[0].push_token     // push 토큰
-         hs_ymd      = ajaxResult2[0].hs_ymd;        // 휴가갱신 시작일
-         he_ymd      = ajaxResult2[0].he_ymd;        // 휴가갱신 종료일
-
-         h_count = GetCntMyHoliday(join_year, join_month, join_day); // 발생 연차 수
-
-         var date        = new Date();
-            var year        = date.getFullYear();   // 년
-            var toYear0101  = year + "0101";
-
-            var holidayCountParams = {
-                    id          : id,
-                    toYear0101  : toYear0101
-            };
-
-            navigate(holidayCountParams, "holidayCount.json", getHolidayCount, "");  // 남은연차 수 가져오기
-
-            // 휴가갱신종료일이 금일보다 작거나 같으면 휴가연차새로 갱신
-            // 20180114 + 10000,   20190113 + 10000
-
-            if(getDate() >= he_ymd) {
-                hs_ymd = Number(hs_ymd) + 10000;
-                he_ymd = Number(he_ymd) + 10000;
-            }
+        /* 휴가신청자 정보 */
+        for(var i=0; i < ajaxResult2.length; i++) {
+            id          = ajaxResult2[i].id;            // 아이디
+            name        = ajaxResult2[i].name;          // 이름
+            grade       = ajaxResult2[i].grade;         // 직급
+            email       = ajaxResult2[i].email;         // 이메일
+            hp_num      = ajaxResult2[i].hp_num;        // 전화번호
+            contact_num = ajaxResult2[i].contact_num;   // 비상연락처
+            join_ymd    = ajaxResult2[i].join_ymd;      // 입사일
+            resign_ymd  = ajaxResult2[i].resign_ymd;    // 퇴사일
+            join_year   = ajaxResult2[i].join_year;     // 입사년도
+            join_mon    = ajaxResult2[i].join_mon;      // 입사월
+            join_day    = ajaxResult2[i].join_day;      // 입사일
+            push_token  = ajaxResult2[i].push_token     // push 토큰
+            hs_ymd      = ajaxResult2[i].hs_ymd;        // 휴가갱신 시작일
+            he_ymd      = ajaxResult2[i].he_ymd;        // 휴가갱신 종료일
         }
-            $("#holiday_detail_count").append("연차발생기간 : " + hs_ymd + " ~ " + he_ymd + "<br>발생연차 수 : " + h_count);
-            $("#name_grade").html("[성명 : " + name + "] " + "[직급 : " + grade + "]");
+
+         h_count = GetCntMyHoliday(join_year, join_mon, join_day); // 발생 연차 수
+
+         date        = new Date();
+         year        = date.getFullYear();   // 년
+         toYear0101  = year + "0101";
+
+         holidayCountParams = {
+            id          : id,
+            toYear0101  : toYear0101
+         };
+
+         navigate(holidayCountParams, "holidayCount.json", getHolidayCount, "");  // 사용연차 수 가져오기
+
+         // 휴가갱신종료일이 금일보다 작거나 같으면 휴가연차 새로 갱신
+         // 20180114 + 10000,   20190113 + 10000
+         if(getDate() >= he_ymd) {
+            hs_ymd = Number(hs_ymd) + 10000;
+            he_ymd = Number(he_ymd) + 10000;
+         }
+
+        /* 연차정보 출력 */
+        //$("#holiday_detail_count").append("연차발생기간 : " + hs_ymd + " ~ " + he_ymd + "<br>발생연차 수 : " + h_count);
+        $("#holiday_period"     ).append(dateFormat(hs_ymd) + " ~ " + dateFormat(he_ymd) ).css("color", "#999");
+        $("#holiday_total_count").append(h_count + " 일"                                 );
+        $("#name_grade").html("[성명 : " + name + "] " + "[직급 : " + grade + "]");
     }
 
     /* 휴가신청 상세정보 가져오기 */
     function getHolidayDetail(result) {
-        console.log("sucessFncMultiSndSample>>>>>" + JSON.stringify(result));
 
         ajaxResult  =JSON.stringify(result);
         ajaxResult2 =JSON.parse(ajaxResult);
 
         for(var i=0; i < ajaxResult2.length; i++){
 
+            /* 휴가신청자 휴가 정보*/
             apply_seq_no     = ajaxResult2[0].apply_seq;        // 신청번호
             id               = ajaxResult2[0].id;               // 아이디
             h_type           = ajaxResult2[0].h_type;           // 휴가구분
@@ -233,6 +222,7 @@
             approval_flag    = ajaxResult2[0].approval_flag;    // 휴가결재
             file_name        = ajaxResult2[0].file_name;        // 휴가신청서 파일명
 
+            /* 휴가신청자 정보 */
             name             = ajaxResult2[0].name;             // 이름
             birth_ymd        = ajaxResult2[0].birth_ymd;        // 생년월일
             grade            = ajaxResult2[0].grade;            // 직급
@@ -253,68 +243,54 @@
             hs_ymd           = ajaxResult2[0].hs_ymd;           // 휴가갱신 시작일
             he_ymd           = ajaxResult2[0].he_ymd;           // 휴가갱신 종료일
 
-
-            console.log('******************************');
-            console.log("신청번호 : "                 + ajaxResult2[i].apply_seq          );
-            console.log("아이디 : "                   + ajaxResult2[i].id                 );
-            console.log("휴가구분 : "                 + ajaxResult2[i].h_type             );
-            console.log("휴가종류 : "                 + ajaxResult2[i].h_flag             );
-            console.log("휴가시작일 : "               + ajaxResult2[i].start_ymd          );
-            console.log("휴가종료일 : "               + ajaxResult2[i].end_ymd            );
-            console.log("휴가신청일수 : "             + ajaxResult2[i].apply_count        );
-            console.log("휴가사유 : "                 + ajaxResult2[i].apply_content      );
-            console.log("휴가신청서 등록날짜 : "       + ajaxResult2[i].apply_date         );
-            console.log("휴가승인일 : "               + ajaxResult2[i].approval_date      );
-            console.log("승인코멘트 : "               + ajaxResult2[i].approval_comment   );
-            console.log("휴가결재 : "                 + ajaxResult2[i].approval_flag      );
-            console.log("휴가신청서 파일명 : "         +  ajaxResult2[i].file_name           );
-            console.log('******************************');
-
         }
 
-        console.log(start_ymd.substring(0,4) + "-" + start_ymd.substring(4,6) + "-" + start_ymd.substring(6,8));
+        /* 신청번호 출력 */
+        $("#apply_seq"          ).html(apply_seq_no + " (" + apply_date + ")"); // 신청번호 출력
 
-        $("#apply_seq"          ).html(apply_seq_no + " (" + apply_date + ")");
-
+        /* 휴가구분 선택 */
         $("#h_type"             ).val(h_type).prop("selected", true);
         //$("#h_type"             ).selectmenu("refresh", true);
 
-        h_typeChange();
-
+        /* 휴가종류 선택 */
         $("#h_flag"             ).val(h_flag).prop("selected", true);
         //$("#h_flag"             ).selectmenu("refresh", true);
 
+        /* 휴가 시작일, 휴가 종료일 세팅*/
         $("#start_ymd"          ).val(start_ymd.substring(0,4)  + "-" + start_ymd.substring(4,6)    + "-" + start_ymd.substring(6,8));
         $("#end_ymd"            ).val(end_ymd.substring(0,4)    + "-" + end_ymd.substring(4,6)      + "-" + end_ymd.substring(6,8)  );
 
+        /* 휴가일수 선택 */
         $("#apply_count"        ).val(apply_count).prop("selected", true);
         //$("#apply_count"        ).selectmenu("refresh", true);
 
+        /* 휴가사유 출력 */
         $("#apply_content"      ).html(apply_content);
 
+        /* 신청처리 결과 선택 */
         $("#approval_flag"      ).val(approval_flag).prop("selected", true);
         //$("#approval_flag"      ).selectmenu("refresh", true);
         //$("approval_flag_div"    ).html("(" + approval_date + ")");
 
+        /* 결재사항 출력 */
         $("#approval_comment"   ).html(approval_comment);
 
-        console.log("adm_flag : " + adm_flag);
-
+        /* 관리자가 아닌 경우 */
         if(sessionAdm_flag != "G" && sessionAdm_flag != "A") {
-            $("#approval_flag"      ).attr("disabled", "disabled");
-            $("#approval_comment"   ).attr("disabled", "disabled");
+            $("#approval_flag"      ).attr("disabled", "disabled"); // 신청처리 결과 disabled
+            $("#approval_comment"   ).attr("disabled", "disabled"); // 결재사항 disabled
 
-            if(session_id != id) {
-                $("#modifyBtn").attr("disabled", "disabled");
+            if(session_id != id) { // 로그인아이디와 휴가신청한 아이디가 다른 경우
+                $("#modifyBtn").attr("disabled", "disabled"); // 수정버튼 disabled
             }
 
-            if(approval_flag != "신청") {
-                $("#holidayModifyBtn").hide();
-                $("#memberHolidayCancelBtn").show();
-                $("#holidayCancelBtn").hide();
+            if(approval_flag != "신청") { // 신청처리결과가 '신청'이 아닌경우
+                $("#holidayModifyBtn").hide(); // 수정버튼 숨기기
+                $("#memberHolidayCancelBtn").show(); // 취소버튼 보여주기
+                $("#holidayCancelBtn").hide(); // 취소버튼 숨기기
             }
-            if(approval_flag == "신청") {
-                $("#approval_comment_div").hide();
+            if(approval_flag == "신청") { // 신청 처리결과가 '신청'인 경우
+                $("#approval_comment_div").hide(); // 결재사항 숨기기
             }
 
         }/*else if(sessionAdm_flag == "G" || sessionAdm_flag == "A") {
@@ -324,17 +300,18 @@
         }
         */
 
+        /* 승인신청 결과가 승인 또는 반려 또는 검토 이면서 로그인한 사원의 권한이 관리자가 아닌경우 */
         if((approval_flag == "승인" || approval_flag == "반려" || approval_flag == "검토")  && (sessionAdm_flag != "G" && sessionAdm_flag != "A")) {
             $("#holidayDeleteBtn"   ).hide();   // 삭제버튼 숨기기
             $("#holidayApplyBtn"    ).hide();   // 수정버튼 숨기기
-            $("#holidayDeleteBtn"   ).attr("disabled", "disabled");
-            $("#applyBtn"           ).attr("disabled", "disabled");
-            $("#h_type"             ).attr("disabled", "disabled");
-            $("#h_flag"             ).attr("disabled", "disabled");
+            $("#holidayDeleteBtn"   ).attr("disabled", "disabled"); // 삭제버튼 disabled
+            $("#applyBtn"           ).attr("disabled", "disabled"); // 신청버튼 disabled
+            $("#h_type"             ).attr("disabled", "disabled"); // 휴가구분 disabled
+            $("#h_flag"             ).attr("disabled", "disabled"); // 휴가종류 disabled
             $("start_ymd"           ).attr("readonly", true);   // 수정 필요
             $("end_ymd"             ).attr("readonly", true);   // 수정 필요
-            $("#apply_count"        ).attr("disabled", "disabled");
-            $("#apply_content"      ).attr("disabled", "disabled");
+            $("#apply_count"        ).attr("disabled", "disabled"); // 휴가신청일수 disabled
+            $("#apply_content"      ).attr("disabled", "disabled"); // 휴가사유 disabled
         }
 
         h_count = GetCntMyHoliday(join_year, join_month, join_day); // 발생 연차 수
@@ -352,20 +329,22 @@
 
         // 휴가갱신종료일이 금일보다 작거나 같으면 휴가연차새로 갱신
         // 20180114 + 10000,   20190113 + 10000
-
         if(getDate() >= he_ymd) {
             hs_ymd = Number(hs_ymd) + 10000;
             he_ymd = Number(he_ymd) + 10000;
         }
 
-        $("#holiday_detail_count").append("연차발생기간 : " + hs_ymd + " ~ " + he_ymd + "<br>발생연차 수 : " + h_count);
+        /* 연차정보 출력 */
+        //$("#holiday_detail_count").append("연차발생기간 : " + hs_ymd + " ~ " + he_ymd + "<br>발생연차 수 : " + h_count);
+
+        $("#holiday_period"     ).append(dateFormat(hs_ymd) + " ~ " + dateFormat(he_ymd) ).css("color", "#999");
+        $("#holiday_total_count").append(h_count + " 일"                                 );
         $("#name_grade").html("[성명 : " + name + "] " + "[직급 : " + grade + "]");
 
     }
 
     /* 최근 신청번호 가져오기 */
     function getRecentApplySeq(result) {
-        console.log("sucessFncMultiSndSample >>>>>" + JSON.stringify(result));
 
         ajaxResult=JSON.stringify(result);
         ajaxResult2=JSON.parse(ajaxResult);
@@ -385,21 +364,15 @@
         var end_ymd_val             = $("#end_ymd"          ).val();    // 휴가 종료일
         var apply_count_val         = $("#apply_count"      ).val();    // 신청일수
         var apply_content_val       = $("#apply_content"    ).val();    // 휴가 사유
-        var approval_flag_val       = $("#approval_flag"    ).val();
-        var approval_comment_val    = $("#approval_comment" ).val();
+        var approval_flag_val       = $("#approval_flag"    ).val();    // 결재구분
+        var approval_comment_val    = $("#approval_comment" ).val();    // 결재사항
 
         var ConfirmMsg      = ""; // 신청 확인용 메세지
-        var emailSubject    = ""; // 메일 제목
-
-        var pushTitle   = ""; // push 제목
-        var pushBody    = ""; // push 내용
 
         start_ymd_val   = start_ymd_val.replace(/-/gi, "");
         end_ymd_val     = end_ymd_val.replace(/-/gi, "");
 
-        console.log("apply_content_val : " + apply_content_val.replace("\n", "").length);
-
-        if(flag == "apply") {
+        if(flag == "apply") { // 결재구분이 신청인 경우
             ConfirmMsg = "신청 하시겠습니까?";
             if(h_type_val == "") {
                 alert("휴가 구분을 선택해주세요.");
@@ -423,7 +396,7 @@
                 alert("휴가신청일수가 올바르지 않습니다. 다시 선택해주세요.");
                 return false;
             }*/
-        }else if(flag == "modify") {
+        }else if(flag == "modify") {    // 결재구분이 수정인 경우
             ConfirmMsg = $("#modifyBtn").html() +" 하시겠습니까?";
             if(sessionAdm_flag == "G" || sessionAdm_flag == "A") {
                 if(approval_flag_val == ""){
@@ -434,8 +407,8 @@
         }
 
         if(window.confirm(ConfirmMsg))
-      {
-            if(flag == "apply") {
+        {
+            if(flag == "apply") { // 결재구분이 신청인 경우
 
                 if(session_id != "silveragtl") { // 이부분 테스트용으로 poowoo90으로 사용
                     setToken = adminToken;
@@ -458,8 +431,6 @@
                         sub_seq = "0"+ sub_seq;   // 10보다 작을경우 앞에 0을 다시 붙여준다.
                     }
 
-                    console.log("sub_seq : "  + sub_seq);
-
                     apply_seq_no = apply_seq_max.substring(0,8) + sub_seq; // 신청번호 재정의
                 }
 
@@ -469,7 +440,7 @@
 
                 pushBody = apply_content_val + "\n휴가 기간 : " + "(" + start_ymd_val + " ~ " + end_ymd_val + ", " + apply_count_val + "일" + ")";
 
-            }else if(flag == "modify") {
+            }else if(flag == "modify") { // 결재구분이 수정인 경우
 
                 if(session_id != "silveragtl") { // 이부분 테스트용으로 poowoo90으로 사용
                                          // 부장님이 아닌 경우
@@ -506,113 +477,72 @@
                 }
             }
 
-            console.log("apply_seq_no : " + apply_seq_no + "apply_seq_max : " + apply_seq_max);
-
-            /*
-            var sendMail = {
-                emailmsg : emailSubject
-            };
-            */
-
-            var sendMail = new Array();
-
-            sendMail[0] = "poowoo90@gmail.com";
-            sendMail[1] = "skarldhks123@naver.com";
-
-            Email.send({
-                SecureToken : "d4c3cfe4-e2e2-4925-9a94-1f21d2568bc2",
-                To : sendMail,
-                From : "contact@calebslab.com",
-                Subject : emailSubject,
-                Body : apply_content_val.replace("\n", "<br>")
-            });/*.then(
-              message => alert(message)
-            );*/
-
-            /*
-                Host : "smtp.gmail.com",
-                Username : "poowoo90@gmail.com",
-                Password : "",
-            */
-
-            //console.log("newToken : " + newToken + "                         push_token : " + push_token );
-
-            /*
-            if((push_token != newToken) || push_token == "") {
-                console.log("불일치!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
-                push_token = newToken;
-
-                var params = {
-                    id         : id,
-                    push_token : push_token
-                };
-
-                navigate(params, "tokenUpdate.json", "", "");
-            }
-            */
-
-            /*
-            var tokenArray = new Array();
-            tokenArray[0] = "eM0XuQunBJ4:APA91bGmsD4CiJTWJRhYuRDWJXau5nwdUk874E7X3uLYPwMxKmfkKlfGdPBz8aAJvmyANx65vMnjVXY0tBOeI5J1ewUutC6EbrYUpRAEKGlUjZ6B35KHkvS6efqv3rLDNDRn4G-JdVrT";
-            tokenArray[1] = "cEpGprv2qnQ:APA91bF4-WQXzdo6_V27K5c5fLvDC8O715GdZ3cXgjniMH0J8xl6WPcID99Ual9zK43NxrC8HkJH6CuYZR99_Ei7-mrLPYhkVeKR12PBQ6VuyBhSfkadYf2BvHOwgiO9L87xdSE97tKN";
-            */
-
-            var sendPushMessage = {
-                title   : pushTitle,
-                body    : pushBody,
-                token   : setToken,
-                notiId  : apply_seq_no
-                //token   : tokenArray
-            };
-
-            sendFirebase(sendPushMessage, "single");
-
-            /* 기존 휴가신청 params
             var params = {
-                    apply_seq_no    : apply_seq_no,
-                    id              : id,
-                    h_type          : h_type_val,
-                    h_flag          : h_flag_val,
-                    start_ymd       : start_ymd_val,
-                    end_ymd         : end_ymd_val,
-                    apply_count     : apply_count_val,
-                    apply_content   : apply_content_val
-                 };
-             */
-              var params = {
-                    apply_seq_no     : apply_seq_no,
-                    approval_comment : approval_comment_val,
-                    id               : id,
-                    h_type           : h_type_val,
-                    h_flag           : h_flag_val,
-                    start_ymd        : start_ymd_val,
-                    end_ymd          : end_ymd_val,
-                    apply_count      : apply_count_val,
-                    apply_content    : apply_content_val,
-                    approval_flag    : approval_flag_val
-              };
+                apply_seq_no     : apply_seq_no,
+                approval_comment : approval_comment_val,
+                id               : id,
+                h_type           : h_type_val,
+                h_flag           : h_flag_val,
+                start_ymd        : start_ymd_val,
+                end_ymd          : end_ymd_val,
+                apply_count      : apply_count_val,
+                apply_content    : apply_content_val,
+                approval_flag    : approval_flag_val
+            };
 
-
-
-            if(flag == "apply") {
-                navigate(params, "holidayApply.json", "", "");  // 휴가 신청 등록
-            }else if(flag == "modify") {
-                if(sessionAdm_flag == "G" || sessionAdm_flag == "A") {
-                    navigate(params, "holidayModifyAdmin.json", "", "");  // 휴가 신청서 수정 (관리자)
-                }else {
-                    navigate(params, "holidayModifyUser.json", "", ""); // 휴가 신청서 수정(사원)
+            if(flag == "apply") { // 결재구분이 신청인 경우
+                navigate(params, "holidayApply.json", holidaySuccess, "");  // 휴가 신청 등록
+            }else if(flag == "modify") { // 결재구분이 수정인 경우
+                if(sessionAdm_flag == "G" || sessionAdm_flag == "A") { // 관리자인 경우
+                    navigate(params, "holidayModifyAdmin.json", holidaySuccess, "");  // 휴가 신청서 수정 (관리자)
+                }else { // 관리자가 아닌 경우
+                    navigate(params, "holidayModifyUser.json", holidaySuccess, ""); // 휴가 신청서 수정(사원)
                 }
             }
 
         }
-        /*
-        if(gubun == "1") {          // 신청 상세페이지인 경우
 
-        }else if(gubun == "2") {    // 신청 페이지인 경우
-            history.back();
-        }
+    }
+
+    /* 휴가신청/결재/수정 완료 */
+    function holidaySuccess() {
+
+        /*
+        push 여러사람에게 보낼 때는 배열로
+        var tokenArray = new Array();
         */
+
+        //var imgURL = "http://calebslab1.cdn3.cafe24.com/imployeeInfo/sign/20190122_142122.jpg";
+
+        var sendPushMessage = {
+            title   : pushTitle,    // push 제목
+            body    : pushBody,     // push 내용
+            token   : setToken,     // push 토큰
+            type    : "picture",     // push 전송처리 구분
+            //picture : imgURL
+            //token   : tokenArray
+        };
+
+        sendFirebase(sendPushMessage, "single"); // push 전송
+
+
+        var sendMail = new Array();
+
+        sendMail[0] = "poowoo90@gmail.com";
+        sendMail[1] = "skarldhks123@naver.com";
+
+        Email.send({
+            SecureToken : "d4c3cfe4-e2e2-4925-9a94-1f21d2568bc2",   // 보내는 사람의 메일 토큰
+            To : sendMail,                                          // 받는 사람
+            From : "contact@calebslab.com",                         // 보내는 사람
+            Subject : emailSubject,                                 // 메일 제목
+            Body : $("#apply_content").val().replace("\n", "<br>"), // 메일 내용
+        }).then(
+            //message => alert(message)
+            setTimeout(function() { movePage("holidayList.html") }, 1200)
+
+        );
+
     }
 
     /* 휴기신청서 삭제 */
@@ -625,7 +555,6 @@
 
     /* 남은 연차수 가져오기 */
     function getHolidayCount(result) {
-        console.log("sucessFncMultiSndSample >>>>>" + JSON.stringify(result));
 
         ajaxResult=JSON.stringify(result);
         ajaxResult2=JSON.parse(ajaxResult);
@@ -635,16 +564,26 @@
             holiday_count = ajaxResult2[0].cnt;
         }
 
+        $("#used_holiday_count"  ).append(holiday_count + " 일");
+        $("#used_holiday_count"  ).css("color", "#2478FF");
+
         holiday_count = h_count - holiday_count;
 
-        console.log("holiday_count>>>>>" + holiday_count);
+       //$("#holiday_detail_count").append("<br>남은연차 수 : " + holiday_count);
+       $("#available_holiday"   ).append(holiday_count  + " 일");
 
-        $("#holiday_detail_count").append("<br>남은연차 수 : " + holiday_count);
+       if(holiday_count >= 0) {
+            $("#available_holiday").css("color", "#0BC904");
+       }else {
+            $("#available_holiday").css("color", "#FF1212");
+       }
     }
 
 
-    /*****************************************************발생연차 수*************************************************************/
+    /* 발생 연차수 구하기 */
     function GetCntMyHoliday(join_year_val, join_mon_val, join_day_val) {
+
+        console.log("join_year_val : " + join_year_val + "      join_mon_val : " + join_mon_val + "           join_day_val : " + join_day_val);
 
         var h_count = 15;   //  기본휴가일수
         var wd_80   = 292;  //  입사 후 1년 80% 근무일수
@@ -673,11 +612,10 @@
             }
             */
         }
-
         console.log("h_count : " + h_count);
         return h_count;
     }
-    /******************************************************************************************************************************/
+
 
     /* 오늘 날짜 구하기 */
     function getDate(hyphen) {
@@ -701,26 +639,15 @@
         }
     }
 
-    /* 휴가구분 selectbox 이벤트 */
-    function h_typeChange() {
+    /* 날짜 형식 포멧 */
+    function dateFormat(date) {
 
-        var size = document.getElementById("apply_count").options.length;
+        year    = date.substr(0, 4);
+        month   = date.substr(4, 2);
+        day     = date.substr(6, 2);
 
-        if($("#h_type").val() == "반차") {
-            $("#apply_count").find("option:eq(1)").show();
-           for(var i= 1; i < size; i++ ) {
-                $("#apply_count option[value=" + i + "]").hide();
-            }
-            $("#apply_count").find("option:eq(0)").prop("selected", true);
-            //$("#apply_count").selectmenu("refresh", true);
-        }else if($("#h_type").val() == "연차") {
-           $("#apply_count").find("option:eq(1)").hide();
-           for(var i= 1; i < size; i++ ) {
-                $("#apply_count option[value=" + i + "]").show();
-            }
-            $("#apply_count").find("option:eq(1)").prop("selected", true);
-            //$("#apply_count").selectmenu("refresh", true);
-        }
+        return year + "-" + month + "-" + day;
+
     }
 
     /* 결재구분 selectbox 이벤트 */
@@ -750,13 +677,13 @@
         ajaxResult2=JSON.parse(ajaxResult);
 
         for(var i=0; i < ajaxResult2.length; i++){
-
             adminToken     = ajaxResult2[0].adminToken;        // 관리자 토큰
         }
     }
 
+    /* 취소 버튼 선택 */
     function holidayCancel() {
-        history.back();
+        history.back(); // 페이지 뒤로 이동
     }
 
     /* ajax 통신 실패 */
@@ -791,12 +718,13 @@
             font-family: 'Nanum Gothic', sans-serif;
             border-bottom: solid 1px gray;
         }
-
+        /*
        #holiday_detail_count{
             border: 2px solid #F9F9F9;  background : #F9F9F9;
             margin-top : 0px;
             color : #999;
         }
+        */
 
         table {
             width:100%; border:0; border-spacing:0; border-collapse:collapse; table-layout:fixed;}
@@ -827,6 +755,10 @@
             color : #999;
         }
 
+        #holiday_detail_count_table {
+            font-size : 15px;
+        }
+
 
 
     </style>
@@ -839,7 +771,7 @@
                <h1 id="title">휴가 신청 정보</h1>
                <h4 id = "name_grade"></h4>
            </div>
-   -->
+        -->
         <div id="apply_seq_div">
             <label>신청번호</label>
             <h4 id ="apply_seq"></h4>
@@ -847,9 +779,9 @@
 
         <div id="h_type_div">
             <label>휴가 구분</label>
-            <select id = "h_type" onchange="h_typeChange()"  data-role="none"  data-theme="b">
+            <select id = "h_type" data-role="none"  data-theme="b">
                 <option value="연차" selected>연차</option>
-                <option value="반차">반차</option>
+                <option value="특별">특별</option>
             </select>
         </div>
 
@@ -897,8 +829,8 @@
         <div id="apply_count_div">
             <label>휴가신청일수</label>
             <select id = "apply_count" data-role="none">
-                <option value="0.5" style="display:none;">0.5</option>
-                <option value="1" selected>1</option>
+                <option value="0.5">0.5</option>
+                <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
                 <option value="4">4</option>
@@ -918,7 +850,25 @@
 
         <div id="holiday_detail_info_div">
             <label>연차정보</label>
-            <h5 id="holiday_detail_count"></h5>
+            <!--<h5 id="holiday_detail_count"></h5>-->
+            <table id="holiday_detail_count_table">
+                <tr>
+                    <td style="width:40%; color:#999;">연차발생기간</td>
+                    <td id="holiday_period"></td>
+                </tr>
+                <tr>
+                    <td style="width:40%; color:#999;">총 연차 일수</td>
+                    <td id="holiday_total_count"></td>
+                </tr>
+                <tr>
+                    <td style="width:40%; color:#999;">사용한 연차 일수</td>
+                    <td id="used_holiday_count"></td>
+                </tr>
+                <tr>
+                    <td style="width:40%; color:#999;">남은 연차 일수</td>
+                    <td id="available_holiday"></td>
+                </tr>
+            </table>
             <!--<textarea name="holiday_detail_count" id="holiday_detail_count" rows="8" cols="70" style="color:#373D45; background-color:#FFFF9F; overflow-x:hidden; overflow-y:auto;" ></textarea>-->
             <!--<input type ="text" id="holiday_detail_count" disabled>-->
         </div>
@@ -961,112 +911,5 @@
     </div>
 
 </div>
-
-<!--
-<div class="content" data-role="content">
-
-    <h1 id="title">휴가 신청 정보</h1>
-    <h4 id = "name_grade"></h4>
-
-    <table>
-        <tr id="apply_seq_tr">
-            <td>신청번호</td>
-            <td id ="apply_seq"></td>
-        </tr>
-        <tr>
-            <td>휴가구분</td>
-            <td>
-                <select id = "h_type" onchange="h_typeChange()">
-                    <option value="">휴가구분</option>
-                    <option value="연차">연차</option>
-                    <option value="반차">반차</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>휴가종류</td>
-            <td>
-                <select id = "h_flag">
-                    <option value="">휴가종류</option>
-                    <option value="refresh">refresh</option>
-                    <option value="가족">가족</option>
-                    <option value="경조사">경조사</option>
-                    <option value="공항">공항</option>
-                    <option value="기타">기타</option>
-                    <option value="매매">매매</option>
-                    <option value="병원">병원</option>
-                    <option value="여행">여행</option>
-                    <option value="오후">오후</option>
-                    <option value="육아">육아</option>
-                    <option value="일반">일반</option>
-                    <option value="자녀">자녀</option>
-                    <option value="출산">출산</option>
-                    <option value="플젝">플젝</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>휴가기간</td>
-            <td><input id="start_ymd" type="date" value=""> ~ <input id="end_ymd" type="date" value=""></td>
-        </tr>
-        <tr>
-            <td>휴가신청일수</td>
-            <td>
-                <select id = "apply_count">
-                    <option value="">휴가신청일수</option>
-                    <option value="0.5">0.5</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                    <option value="13">13</option>
-                    <option value="14">14</option>
-                    <option value="15">15</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>연차정보</td>
-            <td id="holiday_detail_count"></td>
-        </tr>
-        <tr>
-            <td>휴가사유</td>
-            <td><textarea name="apply_content" id="apply_content" class="textarea01" rows="8" cols="70" style="color:#373D45; background-color:#FFFF9F; overflow-x:hidden; overflow-y:auto;">사유 : &#10;장소 : </textarea></td>
-        </tr>
-        <tr id="approval_flag_tr">
-            <td>신청처리 결과</td>
-            <td>
-                <select id = "approval_flag" onchange="approvalChange()">
-                    <option value="">결재처리</option>
-                    <option value="검토">검토중</option>
-                    <option value="승인">승인</option>
-                    <option value="반려">반려</option>
-                    <option value="신청">신청</option>
-                </select>
-            </td>
-        </tr>
-        <tr id="approval_comment_tr">
-            <td>결재사항</td>
-            <td>
-                <textarea name="approval_comment" id="approval_comment" class="textarea01" rows="8" cols="70" style="color:#373D45; background-color:#FFFF9F; overflow-x:hidden; overflow-y:auto;"></textarea>
-            </td>
-        </tr>
-
-
-    </table>
-    <button onclick="holidayDelete();"          id="holidayDeleteBtn" >삭제</button>
-    <button onclick="holidayApply('apply');"    id="holidayApplyBtn"  >신청</button>
-    <button onclick="holidayApply('modify');"   id="holidayModifyBtn" >수정</button>
-    <button onclick="holidayCancel();"          id="holidayCancelBtn" >취소</button>
-</div>
--->
 </body>
 </html>

@@ -39,7 +39,8 @@
 				showHolidayList(2);
 			});// end of $("#btMore").click()----------
 
-		});// end of $(document).ready()--------------------------------------------
+		});// end of $(document).ready()----
+
 
 
 
@@ -133,11 +134,12 @@
 
                         case "반려":
                             html +=		"<font color='red'>반려되었습니다. 사유를 확인하세요.</font><br>";
-                            html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font><br>"
+                            html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font>"
                             break;
 
                         case "승인":
                             html +=		"<font color='#3cb371'>승인되었습니다.</font><br>"; // #3cb371 : MediumSeaGreen
+                            html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font>"
                             break;
                     }// end of switch-----------------------------------
 
@@ -221,11 +223,12 @@
 
                     case "반려":
                         html +=		"<font color='red'>반려되었습니다. 사유를 확인하세요.</font><br>";
-                        html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font><br>"
+                        html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font>"
                         break;
 
                     case "승인":
                         html +=		"<font color='#3cb371'>승인되었습니다.</font><br>"; // #3cb371 : MediumSeaGreen
+                        html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font>"
                         break;
 
                 }// end of switch-----------------
