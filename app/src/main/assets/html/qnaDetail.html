@@ -163,7 +163,7 @@
                 title   : '새로 등록된 공지가 있습니다',
                 body    : $("#qna-title").val(),
                 token   : tokenArray,
-                notiId  : data.regnum
+                type    : 'noti'
             };
             // 전체 알림
             sendFirebase(sendPushMessage, "multi");
