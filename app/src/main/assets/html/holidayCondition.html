@@ -84,13 +84,16 @@
     }
 
     function getExcel(){
-        console.log(newResult);
+
         navigate("","getHolidayConditionExcel.json", sucessFncExcel,"");
-       <!-- window.android.saveExcel(newResult); -->
+
     }
     <!-- 엑셀 ajax통신 성공 -->
     function sucessFncExcel(result) {
-     <!--   resultSum += "@" + JSON.stringify(result); -->
+        console.log(">>>>>>>>>>>>>>>>>JSON.stringify(result)>>>>>>>>>>>>>>>>>>>>>>>"+JSON.stringify(result))
+        resultSum += "@" + JSON.stringify(result);
+        console.log(resultSum);
+        window.android.saveExcel(resultSum);
      <!--   newResult = JSON.stringify(result);   -->
     } // --- End of sucessFncExcel
     </script>
