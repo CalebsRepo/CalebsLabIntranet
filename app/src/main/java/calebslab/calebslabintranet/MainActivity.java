@@ -23,6 +23,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.JsonToken;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebBackForwardList;
@@ -53,8 +56,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.lang.reflect.Array;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+
 
 import component.Contacts;
 import it.sauronsoftware.ftp4j.FTPClient;
@@ -90,10 +95,10 @@ public class MainActivity extends AppCompatActivity {
 
     private final Handler handler = new Handler();
     private Object JsonToken;
+    OnSwipeTouchListener onSwipeTouchListener;
     private String urlPath = "file:///android_asset/html/";
 
-
-    @SuppressLint("JavascriptInterface")
+    @SuppressLint({"JavascriptInterface", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,6 +130,14 @@ public class MainActivity extends AppCompatActivity {
 
         web.loadUrl("file:///android_asset/html/login.html"); // 처음 로드할 페이지
 
+        web.setOnTouchListener(new OnSwipeTouchListener(this) {
+            @Override
+            public void onSwipeLeft() {
+            }
+            @Override
+            public void onSwipeRight() {
+            }
+        });
 
         web.setWebViewClient(new android.webkit.WebViewClient() {
 
@@ -725,39 +738,34 @@ public class MainActivity extends AppCompatActivity {
         //************************************************************************
         /* 이미지 Array 찾아오기 */
         @JavascriptInterface
-        public String imgPath(final int imgNum, final String imageInfo) {
+        public void imgPath(final int imgNum, final String imageInfo) {
             Log.d("현재 올리고자하는 이미지 정보는용:",imageInfo);
             if(imgNum==1) {
                 /*첫 호출시 imageInfo(프로필,사인여부)를 저장해놓는다*/
                 imgRealPath.set(0,imgRealPath.get(0).toString()+":"+imageInfo);
-                return imgRealPath.get(0).toString()+":"+imageInfo;
             }else if((imgNum==2)) {
-                /*만약에 첫번째 index의 imageInfo(프로필인지, 사인인지 여부)가
-                  두번째 index의 imageInfo와 똑같다면, 이는 갤러리를 한번 더 요청해서 이미지를 바꾸려고한것이다
-                  그러므로, 두번째 index를 지우고 해당 정보를 첫번째 index에 넣는다*/
-                if(imgRealPath.get(0).toString().matches(".*:.*")){
-                    imgRealPath.set(0,imgRealPath.get(1).toString()+":"+imageInfo);
+                /*만약에 첫번째 index의 imageInfo(프로필인지, 사인인지 여부)가  두번째 index의 imageInfo와 똑같다면,
+                  이는 갤러리를 한번 더 요청해서 이미지를 바꾸려고한것이므로, 두번째 index를 지우고 해당 정보를 첫번째 index에 넣는다*/
+                if(imgRealPath.get(0).toString().contains(imageInfo)) {
+                    imgRealPath.set(0, imgRealPath.get(1).toString() + ":" + imageInfo);
                     imgRealPath.remove(1);
-                    return imgRealPath.get(0).toString()+":"+imageInfo;
-                }else {
-                    return imgRealPath.get(1).toString() + ":" + imageInfo;
+                }else{
+                    imgRealPath.set(1, imgRealPath.get(1).toString() + ":" + imageInfo);
                 }
             }else{
-                if(imgRealPath.get(0).toString().matches(".*:.*")) {
+                if(imgRealPath.get(0).toString().contains(imageInfo)) {
+                    Log.d("imgRealPath2:",imgRealPath.get(0).toString());
                     imgRealPath.set(0,imgRealPath.get(2).toString()+":"+imageInfo);
                     imgRealPath.remove(2);
-                    return imgRealPath.get(0).toString()+":"+imageInfo;
                 }else{
                     imgRealPath.set(1,imgRealPath.get(2).toString()+":"+imageInfo);
                     imgRealPath.remove(2);
-                    return imgRealPath.get(1).toString()+":"+imageInfo;
                 }
             }
         }
 
         @JavascriptInterface
-        public void imgFtpSend(final String imgPathArray) {
-            salesTeamArray = imgPathArray.split(",");
+        public void imgFtpSend() {
             checkPermissions();
             NThread nThread = new NThread();
             nThread.start();
@@ -843,7 +851,8 @@ public class MainActivity extends AppCompatActivity {
     /*********  FTP PASSWORD ***********/
     static final String FTP_PASS  ="wjswls!1";
 
-    private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,
+    private String[] permissions = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE};//권한 설정 변수
     private static final int MULTIPLE_PERMISSIONS = 101;//권한 동의 여부 문의 후 callback함수에 쓰일 변수
 
@@ -911,19 +920,19 @@ public class MainActivity extends AppCompatActivity {
 
         public void run() {
 
-            for(int i=0; i<salesTeamArray.length; i++){
+            for(int i=0; i<imgRealPath.size(); i++){
                 upload(i);
             }
+            /*스레드가 끝나면 인덱스 clear시킨다*/
+            imgRealPath.clear();
         }
 
         public void upload(int i){
-
             /********** Pick file from memory *******/
             //장치로부터 메모리 주소를 얻어낸 뒤, 파일명을 가지고 찾는다.
             //현재 이것은 내장메모리 루트폴더에 있는 것.
-            Log.d("FTP보내지기 디렉토리+이름:",imgRealPath.get(0).toString());
-            Log.d("FTP보내지기전 실제 저장되야할 파일이름:","아직안넣음");
-            String filePathOrg=salesTeamArray[i].toString();
+
+            String filePathOrg=imgRealPath.get(i).toString();
 
             String filePath=filePathOrg.substring(1,filePathOrg.lastIndexOf(":"));
             String fileInfo=filePathOrg.substring(filePathOrg.lastIndexOf(":")+1);
@@ -932,6 +941,9 @@ public class MainActivity extends AppCompatActivity {
             Log.d("파일 존재하는 디렉토리:",f.getParent().toString());
             Log.d("파일 이름",f.getName());;
             // Upload file
+
+            File convFile = new File(f.getParent() + "/"+"hyjlm92.png");
+            f.renameTo(convFile);
             uploadFile(f, fileInfo);
         }
     }
@@ -954,9 +966,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"성공",Toast.LENGTH_SHORT).show();
                 }
             });
-            imgRealPath.remove(0);
-            imgRealPath.remove(1);
-
         } catch (Exception e) {
 
             handler.post(new Runnable() {

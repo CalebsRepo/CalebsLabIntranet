@@ -51,8 +51,8 @@ public class FireBaseMessagingService extends FirebaseMessagingService {
         //you can get your text message here.
         String title = data.get("title");
         String body  = data.get("body");
-
-        sendNotification(title, body);
+        int notiId  =  Integer.parseInt(data.get("notiId"));
+        sendNotification(title, body, notiId);
 
 
         /*
@@ -99,7 +99,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService {
 
 
 
-    private void sendNotification(String messageTitle, String messageBody) {
+    private void sendNotification(String messageTitle, String messageBody, int messageNotiId) {
 
         Intent intent = new Intent(this, MainActivity.class);
 
@@ -171,7 +171,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService {
 
         }
 
-        notificationManager.notify(0, notificationBuilder.build());
+        notificationManager.notify(messageNotiId, notificationBuilder.build());
 
     }
 
