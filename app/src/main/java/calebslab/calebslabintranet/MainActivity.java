@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +23,10 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.JsonToken;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebBackForwardList;
@@ -54,15 +57,20 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.lang.reflect.Array;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+
 import component.Contacts;
 import it.sauronsoftware.ftp4j.FTPClient;
 import it.sauronsoftware.ftp4j.FTPDataTransferListener;
+
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -95,9 +103,10 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList imgRealPath = new ArrayList();
 
     private final Handler handler = new Handler();
+    private Object JsonToken;
+    OnSwipeTouchListener onSwipeTouchListener;
 
-
-    @SuppressLint("JavascriptInterface")
+    @SuppressLint({"JavascriptInterface", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,6 +138,14 @@ public class MainActivity extends AppCompatActivity {
 
         web.loadUrl("file:///android_asset/html/login.html"); // 처음 로드할 페이지
 
+        web.setOnTouchListener(new OnSwipeTouchListener(this) {
+            @Override
+            public void onSwipeLeft() {
+            }
+            @Override
+            public void onSwipeRight() {
+            }
+        });
 
         web.setWebViewClient(new android.webkit.WebViewClient() {
 
@@ -736,19 +753,34 @@ public class MainActivity extends AppCompatActivity {
         //************************************************************************
         /* 이미지 Array 찾아오기 */
         @JavascriptInterface
-        public String imgPath(final int imgNum) {
+        public void imgPath(final int imgNum, final String imageInfo) {
+            Log.d("현재 올리고자하는 이미지 정보는용:",imageInfo);
             if(imgNum==1) {
-                return imgRealPath.get(0).toString();
-            }else {
-                return imgRealPath.get(1).toString();
+                /*첫 호출시 imageInfo(프로필,사인여부)를 저장해놓는다*/
+                imgRealPath.set(0,imgRealPath.get(0).toString()+":"+imageInfo);
+            }else if((imgNum==2)) {
+                /*만약에 첫번째 index의 imageInfo(프로필인지, 사인인지 여부)가  두번째 index의 imageInfo와 똑같다면,
+                  이는 갤러리를 한번 더 요청해서 이미지를 바꾸려고한것이므로, 두번째 index를 지우고 해당 정보를 첫번째 index에 넣는다*/
+                if(imgRealPath.get(0).toString().contains(imageInfo)) {
+                    imgRealPath.set(0, imgRealPath.get(1).toString() + ":" + imageInfo);
+                    imgRealPath.remove(1);
+                }else{
+                    imgRealPath.set(1, imgRealPath.get(1).toString() + ":" + imageInfo);
+                }
+            }else{
+                if(imgRealPath.get(0).toString().contains(imageInfo)) {
+                    Log.d("imgRealPath2:",imgRealPath.get(0).toString());
+                    imgRealPath.set(0,imgRealPath.get(2).toString()+":"+imageInfo);
+                    imgRealPath.remove(2);
+                }else{
+                    imgRealPath.set(1,imgRealPath.get(2).toString()+":"+imageInfo);
+                    imgRealPath.remove(2);
+                }
             }
         }
 
         @JavascriptInterface
-        public void imgFtpSend(final String imgPathArray) {
-            salesTeamArray = imgPathArray.split(",");
-            Log.d("저녁으로 뭐먹지:", salesTeamArray[0]);
-            Log.d("저녁으로 뭐먹지2:", salesTeamArray[1]);
+        public void imgFtpSend() {
             checkPermissions();
             NThread nThread = new NThread();
             nThread.start();
@@ -783,6 +815,30 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+
+        /* getNativePushToken() 호출 */
+        @JavascriptInterface
+        public void pushToken() {
+            Log.d("GWNAM", "Web JS에서 MainActivity쪽 function 호출");
+            getNativePushToken();
+        }
+
+        /* PUSH 토큰 보내기 */
+        public void getNativePushToken() {
+            Log.d("GWNAM", "Native영역 Token 정보 가져오기");
+            JsonToken = FirebaseInstanceId.getInstance().getToken();
+
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    String args = null;
+                    if(JsonToken != null) args = JsonToken.toString();
+                    Log.d("GWNAM", "jsonContacts = "+ args);
+                    web.loadUrl("javascript:getToken('" + args + "')"); // 해당 url의 자바스크립트 함수 호출
+                }
+            });
+        }
+
     }
 
 
@@ -805,7 +861,8 @@ public class MainActivity extends AppCompatActivity {
     /*********  FTP PASSWORD ***********/
     static final String FTP_PASS  ="wjswls!1";
 
-    private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,
+    private String[] permissions = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE};//권한 설정 변수
     private static final int MULTIPLE_PERMISSIONS = 101;//권한 동의 여부 문의 후 callback함수에 쓰일 변수
 
@@ -873,28 +930,35 @@ public class MainActivity extends AppCompatActivity {
 
         public void run() {
 
-            for(int i=0; i<salesTeamArray.length; i++){
+            for(int i=0; i<imgRealPath.size(); i++){
                 upload(i);
             }
+            /*스레드가 끝나면 인덱스 clear시킨다*/
+            imgRealPath.clear();
         }
 
         public void upload(int i){
-
             /********** Pick file from memory *******/
             //장치로부터 메모리 주소를 얻어낸 뒤, 파일명을 가지고 찾는다.
             //현재 이것은 내장메모리 루트폴더에 있는 것.
-            Log.d("FTP보내지기 디렉토리+이름:",imgRealPath.get(0).toString());
-            Log.d("FTP보내지기전 실제 저장되야할 파일이름:","아직안넣음");
 
-            File f = new File(salesTeamArray[i]);
+            String filePathOrg=imgRealPath.get(i).toString();
+
+            String filePath=filePathOrg.substring(1,filePathOrg.lastIndexOf(":"));
+            String fileInfo=filePathOrg.substring(filePathOrg.lastIndexOf(":")+1);
+
+            File f = new File(filePath);
             Log.d("파일 존재하는 디렉토리:",f.getParent().toString());
             Log.d("파일 이름",f.getName());;
             // Upload file
-            uploadFile(f);
+
+            File convFile = new File(f.getParent() + "/"+"hyjlm92.png");
+            f.renameTo(convFile);
+            uploadFile(f, fileInfo);
         }
     }
 
-    public void uploadFile(File fileName){
+    public void uploadFile(File fileName,String fileInfo){
 
         FTPClient client = new FTPClient();
 
@@ -902,7 +966,7 @@ public class MainActivity extends AppCompatActivity {
             client.connect(FTP_HOST,21);//ftp 서버와 연결, 호스트와 포트를 기입
             client.login(FTP_USER, FTP_PASS);//로그인을 위해 아이디와 패스워드 기입
             client.setType(FTPClient.TYPE_BINARY);//2진으로 변경
-            client.changeDirectory("/www/imployeeInfo");//서버에서 넣고 싶은 파일 경로를 기입
+            client.changeDirectory("/www/imployeeInfo/"+fileInfo);//서버에서 넣고 싶은 파일 경로를 기입
 
             client.upload(fileName, new MyTransferListener());//업로드 시작
 
@@ -997,7 +1061,6 @@ public class MainActivity extends AppCompatActivity {
   */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.d("파일이 가지고온 경로:", intent.getData().getPath());
         if (requestCode == FILECHOOSER_RESULTCODE) {
             if (null == mUploadMessage) {
                 return;
@@ -1014,9 +1077,10 @@ public class MainActivity extends AppCompatActivity {
             filePathCallbackLollipop = null;
         }
         Uri urlTest;
-        urlTest = intent.getData();
-        getPath(urlTest);
-
+        if(intent!=null) {
+            urlTest = intent.getData();
+            getPath(urlTest);
+        }
     }
 
     /*실제경로 구하기*/

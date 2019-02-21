@@ -9,14 +9,18 @@
     <link rel="stylesheet" href="../css/menu.css">
 
     <script src="../js/common.js"></script>
+    <script src="../js/login.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <title></title>
     <script>
         var userInfo = JSON.parse(getUserData());
+        var tokenArray = new Array();               // 토큰 배열
 
     	$(document).ready(function(){
+
+            $(".btn-area-2").hide();
 
     		if(sessionStorage.getItem('regnum') != null && sessionStorage.getItem('regnum') != '' ) { // 게시물 화면 및 수정 화면
 
@@ -30,6 +34,7 @@
                 }else {
                     $(".editView").hide();
                     $(".btn-area-3").hide();
+                    $(".btn-area-2").show();
                 }
 
     		}else{ // 등록화면
@@ -38,6 +43,8 @@
     			// 취소 삭제 수정 버튼
     			$(".btn-area-3").hide();
     		}
+            // 토큰값 가져와서 tokenArray에 넣어주기
+    		navigate({}, "getMemberAllToken.json", succesGetTokens);
 
     	});// end of $(document).ready()-----------------------------------------------
 
@@ -52,25 +59,29 @@
     	}// end of showQnaDetail()---------------------------------------
 
     	// insert update delete 작업을 해주는 함수
-    	function commit(num) {
+    	function commit(num, str) {
+
+           if( confirm(str + "하시겠습니까?") == false ) {
+                return;
+           }
 
     	    //null 검사
-    	    if( $("#qna-title").val() == "" || $("#qna-title").val() == null) {
+    	    if( $("#qna-title").val().trim() == "" || $("#qna-title").val() == null) {
     	        alert("제목을 입력해주세요");
     	        $("#qna-title").focus();
     	        return;
     	    }
-    	    else if($("#qna-content").val() == "" || $("#qna-content").val() == null) {
+    	    else if($("#qna-content").val().trim() == "" || $("#qna-content").val() == null) {
     	        alert("내용을 입력해주세요");
     	        $("#qna-content").focus();
     	        return;
     	    }
 
             /*
-    		if( checkSpecial($("#qna-title").val()) || checkSpecial($("#qna-content").val()) ){
+    		if( checkSpecial($("#qna-title").val()) || checkSpecial($("#qna-content").val()) ) {
     			console.log("특수문자 있어용");
     			return;
-    		}else{
+    		}else {
     			console.log("특수문자 없어요");
     		}
             */
@@ -147,6 +158,16 @@
         function successInsert(data) {
 
             alert("등록되었습니다.");
+
+             var sendPushMessage = {
+                title   : '새로 등록된 공지가 있습니다',
+                body    : $("#qna-title").val(),
+                token   : tokenArray,
+                type    : 'noti'
+            };
+            // 전체 알림
+            sendFirebase(sendPushMessage, "multi");
+
 			movePage("qnaList.html");
 
         }// end of successInsert(data) ---------------------------------------
@@ -154,7 +175,7 @@
         function successUpdate(data) {
 
             alert("수정 완료.");
-            movePage("qnaDetail.html");
+            movePage("qnaList.html");
 
         }// end of successInsert(data) ---------------------------------------
 
@@ -165,6 +186,14 @@
             movePage("qnaList.html");
 
         }// end of successInsert(data) ---------------------------------------
+
+        function succesGetTokens(data) {
+
+            for(var i=0; i<data.length; i++){
+                tokenArray[i] = data[i].push_token;
+            }
+
+        }// end of succesGetTokens(data) ------------------------------------------
 
     </script>
 
@@ -192,7 +221,7 @@
         <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
         <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
         <p>휴가</p>
-        <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+        <li><a onclick= "movePage('holidayDetail.html')" >휴가신청</a></li>
         <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
         <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
         <p>게시판</p>
@@ -238,15 +267,15 @@
 
                 <div class="btn-area-3">
                     <div class="grid-pt">
-                        <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
-                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(3);">삭제</a></div>
-                        <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(2);">수정</a></div>
+                        <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all" onclick="movePage('qnaList.html')">취소</a></div>
+                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(3,'삭제');">삭제</a></div>
+                        <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(2,'수정');">수정</a></div>
                     </div>
                 </div>
                 <div class="btn-area-1">
                     <div class="grid-pt">
-                        <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
-                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(1);">등록</a></div>
+                        <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all" onclick="movePage('qnaList.html')">취소</a></div>
+                        <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(1,'등록');">등록</a></div>
                     </div>
                 </div>
                 <div class="btn-area-2">
@@ -254,6 +283,7 @@
                         <button class="ui-btn ui-corner-all ui-btn-b" onclick="movePage('qnaList.html')" >목록</button>
                     </div>
                 </div>
+
             </form>
         </div>
     </div>
@@ -264,7 +294,7 @@
         <ul>
             <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
             <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
-            <li><a href="#" data-icon="calendar">휴가신청</a></li>
+            <li><a onclick="movePage('holidayDetail.html')" data-icon="calendar">휴가신청</a></li>
             <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
         </ul>
     </div>

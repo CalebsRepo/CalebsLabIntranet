@@ -110,9 +110,10 @@
             for(var i=0; i<ajaxResult2.length; i++) {
                $("#plan-summary").append(
                     "<li class='ui-corner-all'>"
-                        +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r'>"
+                        +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r' onclick='movePage(\"planDetail.html\"," + ajaxResult2[i].schedule_seq + ")'>"
+                            +"<input type='hidden' name='scheduleSeq' id='scheduleSeq' val='" +ajaxResult2[i].schedule_seq + "'>"
                             +"<div class='plan plan-name'>일정이름 : "+ ajaxResult2[i].schedule_name + "</div>"
-                            +"<div class='plan plan-date'>기간 : "+ ajaxResult2[i].start_dt +" ~ "+  ajaxResult2[i].end_dt +"</div>"
+                            +"<div class='plan plan-date'>기간 : "+ YMDFormatter(ajaxResult2[i].start_dt) +" ~ "+  YMDFormatter(ajaxResult2[i].end_dt) +"</div>"
                             +"<div class='plan plan-incharge'>담당자 : "+ ajaxResult2[i].name +"</div>"
                         +"</a>"
                     +"</li>"
@@ -133,7 +134,6 @@
             } else {
                 $('#btnMore').show();
             }
-
         }
         function selectChange(){
         start_num = 0;

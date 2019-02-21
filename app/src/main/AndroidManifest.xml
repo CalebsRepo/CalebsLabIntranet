@@ -7,9 +7,13 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <!-- 갤러리 이미지 사용 권한 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
 
+    <!-- 카메라 퍼미션 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
 
     <application
         android:usesCleartextTraffic="true"
@@ -19,21 +23,49 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/CalebNoti"/>
+
         <activity
             android:name=".MainActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:host="intent2" android:scheme="market" />
-
             </intent-filter>
         </activity>
+
+        <service
+
+            android:name=".FireBaseMessagingService">
+
+            <intent-filter>
+
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+
+            </intent-filter>
+
+        </service>
+
+        <service
+
+            android:name=".FirebaseInstanceIDService">
+
+            <intent-filter>
+
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+
+            </intent-filter>
+
+        </service>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

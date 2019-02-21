@@ -12,26 +12,21 @@
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <title></title>
-    <!--로그인 세션 공통-->
-    <script>
-    var loginUser = JSON.parse(getUserData());
-    var loginUserAdmFlag = loginUser.adm_flag;
-    $(document).ready(function(){
-         if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
-            $(".admMenu").show();
-        }
-    });
-    </script>
     <script type="text/javascript">
         var trigger = "";
         var start_num = 0;
         var paramJSON = new Object();
         var today = todayFormat();
+        var loginUser = JSON.parse(getUserData());
+        var loginUserAdmFlag = loginUser.adm_flag;
 
         $(document).ready(function(){
             <!--최초로 진행중인 프로젝트 목록을 가져온다-->
             $("#listArea").empty();
             getProject();
+            if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
+            $(".admMenu").show();
+        }
         });
 
         //오늘날짜 포맷 리턴
@@ -39,24 +34,6 @@
             var now = new Date();
             var todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
             return todayUTC.toISOString().slice(0, 10).replace(/-/g, '');
-        }
-
-        function YMDFormatter(num){
-             if(!num) return "";
-             var formatNum = '';
-
-             // 공백제거
-             num=num.replace(/\s/gi, "");
-
-             try{
-                  if(num.length == 8) {
-                       formatNum = num.replace(/(\d{4})(\d{2})(\d{2})/, '$1/$2/$3');
-                  }
-             } catch(e) {
-                  formatNum = num;
-                  console.log(e);
-             }
-             return formatNum;
         }
 
         function flipChange() {
@@ -155,9 +132,29 @@
     <!-- header -->
     <header data-role="header">
         <h1>프로젝트 목록</h1>
-        <a class="ui-btn ui-corner-all ui-btn-inline ui-mini footer-button-left ui-btn-icon-left ui-icon-carat-l" href="javascript:history.back()">back</a>
         <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
     </header>
+
+    <div data-role="panel" class="menuPanel"id="menuPanel" data-position="right"  data-display="overlay" data-theme="a">
+        <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
+        <ul id="menuPanelList"data-role="listview">
+            <p>내정보</p>
+            <li><a onclick= "movePage('employeeDetail.html')" >마이페이지</a></li>
+            <p>프로젝트</p>
+            <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
+            <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
+            <p>휴가</p>
+            <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+            <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
+            <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
+            <p>게시판</p>
+            <li><a onclick= "movePage('qnaList.html')" >FAQ</a></li>
+            <p class="admMenu">관리</p>
+            <li class="admMenu"><a onclick= "movePage('employeeDetail.html')" >사원등록</a></li>
+            <li class="admMenu"><a onclick= "movePage('employeeInfo.html')" >사원목록</a></li>
+            <li class="admMenu"><a onclick= "movePage('holidayCondition.html')">휴가현황</a></li>
+        </ul>
+    </div>
 
     <!--container-->
     <div data-role="content" class="project-list">
@@ -165,7 +162,7 @@
         <div  class="title-area">
             <div class="gird-pt">
                 <div class="grid-cd-1">
-                    <h3>• 프로젝트 일정 </h3>
+                    <h3>• 프로젝트 목록 </h3>
                 </div>
 
                 <div class="grid-cd-2">
@@ -180,7 +177,7 @@
                     </style>
                 </div>
                 <div class="grid-cd-3">
-                    <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b">추가</a>
+                    <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline ui-btn-b" onclick="movePage('projectRegister.html')">추가</a>
                 </div>
             </div>
         </div>

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "624939955252",
+    "firebase_url": "https://caleb-adcd6.firebaseio.com",
+    "project_id": "caleb-adcd6",
+    "storage_bucket": "caleb-adcd6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:624939955252:android:3445a676726449f8",
+        "android_client_info": {
+          "package_name": "calebslab.calebslabintranet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "624939955252-ocrb9oemt5pkab20fr7gcjppbc9ddeqa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeozJ_-qJx2nWEeQjcDSoXhTq7wjBhDgc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
