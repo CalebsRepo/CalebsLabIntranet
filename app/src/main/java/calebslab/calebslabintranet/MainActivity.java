@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final Handler handler = new Handler();
     private Object JsonToken;
+    private String urlPath = "file:///android_asset/html/";
 
 
     @SuppressLint("JavascriptInterface")
@@ -799,6 +800,11 @@ public class MainActivity extends AppCompatActivity {
             getNativePushToken();
         }
 
+        @JavascriptInterface
+        public void toastLong(String message) {
+            Toast.makeText(myApp, message, Toast.LENGTH_LONG).show();
+        }
+
         /* PUSH 토큰 보내기 */
         public void getNativePushToken() {
             Log.d("GWNAM", "Native영역 Token 정보 가져오기");
@@ -1081,7 +1087,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         WebBackForwardList list = web.copyBackForwardList(); // 누적된 history 를 저장할 변수
-        if (list.getCurrentIndex() <= 0 && !web.canGoBack()) { // 처음 들어온 페이지이거나, history 가 없는 경우
+        Log.d("CurrentIndex1","currentIndex1: "+ list.getCurrentIndex());
+        if (list.getCurrentIndex() <= 0 && !web.canGoBack() || web.getUrl().equals(urlPath + "login.html")
+                || web.getUrl().equals(urlPath + "index.html")) { // 처음 들어온 페이지이거나, history 가 없는 경우, 로그인/index 페이지
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     //.setTitle("Exit!")
@@ -1095,14 +1103,15 @@ public class MainActivity extends AppCompatActivity {
                     })
                     .setNegativeButton("No", null)
                     .show();
-
-        } else { // history 가 있는 경우
-            if (web.canGoBack()) {
+            // history 가 있는 경우
+        } else if(web.getUrl().equals(urlPath + "projectList.html")|| web.getUrl().equals(urlPath + "employeeInfo.html")) {
+            Log.d("CurrentIndex2","currentIndex2: "+ list.getCurrentIndex());
+                web.goBackOrForward(-(list.getCurrentIndex()) + 1);
+            }else {
                 web.goBack();
-            }
-            web.clearHistory(); // history 삭제
+                web.clearHistory(); // history 삭제
+        }
+
         }
     }
 
-
-}

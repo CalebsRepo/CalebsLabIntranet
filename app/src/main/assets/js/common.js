@@ -165,3 +165,9 @@
              }
         });
     }
+
+    function toastLong(String){
+
+        window.android.toastLong(String);
+
+    }

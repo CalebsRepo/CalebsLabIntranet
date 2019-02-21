@@ -8,6 +8,7 @@
     <script src="../js/login.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
     <script language="JavaScript">
 
         function findId(){
@@ -33,15 +34,46 @@
 
             var param = {"email" : email, "id" : id , "birth" : birth};
 
-            navigate(param,"mailSender",successFindId);
+            navigate(param,"findPwd.json",successFindId);
 
         }
 
         function successFindId(result){
-            alert("메일전송 : "+result.result);
+
+            if(result.pwd != null){
+
+               toastLong("메일 전송중");
+
+               Email.send({
+                SecureToken : "1fcf4579-8e46-4fcd-a95c-94ec7fa5cae7",
+                To : result.email,
+                From : "contact@calebslab.com",
+                Subject : "[갈렙스랩 비밀번호 찾기 결과.]",
+                Body : "귀하의 비밀번호는 ["+result.pwd+"] 입니다"
+            }).then(
+                function (message) {
+                    if(message == "OK"){
+                        movePage("resultPw.html",result.pwd);
+                    }else{
+                        alert("메일전송 실패");
+                    }
+              }
+            );
+
+
+            }else{
+                alert("입력된 정보가 일치하지 않습니다");
+            }
+
+            /*
+                Host : "smtp.gmail.com",
+                Username : "rlxod1234@gmail.com",
+                Password : "sig9538*",
+            */
+
+
             //movePage("resultPw.html",result.result);
         }
-
     </script>
 
     <style>
