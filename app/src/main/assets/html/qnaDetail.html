@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/menu.css">
 
     <script src="../js/common.js"></script>
+    <script src="../js/login.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
@@ -18,6 +19,8 @@
         var tokenArray = new Array();               // 토큰 배열
 
     	$(document).ready(function(){
+
+            $(".btn-area-2").hide();
 
     		if(sessionStorage.getItem('regnum') != null && sessionStorage.getItem('regnum') != '' ) { // 게시물 화면 및 수정 화면
 
@@ -31,6 +34,7 @@
                 }else {
                     $(".editView").hide();
                     $(".btn-area-3").hide();
+                    $(".btn-area-2").show();
                 }
 
     		}else{ // 등록화면
@@ -62,12 +66,12 @@
            }
 
     	    //null 검사
-    	    if( $("#qna-title").val() == "" || $("#qna-title").val() == null) {
+    	    if( $("#qna-title").val().trim() == "" || $("#qna-title").val() == null) {
     	        alert("제목을 입력해주세요");
     	        $("#qna-title").focus();
     	        return;
     	    }
-    	    else if($("#qna-content").val() == "" || $("#qna-content").val() == null) {
+    	    else if($("#qna-content").val().trim() == "" || $("#qna-content").val() == null) {
     	        alert("내용을 입력해주세요");
     	        $("#qna-content").focus();
     	        return;
@@ -171,7 +175,7 @@
         function successUpdate(data) {
 
             alert("수정 완료.");
-            movePage("qnaDetail.html");
+            movePage("qnaList.html");
 
         }// end of successInsert(data) ---------------------------------------
 
@@ -217,7 +221,7 @@
         <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
         <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
         <p>휴가</p>
-        <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+        <li><a onclick= "movePage('holidayDetail.html')" >휴가신청</a></li>
         <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
         <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
         <p>게시판</p>
@@ -263,14 +267,14 @@
 
                 <div class="btn-area-3">
                     <div class="grid-pt">
-                        <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                        <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all" onclick="movePage('qnaList.html')">취소</a></div>
                         <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(3,'삭제');">삭제</a></div>
                         <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(2,'수정');">수정</a></div>
                     </div>
                 </div>
                 <div class="btn-area-1">
                     <div class="grid-pt">
-                        <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                        <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all" onclick="movePage('qnaList.html')">취소</a></div>
                         <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="commit(1,'등록');">등록</a></div>
                     </div>
                 </div>
@@ -279,6 +283,7 @@
                         <button class="ui-btn ui-corner-all ui-btn-b" onclick="movePage('qnaList.html')" >목록</button>
                     </div>
                 </div>
+
             </form>
         </div>
     </div>
@@ -289,7 +294,7 @@
         <ul>
             <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
             <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
-            <li><a href="#" data-icon="calendar">휴가신청</a></li>
+            <li><a onclick="movePage('holidayDetail.html')" data-icon="calendar">휴가신청</a></li>
             <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
         </ul>
     </div>
