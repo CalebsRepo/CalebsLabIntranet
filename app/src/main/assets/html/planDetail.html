@@ -5,106 +5,286 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
     <!--DatePicker--><link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="../css/menu.css">
     <link rel="stylesheet" href="../css/project_plan.css">
     <script src="../js/common.js"></script>
-    <script src="../js/datepicker.js"></script>
+    <script src="../js/login.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <!--DatePicker--><script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <!--DatePicker--><script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <!--DatePicker--><script src="../js/datepicker.js"></script>
 
     <title></title>
+    <!--로그인 세션 공통-->
     <script>
+    var paramJSON = Object();
+    var scheduleSeq = getStorageItem();         // 일정 시퀀스
+    var RegisterId = "";
+    var loginUser = JSON.parse(getUserData());  // 로그인 정보
+    var loginUserId = loginUser.id;
+    var loginUserAdmFlag = loginUser.adm_flag;  // 관리자여부 A = 관리자 G = 그룹멤버
+    $(document).ready(function(){
+         if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
+            $(".admMenu").show();
+        }
+        getProject();
+        getPlanDetail(scheduleSeq);
+    });
+    //프로젝트리스트 가져오기
+     function getProject() {
+        var trigger = "during";
+        paramJSON.trigger = trigger;
+        navigate(paramJSON, "getAllProjectList.json", projectSelectSuccess, "" );
+     }
+     //프로젝트 리스트 가져오기
+      function projectSelectSuccess(result) {
+        console.log("성공");
+        var projectSelectResult="";
+        var parseProjectResult="";
+        console.log("============================================");
+        projectSelectResult=JSON.stringify(result);
+        parseProjectResult=JSON.parse(projectSelectResult);
+        console.log("projectSelectSuccess>>>>>" + projectSelectResult);
+        console.log("============================================");
+        $("#select-choice-1").empty();
 
+        if (parseProjectResult.length != 0) {
+            for(var i=0; i<parseProjectResult.length; i++) {
+                $("#select-1").append(
+                       "<option value='"+parseProjectResult[i].project_code + "'>" + parseProjectResult[i].project_name + "</option>"
+                  );
+                $("#select-1").selectmenu("refresh", true);
+                }
+            } else {
+            $("#select-1").append(
+                       "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
+               );
+        }
+    }
+    function getPlanDetail(scheduleSeq){
+        console.log("getPlanDetail 플랜 디테일 함수 실행 ");
+        paramJSON.schedule_seq = scheduleSeq;
+	    navigate(paramJSON, "getPlanDetail.json", getPlanDetailSuccess,"");
+	    console.log("getPlanDetail 플랜 디테일 네비게이트 실행 ");
+    }
+        var selectResult="";
+        var parseSelectResult="";
+    function getPlanDetailSuccess(result){
+
+
+        console.log("성공");
+        console.log("============================================");
+        selectResult=JSON.stringify(result);
+        parseSelectResult=JSON.parse(selectResult);
+        console.log("selectResult>>>>>" + selectResult);
+        console.log("parseSelectResult>>>>>" + parseSelectResult);
+        console.log("============================================");
+
+        if (parseSelectResult.length != 0) {
+            //값 넣어주기
+            for(var i=0; i<parseSelectResult.length; i++) {
+                RegisterId = parseSelectResult[i].id;
+                $("#select-1").val(parseSelectResult[i].project_code);
+                $("#textinput-2").val(parseSelectResult[i].schedule_name);
+                $("#select-3").val(parseSelectResult[i].kind_code);
+                $("#textinput-4").val(YMDFormatter(parseSelectResult[i].start_dt));
+                $("#textinput-5").val(YMDFormatter(parseSelectResult[i].end_dt));
+                $("#textarea-6").val(parseSelectResult[i].contents);
+              }
+              $("#select-1").selectmenu("refresh", true);
+              $("#select-3").selectmenu("refresh", true);
+                //input, select 수정불가
+               readMode();
+        }else{
+            alert("일정을 불러올 수 없습니다.");
+            movePage('planList.html');
+        }
+        userCheck(RegisterId);
+    }
+    //사용자에 따라 버튼 다르게 보여주기
+    function userCheck(RegisterId){
+        if (RegisterId == loginUserId || loginUserAdmFlag == "A"){
+            //목록 수정 삭제 버튼
+            $(".btn-area-3").css("display","block");
+        }else {
+            //목록 버튼
+            $(".btn-area-2").css("display","block");
+        }
+    }
+    //수정모드
+    function planEdit(){
+        //input, select 수정가능
+        editMode();
+
+    }
+    //input, select 수정불가
+    function readMode(){
+          $(".title-area h3").text("• 프로젝트 일정 상세");
+          $(".edit-btn").css("display","inline-flex");
+          $(".save-btn").css("display","none");
+
+          $("#select-1").attr('disabled','disabled');
+          $("#textinput-2").attr('readonly',true);
+          $("#select-3").attr('disabled','disabled');
+          $("#textinput-4").attr('readonly',true);
+          $("#textinput-5").attr('readonly',true);
+          $("#textarea-6").attr('readonly',true);
+    }
+    //input, select 수정가능
+    function editMode(){
+          $(".title-area h3").text("• 프로젝트 일정 수정");
+          $(".edit-btn").css("display","none");
+          $(".save-btn").css("display","inline-flex");
+          $("#select-1").removeAttr('disabled');
+          $("#textinput-2").attr('readonly',false);
+          $("#select-3").removeAttr('disabled');
+          $("#textinput-4").attr('readonly',false);
+          $("#textinput-5").attr('readonly',false);
+          $("#textarea-6").attr('readonly',false);
+    }
+    function planUpdate(){
+            //값 가져오기
+            var projectCode = document.getElementById('select-1');
+            var kindSelect  = document.getElementById('select-3');
+
+            var id             = loginUserId;      //로그인 아이디
+            var project_code   = projectCode.options[projectCode.selectedIndex].value;
+            var schedule_name  = $("#textinput-2").val();
+            var kind_code      = kindSelect.options[kindSelect.selectedIndex].value;
+            var start_dt       = ($("#textinput-4").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
+            var end_dt         = ($("#textinput-5").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
+            var contents       = $("#textarea-6").val();
+
+            //필수값 체크
+            if( !id || !project_code || !schedule_name || !kind_code || !start_dt || !end_dt || !contents){
+                alert('일정 내용을 모두 채워주세요.');
+            }else{
+                paramJSON.id              = id;
+                paramJSON.project_code    = project_code;
+                paramJSON.schedule_name   = schedule_name;
+                paramJSON.kind_code       = kind_code;
+                paramJSON.start_dt        = start_dt
+                paramJSON.end_dt          = end_dt;
+                paramJSON.contents        = contents;
+
+                navigate(JSONData, planUpdate.json, planUpdateSuccess,"");
+            }
+    }
+    function checkValidate(){
+
+
+    }
     </script>
 
 </head>
 
 <body>
-<section id="page1" data-role="page">
+<section id="page1" data-role="page" class="container">
+    <header data-role="header">
+        <h1>프로젝트 일정</h1>
+        <a class="ui-btn ui-corner-all ui-btn-inline ui-mini footer-button-left ui-btn-icon-left ui-icon-carat-l" href="javascript:history.back()">back</a>
+        <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
+    </header>
+
+    <div data-role="panel" class="menuPanel"id="menuPanel" data-position="right"  data-display="overlay" data-theme="a">
+        <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
+        <ul id="menuPanelList"data-role="listview">
+            <p>내정보</p>
+            <li><a onclick= "movePage('employeeDetail.html')" >마이페이지</a></li>
+            <p>프로젝트</p>
+            <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
+            <li><a onclick= "movePage('planList.html')" >프로젝트일정<br> 목록</a></li>
+            <p>휴가</p>
+            <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+            <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
+            <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
+            <p>게시판</p>
+            <li><a onclick= "movePage('qnaList.html')" >FAQ</a></li>
+            <p class="admMenu">관리</p>
+            <li class="admMenu"><a onclick= "movePage('employeeDetail.html')" >사원등록</a></li>
+            <li class="admMenu"><a onclick= "movePage('employeeInfo.html')" >사원목록</a></li>
+            <li class="admMenu"><a onclick= "movePage('holidayCondition.html')">휴가현황</a></li>
+        </ul>
+    </div>
+
     <div data-role="content" class="plan-detail">
         <!--제목-->
         <div  class="title-area">
             <div class="gird-pt">
-                <h3>• 프로젝트 일정 등록 </h3>
+                <h3>• 프로젝트 일정 상세 </h3>
             </div>
         </div>
-        <style>
-            div#select-2-button { padding: 7.5px 5px; background:#ffffff;}
-            div#select-2-button span { text-align: left; font-weight: 600;}
-
-        </style>
 
         <!--프로젝트 리스트화면-->
         <div class="gird-pt detail-form">
             <form>
                 <div class="ui-field-contain">
                     <label for="select-1">프로젝트명:</label>
-                    <select name="select-1" id="select-1" class="ui-corner-all">
-                        <option value="projectName">프로젝트명1</option>
-                        <option value="projectName">프로젝트명2</option>
-                        <option value="projectName">프로젝트명3</option>
-                        <option value="projectName">프로젝트명4</option>
+                    <select name="select-1" id="select-1" class="ui-corner-all" onchange="getProjectTerm()" >
+                        <!--진행중 프로젝트 리스트-->
                     </select>
                 </div>
-               <div class="ui-field-contain">
-                   <label for="textinput-2">일정명:</label>
-                   <input type="text" name="textinput-2" id="textinput-2" placeholder="일정명을 입력하세요" value="NH 통합스마트뱅킹 구축">
-               </div>
+                <div class="ui-field-contain">
+                    <label for="textinput-2">일정명:</label>
+                    <input type="text" name="textinput-2" id="textinput-2" placeholder="25자 이내로 입력해주세요." value="">
+                </div>
                 <div class="ui-field-contain">
                     <label for="select-3">구분:</label>
-                    <select name="select-3" id="select-3" class="ui-corner-all">
-                        <option value="projectCode">업무</option>
-                        <option value="projectCode">휴가</option>
-                        <option value="projectCode">회사</option>
-                        <option value="projectCode">기타</option>
+                    <select name="select-3" id="select-3" class="ui-corner-all" disabled>
+                        <option value="업무">업무</option>
+                        <option value="휴가">휴가</option>
+                        <option value="회사">회사</option>
+                        <option value="기타">기타</option>
                     </select>
                 </div>
                 <div class="ui-field-contain">
                     <label for="textinput-4">시작일:</label>
-                    <input type="text" name="textinput-4" id="textinput-4" placeholder="시작일을 선택해주세요" value="" readonly>
-                    <script>
-                    $("#textinput-3").datepicker();
-                    </script>
+                    <div id="textinput-4 datepicker" class="picker">
+                        <input type="text" name="textinput-4" id="textinput-4" class="datepicker" placeholder="시작일을 선택해주세요" value="" readonly>
+                    </div>
                 </div>
                 <div class="ui-field-contain">
                     <label for="textinput-5">종료일:</label>
-                    <input type="text" name="textinput-5" id="textinput-5" placeholder="종료일을 선택해주세요" value="" readonly>
-                    <script>
-                    $("#textinput-4").datepicker();
-                    </script>
+                    <div id="textinput-5 datepicker" class="picker">
+                        <input type="text" name="textinput-5" id="textinput-5" class="datepicker" placeholder="종료일을 선택해주세요" value="" readonly>
+                    </div>
                 </div>
                 <div class="ui-field-contain">
                     <label for="textarea-6">설명:</label>
-                    <textarea type="textarea" name="textarea-6" id="textarea-6" placeholder="요구사항 및 내용을 입력해주세요(200자 이내)" value="NH 통합스마트뱅킹 구축 (퇴직연금 단독 구축)"> </textarea>
+                    <textarea type="textarea" name="textarea-6" id="textarea-6" placeholder="요구사항 및 내용을 입력해주세요(200자 이내)" value="" readonly></textarea>
                 </div>
-
             </form>
         </div>
-        <style>
 
-        </style>
-        <div class="btn-area-1">
-            <div class="grid-pt">
-                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
-                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="common_movePage('index.html')">등록</a></div>
-            </div>
-        </div>
-        <div class="btn-area-2">
+        <div class="btn-area-2" style="display:none;">
             <div class="gird-pt">
-                <button class="ui-btn ui-corner-all ui-btn-b" onclick="common_movePage('index.html')" >목록</button>
+                <button class="ui-btn ui-corner-all ui-btn-b" onclick="movePage('planList.html')">목록</button>
             </div>
         </div>
-        <div class="btn-area-3">
+        <div class="btn-area-3" style="display:none;">
             <div class="grid-pt">
-                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
-                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="movePage('index.html')">삭제</a></div>
-                <div class="grid-cd-3"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="movePage('index.html')">등록</a></div>
+                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all" onclick="movePage('planList.html')">취소</a></div>
+                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="planDelete()">삭제</a></div>
+                <div class="grid-cd-3 edit-btn" style="display:none;"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="planEdit()">수정</a></div>
+                <div class="grid-cd-3 save-btn" style="display:none;"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="planUpdate()">저장</a></div>
+            </div>
+        </div>
+        <!-- footer -->
+        <div class="footer" data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
+                    <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
+                    <li><a href="#" data-icon="calendar">휴가신청</a></li>
+                    <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
+                </ul>
             </div>
         </div>
     </div>
-
-
 </section>
 </body>
 </html>
+
+
+
