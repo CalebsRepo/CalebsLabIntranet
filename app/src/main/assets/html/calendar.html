@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,6 +13,7 @@
     <link href="../css/menu.css" rel="stylesheet">
 
     <script src="../js/common.js"></script>
+    <script src="../js/login.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script src='../js/fullcalendar/moment.min.js'></script>
     <script src='../js/fullcalendar/fullcalendar.min.js'></script>
@@ -165,7 +165,7 @@
         <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
         <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
         <p>휴가</p>
-        <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+        <li><a onclick= "movePage('holidayDetail.html')" >휴가신청</a></li>
         <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
         <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
         <p>게시판</p>
@@ -178,7 +178,7 @@
 </div>
 
 <section class="container" data-role="content">
-<div id="calendar" style="padding-top:30px;"></div>
+    <div id="calendar" style="padding-top:30px;"></div>
 </section>
 
 <!-- footer -->
@@ -187,7 +187,7 @@
         <ul>
             <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
             <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
-            <li><a href="#" data-icon="calendar">휴가신청</a></li>
+            <li><a onclick="movePage('holidayDetail.html')" data-icon="calendar">휴가신청</a></li>
             <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
         </ul>
     </div>

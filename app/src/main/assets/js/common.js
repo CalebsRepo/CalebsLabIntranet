@@ -137,10 +137,18 @@
     function sendFirebase(params, flag) {
         var data = "";
 
-        if(flag == "single") {  // 단건 push
-            data = JSON.stringify({"to": params.token, "data": {"title" : params.title, "body" : params.body, "notiId" : params.notiId }});
-        }else if(flag == "multi") { // 다건 push
-            data = JSON.stringify({"registration_ids": params.token, "data": {"title" : params.title, "body" : params.body, "notiId" : params.notiId }});
+        if(flag == "single") {  // 한사람에게 push
+            if(params.type != "picture") { // 이미지가 포함되지 않은 경우
+                data = JSON.stringify({"to": params.token, "data": {"title" : params.title, "body" : params.body, "type" : params.type, "picture" : ""}});
+            }else { // 이미지가 포함된 경우
+                data = JSON.stringify({"to": params.token, "data": {"title" : params.title, "body" : params.body, "type" : params.type, "picture" : params.picture}});
+            }
+        }else if(flag == "multi") { // 여러명에게 push
+            if(params.type != "picture") { // 이미지가 포함되지 않은 경우
+                data = JSON.stringify({"registration_ids": params.token, "data": {"title" : params.title, "body" : params.body, "type" : params.type, "picture" : ""}});
+            }else { // 이미지가 포함된 경우
+                data = JSON.stringify({"registration_ids": params.token, "data": {"title" : params.title, "body" : params.body, "type" : params.type, "picture" : params.picture}});
+            }
         }
 
 

@@ -12,26 +12,21 @@
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <title></title>
-    <!--로그인 세션 공통-->
-    <script>
-    var loginUser = JSON.parse(getUserData());
-    var loginUserAdmFlag = loginUser.adm_flag;
-    $(document).ready(function(){
-         if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
-            $(".admMenu").show();
-        }
-    });
-    </script>
     <script type="text/javascript">
         var trigger = "";
         var start_num = 0;
         var paramJSON = new Object();
         var today = todayFormat();
+        var loginUser = JSON.parse(getUserData());
+        var loginUserAdmFlag = loginUser.adm_flag;
 
         $(document).ready(function(){
             <!--최초로 진행중인 프로젝트 목록을 가져온다-->
             $("#listArea").empty();
             getProject();
+            if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
+            $(".admMenu").show();
+        }
         });
 
         //오늘날짜 포맷 리턴
@@ -39,24 +34,6 @@
             var now = new Date();
             var todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
             return todayUTC.toISOString().slice(0, 10).replace(/-/g, '');
-        }
-
-        function YMDFormatter(num){
-             if(!num) return "";
-             var formatNum = '';
-
-             // 공백제거
-             num=num.replace(/\s/gi, "");
-
-             try{
-                  if(num.length == 8) {
-                       formatNum = num.replace(/(\d{4})(\d{2})(\d{2})/, '$1/$2/$3');
-                  }
-             } catch(e) {
-                  formatNum = num;
-                  console.log(e);
-             }
-             return formatNum;
         }
 
         function flipChange() {

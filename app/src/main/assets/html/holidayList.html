@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/menu.css">
 
     <script src="../js/common.js"></script>
+    <script src="../js/login.js"></script>
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <script type="text/javascript">
@@ -20,17 +21,15 @@
 
 			$('#btMore').hide();
 
-            var test = getUserData();
-            console.log("test : " + test);
 			setDateSelct();
 			showHolidayList(1);
 
 			// 조회 버튼
 			$("#btResult").click(function(){
 				// 넘버링 초기화
+				numCnt = 1;
 				$("#pageNum").val("1");
 				$("#temp").val($("#approvalSel option:selected").val());
-				numCnt = 1;
 
 				showHolidayList(1);
 			});// end of $("#btResult").click()---------
@@ -40,7 +39,8 @@
 				showHolidayList(2);
 			});// end of $("#btMore").click()----------
 
-		});// end of $(document).ready()--------------------------------------------
+		});// end of $(document).ready()----
+
 
 
 
@@ -112,7 +112,7 @@
                     apply_content = apply_content.replace('\\'      , ''    );
 
                     html += "<div class='historyline'>";
-                    html +=   "<ul style='list-style: none; height: 140px;'>";
+                    html +=   "<ul class='ulView'>";
                     html +=      "<li style='float: left; width: 30%;'>";
                     html += 		"NO."+ numCnt++ +"<br>"+ holidayList[i].apply_date;
                     html += 	 "</li>";
@@ -133,12 +133,13 @@
                             break;
 
                         case "반려":
-                            html +=		"<font color='red'>반려되었습니다. 반려사유를 확인하세요.</font><br>";
-                            html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font><br>"
+                            html +=		"<font color='red'>반려되었습니다. 사유를 확인하세요.</font><br>";
+                            html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font>"
                             break;
 
                         case "승인":
                             html +=		"<font color='#3cb371'>승인되었습니다.</font><br>"; // #3cb371 : MediumSeaGreen
+                            html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font>"
                             break;
                     }// end of switch-----------------------------------
 
@@ -199,7 +200,7 @@
                 apply_content = apply_content.replace('\\'      , ''    );
 
                 html += "<div class='historyline'>";
-                html +=   "<ul style='list-style: none; height: 140px;'>";
+                html +=   "<ul class='ulView'>";
                 html +=      "<li style='float: left; width: 30%;'>";
                 html += 		"NO."+ numCnt++ +"<br>"+ holidayList[i].apply_date;
                 html += 	 "</li>";
@@ -221,12 +222,13 @@
                         break;
 
                     case "반려":
-                        html +=		"<font color='red'>반려되었습니다. 반려사유를 확인하세요.</font><br>";
-                        html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font><br>"
+                        html +=		"<font color='red'>반려되었습니다. 사유를 확인하세요.</font><br>";
+                        html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font>"
                         break;
 
                     case "승인":
                         html +=		"<font color='#3cb371'>승인되었습니다.</font><br>"; // #3cb371 : MediumSeaGreen
+                        html +=		"<font color='#bdb76b'>" + holidayList[i].approval_comment + "</font>"
                         break;
 
                 }// end of switch-----------------
@@ -259,11 +261,20 @@
     <style type="text/css">
 
 		.underline {
-			padding-top: 30px;
-		    padding-bottom: 3px;
-		    border-bottom: 1px solid #eee;
-		    margin: 0px 0 30px 0;
-		}
+                    padding-top: 30px;
+                    padding-bottom: 3px;
+                    border-bottom: 1px solid #eee;
+                    margin: 0px 0 30px 0;
+                   }
+
+		a { text-decoration:none }
+
+		.ulView {
+		    list-style: none;
+		    height: 140px;
+		    padding-left: 20px;
+		   }
+
 
 	</style>
 
@@ -284,7 +295,7 @@
         <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
         <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
         <p>휴가</p>
-        <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+        <li><a onclick= "movePage('holidayDetail.html')" >휴가신청</a></li>
         <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
         <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
         <p>게시판</p>
@@ -341,7 +352,7 @@
         <ul>
             <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
             <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
-            <li><a href="#" data-icon="calendar">휴가신청</a></li>
+            <li><a onclick="movePage('holidayDetail.html')" data-icon="calendar">휴가신청</a></li>
             <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
         </ul>
     </div>

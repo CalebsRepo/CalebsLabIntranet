@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 
 import android.content.Intent;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
@@ -16,8 +17,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 
 import android.os.Build;
-
-import android.os.Vibrator;
 
 import android.support.v4.app.NotificationCompat;
 
@@ -31,84 +30,45 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.net.URL;
 import java.util.Map;
 
 
 public class FireBaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
-
-
-
+    Bitmap bigPicture;
 
     @Override
-
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
         /*background에서도 sendNotification()함수를 타기 값 설정*/
         Map<String, String> data = remoteMessage.getData();
 
         //you can get your text message here.
-        String title = data.get("title");
-        String body  = data.get("body");
-        int notiId  =  Integer.parseInt(data.get("notiId"));
-        sendNotification(title, body, notiId);
+        String title    = data.get("title");
+        String body     = data.get("body");
+        String type     = data.get("type");
+        String picture  = data.get("picture");
 
-
-        /*
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
-
-
-
-
-        if (remoteMessage.getData().size() > 0) {
-
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-
-
-
-
-            if (true) {
-
-            } else {
-
-                handleNow();
-
-            }
-
-        }
-
-        if (remoteMessage.getNotification() != null) {
-
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-
-            sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
-
-        }
-        */
-
+        sendNotification(title, body, type, picture);
     }
-    /*
-    private void handleNow() {
-
-        Log.d(TAG, "Short lived task is done.");
-
-    }
-    */
 
 
-
-
-    private void sendNotification(String messageTitle, String messageBody, int messageNotiId) {
+    private void sendNotification(String messageTitle, String messageBody, String messageType, String messagePicture) {
 
         Intent intent = new Intent(this, MainActivity.class);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
+        /*
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
 
                 PendingIntent.FLAG_ONE_SHOT);
+        */
 
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)(System.currentTimeMillis()/1000), intent,
+
+                PendingIntent.FLAG_ONE_SHOT);
 
 
 
@@ -116,37 +76,65 @@ public class FireBaseMessagingService extends FirebaseMessagingService {
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        NotificationCompat.Builder notificationBuilder =
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),android.R.drawable.zoom_plate);
 
-                new NotificationCompat.Builder(this, channelId)
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
 
-                        //.setSmallIcon(R.mipmap.ic_launcher)
+        //notificationBuilder.setSmallIcon(R.mipmap.ic_launcher)
+        //notificationBuilder.setSmallIcon(android.R.drawable.ic_popup_reminder)   // required
 
-                        //.setSmallIcon(android.R.drawable.ic_popup_reminder)   // required
+        notificationBuilder.setSmallIcon(R.mipmap.logo); // 작은 아이콘
 
-                        .setSmallIcon(R.mipmap.logo)
+        notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.logo)); // 큰 아이콘
 
-                        .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.logo))
+        notificationBuilder.setContentTitle(messageTitle); // push 제목
 
-                        .setContentTitle(messageTitle)
+        switch (messageType) {
+            case "noti" : case "project":
+                Log.d("das", "게시판 , 공지사항~~~~~~~~~~~~");
+                notificationBuilder.setContentText(messageBody); // push 내용
+                notificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
+                        .setBigContentTitle(messageTitle) // 아래로 내렸을 시 제목
+                        .bigText(messageBody)); // 아래로 내렸을 시 내용
+                break;
+            case "holiday" :
+                Log.d("das", "휴가~~~~~~~~~~~~~~");
+                notificationBuilder.setContentText("아래로 당겨주세요."); // push 내용
+                notificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
+                        .setBigContentTitle(messageTitle) // 아래로 내렸을 시 제목
+                        .bigText(messageBody)); // 아래로 내렸을 시 내용
+                break;
 
-                        .setContentText("아래로 당겨주세요.")
+            case "picture" :
+                Log.d("das", "그림~~~~~~~~~~~~~~");
+                try {
+                    URL url = new URL(messagePicture);
+                    bigPicture = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                        .setAutoCancel(true)
+                notificationBuilder.setContentText(messageBody); // push 내용
+                notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle()
+                        .setBigContentTitle(messageTitle) // push알림 아래로 내렸을 시 제목
+                        .setSummaryText(messageBody) // push알림 아래로 내렸을 시 내용
+                        .bigPicture(bigPicture));    // 표시할 사진
+                break;
+        }
 
-                        .setWhen(System.currentTimeMillis())
+        notificationBuilder.setAutoCancel(true); // 선택시 자동으로 push메세지 삭제
 
-                        .setSound(defaultSoundUri)
+        notificationBuilder.setWhen(System.currentTimeMillis()); // push메세지 전송 시간
 
-                        .setDefaults(Notification.FLAG_SHOW_LIGHTS)
+        notificationBuilder.setSound(defaultSoundUri); // 사운드 설정
 
-                        .setLights(Color.rgb(165,102,255), 2000,2000)
+        notificationBuilder.setDefaults(Notification.FLAG_SHOW_LIGHTS); // 기본 설정
 
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .setBigContentTitle(messageTitle)
-                                .bigText(messageBody))
+        notificationBuilder.setLights(Color.rgb(165,102,255), 2000,2000); // LED 설정
 
-                        .setContentIntent(pendingIntent);
+        notificationBuilder.setPriority(NotificationCompat.PRIORITY_MAX); //
+
+        notificationBuilder.setContentIntent(pendingIntent);
 
 
 
@@ -166,12 +154,16 @@ public class FireBaseMessagingService extends FirebaseMessagingService {
 
             channel.enableLights(true);
             channel.setLightColor(Color.rgb(165,102,255));
+            channel.setShowBadge(true);
 
             notificationManager.createNotificationChannel(channel);
 
         }
 
-        notificationManager.notify(messageNotiId, notificationBuilder.build());
+        Log.d("NGW", "(int)(System.currentTimeMillis()/1000) : " + (int)(System.currentTimeMillis()/1000));
+
+        //notificationManager.notify(messageNotiId, notificationBuilder.build());
+        notificationManager.notify((int)(System.currentTimeMillis()/1000), notificationBuilder.build());
 
     }
 

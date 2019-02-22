@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
-    <link rel="stylesheet" href="../css/project_info.css">
     <link rel="stylesheet" href="../css/menu.css">
+    <link rel="stylesheet" href="../css/project_info.css">
     <script src="../js/common.js"></script>
     <script src="../js/login.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
@@ -112,60 +112,61 @@
                 ind++;
                 iHTML += '<div id="memberArea'+ind+'" class="member-area ui-field-contain">';
                 if(isAdmin) { // 관리자
-                    iHTML += '    <label><input type="checkbox" id="listChb'+ind+'" name="listChb"></label>';
+                    iHTML += '    <label style="width:22px"><div class="ui-checkbox"><input type="checkbox" id="listChb'+ind+'" name="listChb" style="position: unset; left: unset;"></div></label>';
                 } else {
                     if(projectSelectInfoJSON[0].register_id == sessionID) {
-                        iHTML += '    <label><input type="checkbox" id="listChb'+ind+'" name="listChb"></label>';
+                        iHTML += '    <label style="width:22px"><div class="ui-checkbox"><input type="checkbox" id="listChb'+ind+'" name="listChb" style="position: unset; left: unset;"></div></label>';
                     }
                 }
-                iHTML += '    <ul data-role="listview" data-inset="true" class="list-area">';
-                iHTML += '        <li class="member-name ui-field-contain">';
+                iHTML += '    <ul data-role="listview" data-inset="true" class="list-area  ui-listview ui-listview-inset ui-corner-all ui-shadow">';
+                iHTML += '        <li class="member-name ui-field-contain ui-li-static ui-body-inherit ui-first-child">';
                 iHTML += '            <label>참여인원</label>';
                 iHTML += '            <div class="member">';
-                iHTML += '                <select id="memberSel'+ind+'" name="memberSel" class="memberSel" onchange="memberSelect('+ind+')">';
+                iHTML += '                <div class="ui-select"><div id="memberSel'+ind+'-button" class="ui-btn ui-icon-carat-d ui-btn-icon-right ui-corner-all ui-shadow"><span class="memberSel">선택하세요</span><select id="memberSel'+ind+'" name="memberSel" class="memberSel" onchange="memberSelect('+ind+')" style="z-index: 0;">';
                 iHTML += '                    <option value="">선택하세요</option>';
-                iHTML += '                </select>&nbsp;';
-                iHTML += '                <input type="text" id="memberName'+ind+'" name="memberName" value="" data-clear-btn="true" readonly>';
+                iHTML += '                </select></div></div>&nbsp;';
+                iHTML += '                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input type="text" id="memberName'+ind+'" name="memberName" readonly></div>';
                 iHTML += '            </div>';
                 iHTML += '        </li>';
-                iHTML += '        <li class="memeber-date ui-field-contain">';
+                iHTML += '        <li class="memeber-date ui-field-contain ui-li-static ui-body-inherit">';
                 iHTML += '            <label>참여기간</label>';
                 iHTML += '            <div class="picker">';
-                iHTML += '                <input type="text" name="putDt" class="datepicker" value="'+YMDFormatter(selectMemberProjectInfo[i].mem_start_ymd)+'" readonly> ~';
-                iHTML += '                <input type="text" name="withdrawDt" class="datepicker" value="'+YMDFormatter(selectMemberProjectInfo[i].mem_end_ymd)+'" readonly>';
+                iHTML += '                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input type="text" name="putDt" class="datepicker" value="'+YMDFormatter(selectMemberProjectInfo[i].mem_start_ymd)+'" readonly></div> ~';
+                iHTML += '                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input type="text" name="withdrawDt" class="datepicker" value="'+YMDFormatter(selectMemberProjectInfo[i].mem_end_ymd)+'" readonly></div>';
                 iHTML += '            </div>';
                 iHTML += '        </li>';
-                iHTML += '        <li class="skill ui-field-contain">';
+                iHTML += '        <li class="skill ui-field-contain ui-li-static ui-body-inherit">';
                 iHTML += '            <label>사용기술</label>';
-                iHTML += '            <textarea cols="40" rows="8" id="skillTarea'+ind+'" name="skill"></textarea>';
+                iHTML += '            <textarea cols="40" rows="8" id="skillTarea'+ind+'" name="skill" class="ui-input-text ui-shadow-inset ui-body-inherit ui-corner-all ui-textinput-autogrow" style="height: 52px;"></textarea>';
                 iHTML += '        </li>';
-                iHTML += '        <li class="grade ui-field-contain">';
+                iHTML += '        <li class="grade ui-field-contain ui-li-static ui-body-inherit">';
                 iHTML += '            <label>기술등급</label>';
-                iHTML += '            <select id="gradeSel'+ind+'" name="gradeSel">';
+                iHTML += '            <div class="ui-select"><div id="gradeSel'+ind+'-button" class="ui-btn ui-icon-carat-d ui-btn-icon-right ui-corner-all ui-shadow"><span>선택하세요</span><select id="gradeSel'+ind+'" name="gradeSel" onchange="gradeSelect('+ind+')" style="z-index: 0;">';
                 iHTML += '                <option value="">선택하세요</option>';
                 iHTML += '                <option value="특급">특급</option>';
                 iHTML += '                <option value="고급">고급</option>';
                 iHTML += '                <option value="중급">중급</option>';
                 iHTML += '                <option value="초급">초급</option>';
-                iHTML += '            </select>';
+                iHTML += '            </select></div></div>';
                 iHTML += '        </li>';
-                iHTML += '        <li class="roll ui-field-contain">';
+                iHTML += '        <li class="roll ui-field-contain ui-li-static ui-body-inherit ui-last-child">';
                 iHTML += '            <label>참여형태</label>';
                 iHTML += '            <div class="rollDiv">';
-                iHTML += '                <select id="rollSel'+ind+'" name="rollSel" onchange="rollSelect('+ind+')">';
+                iHTML += '                <div class="ui-select"><div id="rollSel'+ind+'-button" class="ui-btn ui-icon-carat-d ui-btn-icon-right ui-corner-all ui-shadow"><span>선택하세요</span><select id="rollSel'+ind+'" name="rollSel" onchange="rollSelect('+ind+')" style="z-index: 0;">';
                 iHTML += '                    <option value="">선택하세요</option>';
                 iHTML += '                    <option value="PM">PM</option>';
                 iHTML += '                    <option value="PL">PL</option>';
                 iHTML += '                    <option value="참여자">참여자</option>';
                 iHTML += '                    <option value="직접입력">직접입력</option>';
-                iHTML += '                </select>';
+                iHTML += '                </select></div></div>';
                 iHTML += '                &nbsp;';
-                iHTML += '                <input type="text" id="rollTxt'+ind+'" name="memberRoll" value="" data-clear-btn="true" readonly>';
+                iHTML += '                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input type="text" id="rollTxt'+ind+'" name="memberRoll" readonly></div>';
                 iHTML += '            </div>';
                 iHTML += '        </li>';
                 iHTML += '    </ul>';
                 iHTML += '</div>';
             }
+
             $("#listviewArea").append(iHTML);
 
             // 멤버정보 set
@@ -203,10 +204,13 @@
 
                 // 각각의 Element에 값 Mapping
                 $("#memberSel"+j).val(selectMemberProjectInfo[j-1].name).prop("selected", true); // 이름과 일치하는 옵션을 selected
+                $("#memberSel"+j+"-button > span").text(selectMemberProjectInfo[j-1].name); // 선택된 값을 selectBox Span에 출력
                 document.getElementById(nameInputID).value = selectMemberProjectInfo[j-1].name; // 이름
                 document.getElementById(skillID).value = selectMemberProjectInfo[j-1].skill; // 사용기술
                 $("#gradeSel"+j).val(selectMemberProjectInfo[j-1].grade).prop("selected", true); // 등급과 일치하는 옵션을 selected
+                $("#gradeSel"+j+"-button > span").text(selectMemberProjectInfo[j-1].grade); // 선택된 값을 selectBox Span에 출력
                 $("#rollSel"+j).val(selectMemberProjectInfo[j-1].charge_job).prop("selected", true); // 참여형태와 일치하는 옵션을 selected
+                $("#rollSel"+j+"-button > span").text(selectMemberProjectInfo[j-1].charge_job); // 선택된 값을 selectBox Span에 출력
                 document.getElementById(rollInputID).value = selectMemberProjectInfo[j-1].charge_job; // 참여형태
 
                 // db에 key가 되는 이름은 수정이 되지 않도록 disabled 설정한다
@@ -232,25 +236,6 @@
 
         function dbSelectError(result) {
             console.log("실패");
-        }
-
-        <!--날짜 Formatter(YYYY/mm/dd)-->
-        function YMDFormatter(num){
-             if(!num) return "";
-             var formatNum = '';
-
-             // 공백제거
-             num=num.replace(/\s/gi, "");
-
-             try{
-                  if(num.length == 8) {
-                       formatNum = num.replace(/(\d{4})(\d{2})(\d{2})/, '$1/$2/$3');
-                  }
-             } catch(e) {
-                  formatNum = num;
-                  console.log(e);
-             }
-             return formatNum;
         }
 
         <!--참여인원 삭제버튼 클릭 이벤트-->
@@ -284,50 +269,50 @@
             ind++;
 
             iHTML += '<div id="memberArea'+ind+'" class="member-area ui-field-contain">';
-            iHTML += '    <label><input type="checkbox" id="listChb'+ind+'" name="listChb"></label>';
-            iHTML += '    <ul data-role="listview" data-inset="true" class="list-area">';
-            iHTML += '        <li class="member-name ui-field-contain">';
+            iHTML += '    <label style="width:22px"><div class="ui-checkbox"><input type="checkbox" id="listChb'+ind+'" name="listChb" style="position: unset; left: unset;"></div></label>';
+            iHTML += '    <ul data-role="listview" data-inset="true" class="list-area  ui-listview ui-listview-inset ui-corner-all ui-shadow">';
+            iHTML += '        <li class="member-name ui-field-contain ui-li-static ui-body-inherit ui-first-child">';
             iHTML += '            <label>참여인원</label>';
             iHTML += '            <div class="member">';
-            iHTML += '                <select id="memberSel'+ind+'" name="memberSel" class="memberSel" onchange="memberSelect('+ind+')">';
+            iHTML += '                <div class="ui-select"><div id="memberSel'+ind+'-button" class="ui-btn ui-icon-carat-d ui-btn-icon-right ui-corner-all ui-shadow"><span class="memberSel">선택하세요</span><select id="memberSel'+ind+'" name="memberSel" class="memberSel" onchange="memberSelect('+ind+')" style="z-index: 0;">';
             iHTML += '                    <option value="">선택하세요</option>';
-            iHTML += '                </select>&nbsp;';
-            iHTML += '                <input type="text" id="memberName'+ind+'" name="memberName" value="" data-clear-btn="true" readonly>';
+            iHTML += '                </select></div></div>&nbsp;';
+            iHTML += '                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input type="text" id="memberName'+ind+'" name="memberName" readonly></div>';
             iHTML += '            </div>';
             iHTML += '        </li>';
-            iHTML += '        <li class="memeber-date ui-field-contain">';
+            iHTML += '        <li class="memeber-date ui-field-contain ui-li-static ui-body-inherit">';
             iHTML += '            <label>참여기간</label>';
             iHTML += '            <div class="picker">';
-            iHTML += '                <input type="text" name="putDt" class="datepicker"readonly> ~';
-            iHTML += '                <input type="text" name="withdrawDt" class="datepicker"readonly>';
+            iHTML += '                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input type="text" name="putDt" class="datepicker" readonly></div> ~';
+            iHTML += '                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input type="text" name="withdrawDt" class="datepicker" readonly></div>';
             iHTML += '            </div>';
             iHTML += '        </li>';
-            iHTML += '        <li class="skill ui-field-contain">';
+            iHTML += '        <li class="skill ui-field-contain ui-li-static ui-body-inherit">';
             iHTML += '            <label>사용기술</label>';
-            iHTML += '            <textarea cols="40" rows="8" id="skillTarea'+ind+'" name="skill"></textarea>';
+            iHTML += '            <textarea cols="40" rows="8" id="skillTarea'+ind+'" name="skill" class="ui-input-text ui-shadow-inset ui-body-inherit ui-corner-all ui-textinput-autogrow" style="height: 52px;"></textarea>';
             iHTML += '        </li>';
-            iHTML += '        <li class="grade ui-field-contain">';
+            iHTML += '        <li class="grade ui-field-contain ui-li-static ui-body-inherit">';
             iHTML += '            <label>기술등급</label>';
-            iHTML += '            <select id="gradeSel'+ind+'" name="gradeSel">';
+            iHTML += '            <div class="ui-select"><div id="gradeSel'+ind+'-button" class="ui-btn ui-icon-carat-d ui-btn-icon-right ui-corner-all ui-shadow"><span>선택하세요</span><select id="gradeSel'+ind+'" name="gradeSel" onchange="gradeSelect('+ind+')" style="z-index: 0;">';
             iHTML += '                <option value="">선택하세요</option>';
             iHTML += '                <option value="특급">특급</option>';
             iHTML += '                <option value="고급">고급</option>';
             iHTML += '                <option value="중급">중급</option>';
             iHTML += '                <option value="초급">초급</option>';
-            iHTML += '            </select>';
+            iHTML += '            </select></div></div>';
             iHTML += '        </li>';
-            iHTML += '        <li class="roll ui-field-contain">';
+            iHTML += '        <li class="roll ui-field-contain ui-li-static ui-body-inherit ui-last-child">';
             iHTML += '            <label>참여형태</label>';
             iHTML += '            <div class="rollDiv">';
-            iHTML += '                <select id="rollSel'+ind+'" name="rollSel" onchange="rollSelect('+ind+')">';
+            iHTML += '                <div class="ui-select"><div id="rollSel'+ind+'-button" class="ui-btn ui-icon-carat-d ui-btn-icon-right ui-corner-all ui-shadow"><span>선택하세요</span><select id="rollSel'+ind+'" name="rollSel" onchange="rollSelect('+ind+')" style="z-index: 0;">';
             iHTML += '                    <option value="">선택하세요</option>';
             iHTML += '                    <option value="PM">PM</option>';
             iHTML += '                    <option value="PL">PL</option>';
             iHTML += '                    <option value="참여자">참여자</option>';
             iHTML += '                    <option value="직접입력">직접입력</option>';
-            iHTML += '                </select>';
+            iHTML += '                </select></div></div>';
             iHTML += '                &nbsp;';
-            iHTML += '                <input type="text" id="rollTxt'+ind+'" name="memberRoll" value="" data-clear-btn="true" readonly>';
+            iHTML += '                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input type="text" id="rollTxt'+ind+'" name="memberRoll" readonly></div>';
             iHTML += '            </div>';
             iHTML += '        </li>';
             iHTML += '    </ul>';
@@ -372,14 +357,16 @@
             var inputID = 'rollTxt' + index;
             changeSelect(selID, inputID);
         }
+        <!--gradeSel select-->
+        function gradeSelect(index) {
+            var selID = 'gradeSel' + index;
+            changeSelect(selID);
+        }
         <!--selectBox 선택 이벤트-->
         function changeSelect(selID, inputID) {
             console.log("selID>>>>>" + selID);
-            console.log("inputID>>>>>" + inputID);
             <!--이벤트가 발생한 selBox 찾기-->
             var memSelect = document.getElementById(selID);
-            <!--선택한 값을 띄울 input-->
-            var viewInput = document.getElementById(inputID);
 
             <!--select element에서 선택된 option의 value가 저장된다.-->
             var selectValue = memSelect.options[memSelect.selectedIndex].value;
@@ -387,23 +374,69 @@
             var selectText = memSelect.options[memSelect.selectedIndex].text;
             console.log("selectText>>>>" + selectText);
 
-             if(selectText == '직접입력') {
-                viewInput.readOnly = false;
-                viewInput.value = "";
-             } else {
-                viewInput.value = selectText;
-             }
+             $("#"+selID+"-button > span").text(selectText); // 선택된 값을 selectBox Span에 출력
+
+            if(inputID != null) {
+                console.log("inputID>>>>>" + inputID);
+                <!--선택한 값을 띄울 input-->
+                var viewInput = document.getElementById(inputID);
+                 if(selectText == '직접입력') {
+                    viewInput.readOnly = false;
+                    viewInput.value = "";
+                 } else {
+                    viewInput.value = selectText;
+                 }
+            }
         }
 
         function modify() {
-            <!--프로젝트 정보 get-->
             var projectInfoJSON = new Object();
-            projectInfoJSON.name = document.getElementById('projectName').value;
-            projectInfoJSON.company = document.getElementById('projectComp').value;
+
+            // 프로젝트 정보 관련 Validation Check
+            // 정규식 정리
+            var patternNum = /^[0-9]+$/; // 숫자만 체크
+            var patternSpecial = /^[`~!@#$%^&*|\\\'\";:\/?]+$/; // 특수문자만 체크
+
+            // 프로젝트명
+            var projectName = document.getElementById('projectName').value;
+            if(projectName == "") { // 프로젝트명을 입력하지 않은 경우
+                alert("프로젝트명을 입력해주세요");
+                return false;
+            }
+            if(patternNum.test(projectName) || patternSpecial.test(projectName)) { // 프로젝트명이 숫자나 특수문자만으로 구성되어 있는 경우
+                alert("프로젝트명을 확인해주세요");
+                return false;
+            }
+
+            // 발주회사
+            var projectComp = document.getElementById('projectComp').value;
+            if(projectComp == "") { // 발주회사를 선택하지 않은 경우
+                alert("발주회사를 선택해주세요");
+                return false;
+            }
+
+            // 프로젝트 시작 종료일
+            var projectStartDt = document.getElementById('projectStartDt').value;
+            var projectEndDt = document.getElementById('projectEndDt').value;
+            if(projectStartDt == "" || projectEndDt == "") {
+                alert("프로젝트 시작/종료일을 입력해주세요");
+                return false;
+            }
+
+            // 프로젝트 설명
+            var projectExplain = document.getElementById('projectExplain').value;
+            if(projectExplain == "") {
+                alert("프로젝트 설명을 입력해주세요.");
+                return false;
+            }
+
+            // 프로젝트 정보 make
+            projectInfoJSON.name = projectName;
+            projectInfoJSON.company = projectComp;
             projectInfoJSON.code = projectCode;
-            projectInfoJSON.startDt = document.getElementById('projectStartDt').value;
-            projectInfoJSON.endDt = document.getElementById('projectEndDt').value;
-            projectInfoJSON.explain = document.getElementById('projectExplain').value;
+            projectInfoJSON.startDt = projectStartDt;
+            projectInfoJSON.endDt = projectEndDt;
+            projectInfoJSON.explain = projectExplain;
 
             // 멤버 투입정보 get
             var memberInsertArray = new Array(); // insert정보
@@ -419,6 +452,51 @@
             // 참여멤버 입력값이 있을때
             if(memberInfoName.length > 0) { // 참여멤버정보가 있으면 key가 되는 이름값으로 update/delete/insert여부 판단
                 for(var index = 0; index < memberInfoName.length; index++) { // 이름값으로 update/insert
+                    // 멤버 정보 관련 Validation Check
+                    // 이름
+                    if(memberInfoName[index].value == "") {
+                        alert("인원 이름을 선택/입력해주세요."); // 필수값 check
+                        return false;
+                    }
+                    // 이름 중복선택 check(이름과 프로젝트 코드가 테이블의 pk역할을 하므로 1개의 프로젝트에 참여인원의 이름이 중복되어서는 안된다.
+                    for(var diffIndex = index + 1;diffIndex < memberInfoName.length; diffIndex++) { // 현재 인덱스로부터 마지막까지 반복문을 돌면서
+                        if(memberInfoName[index].value == memberInfoName[diffIndex].value) { // 이름이 같으면 return false
+                            alert("참여인원은 중복될 수 없습니다.");
+                            return false;
+                        }
+                    }
+                    // 참여기간
+                    if(memberInfoPutDt[index].value == "" || memberInfoWithdrawDt[index].value == "") {
+                        alert("참여기간을 입력해주세요."); // 필수값 check
+                        return false;
+                    }
+                    // 프로젝트 기간과 참여기간의 비교
+                    if(diffDate(projectStartDt, memberInfoPutDt[index].value, "start") == false) { // 프로젝트 시작일이 투입일보다 큰 경우
+                        alert("투입일은 프로젝트 시작일보다 작을 수 없습니다.");
+                        return false;
+                    }
+                    if(diffDate(projectStartDt, memberInfoPutDt[index].value, "end") == false) { // 프로젝트 종료일이 철수일보다 작은 경우
+                        alert("철수일은 프로젝트 시작일보다 클 수 없습니다.");
+                        return false;
+                    }
+
+                    // 사용기술
+                    if(memberInfoSkill[index].value == "") {
+                        alert("사용기술을 입력해주세요."); // 필수값 check
+                        return false;
+                    }
+
+                    // 기술등급
+                    if(memberInfoGrade[index].value == "") {
+                        alert("사용기술을 입력해주세요."); // 필수값 check
+                        return false;
+                    }
+
+                    // 참여형태
+                    if(memberInfoRoll[index].value == "") {
+                        alert("사용기술을 입력해주세요."); // 필수값 check
+                        return false;
+                    }
                     var memberInfoJSON = new Object();
                     memberInfoJSON.name = memberInfoName[index].value;
                     memberInfoJSON.putDt = memberInfoPutDt[index].value;
@@ -551,7 +629,7 @@
                     </div>
                     <div class="ui-field-contain">
                         <label for="projectComp">발주회사</label>
-                        <select id="projectComp"></select>
+                        <select id="projectComp" style="z-index: 0;"></select>
                     </div>
                     <div class="ui-field-contain">
                         <label for="datepicker">프로젝트 기간</label>
