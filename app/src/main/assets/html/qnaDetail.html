@@ -85,12 +85,16 @@
     			console.log("특수문자 없어요");
     		}
             */
+
+            var contents = $("#qna-content").val();
+            contents = contents.replace(/(?:\r\n|\r|\n)/g, '<br>');
+
     		var form_data = {
     		                  regnum   : sessionStorage.getItem('regnum'),
     						  id       : userInfo.id,
     						  name     : userInfo.name,
     						  subject  : $("#qna-title").val(),
-    						  contents : $("#qna-content").val(),
+    						  contents : contents,
     						  bbs_code : $("#qna-part").val()
     						};
 
