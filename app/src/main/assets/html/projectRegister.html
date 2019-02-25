@@ -102,7 +102,7 @@
             iHTML += '    <label style="width:22px"><div class="ui-checkbox"><input type="checkbox" id="listChb'+ind+'" name="listChb" style="position: unset; left: unset;"></div></label>';
             iHTML += '    <ul data-role="listview" data-inset="true" class="list-area  ui-listview ui-listview-inset ui-corner-all ui-shadow">';
             iHTML += '        <li class="member-name ui-field-contain ui-li-static ui-body-inherit ui-first-child">';
-            iHTML += '            <label>참여인원</label>';
+            iHTML += '            <label>참여자명</label>';
             iHTML += '            <div class="member">';
             iHTML += '                <div class="ui-select"><div id="memberSel'+ind+'-button" class="ui-btn ui-icon-carat-d ui-btn-icon-right ui-corner-all ui-shadow"><span class="memberSel">선택하세요</span><select id="memberSel'+ind+'" name="memberSel" class="memberSel" onchange="memberSelect('+ind+')" style="z-index: 0;">';
             iHTML += '                    <option value="">선택하세요</option>';
@@ -186,7 +186,7 @@
                 var op = new Option();
 
                 op.value = parseEmployeeResult[i].ID;
-                op.text = parseEmployeeResult[i].NAME;
+                op.text = parseEmployeeResult[i].NAME + "(" + parseEmployeeResult[i].ID + ")";
 
                 <!--selectBox에 option 추가-->
                 selbox.options.add(op);
@@ -352,7 +352,17 @@
                         return false;
                     }
                     var memberInfoJSON = new Object();
-                    memberInfoJSON.name = memberInfoName[index].value;
+                    // ID와 이름을 분리
+                    var tempStr = memberInfoName[index].value; // 이름+id값을 변수에 저장
+                    var cutStartIndex = tempStr.indexOf("("); // "("의 index값을 구한다.
+                    if(cutStartIndex == -1) { // 괄호가 포함되어 있지 않은 경우(직접입력)
+                        memberInfoJSON.id   = "free";
+                        memberInfoJSON.name = tempStr;
+                    } else { // select box에서 선택한경우
+                        var cutEndIndex = tempStr.indexOf(")"); // ")"의 index값을 구한다.
+                        memberInfoJSON.id   = tempStr.substring(cutStartIndex+1, cutEndIndex);
+                        memberInfoJSON.name = tempStr.substr(0, cutStartIndex);
+                    }
                     memberInfoJSON.putDt = memberInfoPutDt[index].value;
                     memberInfoJSON.withdrawDt = memberInfoWithdrawDt[index].value;
                     memberInfoJSON.skill = memberInfoSkill[index].value;
