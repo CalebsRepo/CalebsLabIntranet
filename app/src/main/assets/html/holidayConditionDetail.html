@@ -21,7 +21,6 @@
     <!-- 페이지 넘어올때 -->
     $(function(){
         ajaxResult = JSON.parse(getStorageItem());
-        console.log("페이지로딩시" + JSON.stringify( ajaxResult))
         for(var i=0; i<ajaxResult.length; i++) {
             var holidayDetailListview = document.getElementById('holidayDetailListview');
 
