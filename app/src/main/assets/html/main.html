@@ -82,7 +82,6 @@
             console.log("========================================================" + project_code);
             if (ajaxResult[i].project_cnt != 0) {
                 $("#projectListview").append("<li class='ui-corner-all'>"
-
                                         +" <a onclick='movePage(\"projectDetail.html\", \""+project_code+"\")' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
                                         +"<div class='plan plan-name'> 프로젝트명 : " + ajaxResult[i].project_name + "</div>"
                                         +"<div class='plan plan-date'> 기간 : " + ajaxResult[i].start_ymd +" ~ " + ajaxResult[i].end_ymd  + "</div>"
