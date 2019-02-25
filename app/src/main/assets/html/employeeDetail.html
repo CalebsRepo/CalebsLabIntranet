@@ -25,8 +25,8 @@
 
             window.addEventListener('message', function(e) {
             //  console.log("받은 데이테 : " + e.data);
-                $("#zip_code").val(e.data[0]);
-                $("#address1").val(e.data[1]);
+                $("#zip_code").val(e.data[e.data.length-2]);
+                $("#address1").val(e.data[e.data.length-1]);
 
                 $("#jusoAPI").hide();
                 $("#address2").focus();
