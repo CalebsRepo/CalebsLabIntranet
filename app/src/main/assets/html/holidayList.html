@@ -1,3 +1,10 @@
+<!--************************************************************************
+*  화면명: 휴가 신청내역
+*  작성일지: 1) 임규하 (20190129) 최초작성
+*  업무구분: 메뉴바 > 휴가신청내역
+*  내용: 사용자의 휴가신청 내역을 보여주는 기능
+**************************************************************************-->
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -32,19 +39,19 @@
 				$("#temp").val($("#approvalSel option:selected").val());
 
 				showHolidayList(1);
-			});// end of $("#btResult").click()---------
+			});// end of $("#btResult").click() ---------
 
 			// 더보기 버튼
 			$("#btMore").click(function(){
 				showHolidayList(2);
-			});// end of $("#btMore").click()----------
+			});// end of $("#btMore").click() ----------
 
-		});// end of $(document).ready()----
+		});// end of $(document).ready() -----------------------
 
-
-
-
-		// 휴가리스트를 보여주는 함수(num 이 1이면 처음조회화면 2이면 더보기)
+        /**
+        * 내용 : 휴가리스트를 보여주는 함수
+        * param num : 1이면 조회, 2이면 더보기
+        **/
 		function showHolidayList(num){
 
 			var form_data = {
@@ -64,7 +71,9 @@
 
 		}// end of showHolidayList()------------------------------------
 
-		// 날짜 조회값을 append 해주는 함수
+	    /**
+        * 내용 : 날짜 조회값을 append 해주는 함수
+        **/
 		function setDateSelct() {
 			var date = new Date();
 			var year = date.getFullYear();
@@ -87,6 +96,10 @@
 
 		}// end of setDateSelct() ----------------------------------------
 
+        /**
+        * 내용 : holidayList.json 호출 이후 처리
+        * param data : 휴가 내역 json 데이터
+        **/
 		function successHolidayList(data) {
             $("#showList").empty();
                 var html = "";
@@ -119,7 +132,7 @@
                     html += 	 "<li style='float: left; width: 70%;'>";
                     html +=        "<a href=javascript:viewApply('" + apply_seq + '\',\'' + id + "')>신청번호 : " + apply_seq + "</a> " + holidayList[i].name + "<br>";
                     html +=			"휴가종류 : " + holidayList[i].h_type + "<br>";
-                    html +=         start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
+                    html +=        start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
                     html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + holidayList[i].apply_count +"일)";
                     html += 		"<br>"+ apply_content +"<br>";
 
@@ -148,7 +161,7 @@
                     html += "</div>";
                     html += "<div class='underline'></div>";
 
-                }// end of for-------------------
+                }// end of for--------------------------------------
 
                 // 페이지 총수
                 $("#pageMaxNum").val(data.totalPage);
@@ -171,17 +184,26 @@
 
         }// end of successHolidayList(data) -------------------------------------
 
+        /**
+        * 내용 : 휴가 Detail 페이지 이동
+        * param getApplySeq : 휴가시퀀스번호, 아이디
+        * param getId : 아이디
+        **/
         function viewApply(getApplySeq, getId) {
 
-          var params = {
-              getApplySeq : getApplySeq,
-              getId       : getId,
-              gubun       : "1"
-          };
-          movePage("holidayDetail.html", params);
+            var params = {
+                           getApplySeq : getApplySeq,
+                           getId       : getId,
+                           gubun       : "1"
+                          };
+            movePage("holidayDetail.html", params);
 
-      }// end of viewApply(getApplySeq, getId)---------------------------------------------
+         }// end of viewApply(getApplySeq, getId)---------------------------------------------
 
+        /**
+        * 내용 : holidayList.json 호출 이후 처리(더보기)
+        * param data : 휴가 내역 json 데이터
+        **/
         function successMoreList(data) {
 
             var html = "";
@@ -207,7 +229,7 @@
                 html += 	 "<li style='float: left; width: 70%;'>";
                 html +=        "<a href=javascript:viewApply('" + apply_seq + '\',\'' + id + "')>신청번호 : " + apply_seq + "</a> " + holidayList[i].name + "<br>";
                 html +=			"휴가종류 : " + holidayList[i].h_type + "<br>";
-                html +=         start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
+                html +=        start_ymd.substring(0,4) + "/" + start_ymd.substring(4,6) + "/" + start_ymd.substring(6,8) + " ~ ";
                 html +=			end_ymd.substring(0,4) + "/" + end_ymd.substring(4,6) + "/" + end_ymd.substring(6,8) + " (" + holidayList[i].apply_count +"일)";
                 html += 		"<br>"+ apply_content +"<br>";
 
@@ -270,10 +292,10 @@
 		a { text-decoration:none }
 
 		.ulView {
-		    list-style: none;
-		    height: 140px;
-		    padding-left: 20px;
-		   }
+                 list-style: none;
+                 height: 140px;
+                 padding-left: 20px;
+                }
 
 
 	</style>
@@ -309,7 +331,7 @@
 <section class="container" data-role="content">
     <h2>휴가 조회 화면</h2>
 
-    <div class="row" style="border: 0px solid red;">
+    <div class="row">
 
         <div>
             <span>결제구분</span>
@@ -326,9 +348,7 @@
         </div>
 
         <div id="selectDIv">
-            <select  id="dateSel">
-
-            </select>
+            <select  id="dateSel"> </select>
         </div>
 
         <div >
