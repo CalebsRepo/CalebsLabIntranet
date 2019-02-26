@@ -32,7 +32,8 @@
     function sucessFncMyHoliday(result) {
         console.log (JSON.stringify(result));
         resultSum += JSON.stringify(result);
-        var ajaxResult=result
+        var ajaxResult=result;
+        var listCount = 1;                                     //  리스트갯수 (현재는 남은연차일수 -값 여부확인에만 사용됨)
         for(var i=0; i<ajaxResult.length; i++) {
             var holidayListview = document.getElementById('holidayListview');
 
@@ -63,12 +64,20 @@
                                     +"<div class='holiyday holiday-date'> 연차 발생기간 : " + ajaxResult[i].hs_ymd +" ~ " + ajaxResult[i].he_ymd  + "</div>"
                                     +"<div class='holiyday holiday-cnt'> 연차 발생 일수 : " + holidayCnt +" 일 </div>"
                                     +"<div class='holiyday holiday-useCnt'> 연차 사용 일수 : " + usingHolilday +" 일 </div>"
-                                    +"<div class='holiyday holiday-leftCnt'> 남은 연차일수 : " + holidayResult + " 일</div>"
+                                    +"<div class='holiyday holiday-leftCnt'> 남은 연차일수 : <span id='color-span-" + listCount + "'>"+  holidayResult + "</span> 일</div>"
                                     + "</a>"
                                 + "<li>");
+           dataColorChange(holidayResult, listCount);
+           listCount++;
         }
     } // --- End of sucessFncMyHoliday
-
+    //남은 연차일수가 0보다 작을 때 글자색 변경 함수
+   function dataColorChange(holidayResult, listCount){
+        idName = "color-span-"+listCount;
+       if(holidayResult < 0){
+            $(`span[id="${idName}"]`).css("color","red");
+       }
+   }
     <!-- 휴가현황상세 페이지 이동 -->
     function getHolidayDetail(obj){
         var selectId = $(obj).children('.detailID').val();
