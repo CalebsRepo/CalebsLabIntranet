@@ -2,6 +2,7 @@ package calebslab.calebslabintranet;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -112,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
     private Object JsonToken;
     OnSwipeTouchListener onSwipeTouchListener;
 
+    public MyProgressDialog progressDialog;
+
     @SuppressLint({"JavascriptInterface", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,7 +158,31 @@ public class MainActivity extends AppCompatActivity {
         });
 
         web.setWebViewClient(new android.webkit.WebViewClient() {
-
+            // 페이지 시작시 (로딩다이얼로그)
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                if (!web.getUrl().equals("file:///android_asset/html/login.html")) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressDialog = MyProgressDialog.show(myApp,"","",true,true,null);
+                            handler.postDelayed( new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        if (progressDialog!=null&&progressDialog.isShowing()){
+                                            progressDialog.dismiss();
+                                        }
+                                    }
+                                    catch ( Exception e ) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, 600);
+                        }
+                    } );
+                    super.onPageStarted(view, url, favicon);
+                }
+            }
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 //************************************************************************
