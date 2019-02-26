@@ -1,3 +1,11 @@
+<!--************************************************************************
+*  화면명: 프로젝트 일정 등록
+*  작성일지: 1) 김지명 (20190226) 최초작성
+*  업무구분: 사원목록 >사원상세
+            메뉴바 > 프로젝트 > 프로젝트 일정 목록 > 추가
+*  내용: 진행중인 프로젝트의 일정을 입력하여 등록할 수 있다.
+**************************************************************************-->
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,6 +29,7 @@
     var loginUser = JSON.parse(getUserData());
     var loginUserAdmFlag = loginUser.adm_flag;
     $(document).ready(function(){
+         //사용자체크 -> admin메뉴 보이기
          if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
             $(".admMenu").show();
         }
@@ -31,6 +40,8 @@
       var trigger = "";
       var paramJSON = new Object();
       var projectTerm = new Object();
+      var projectStartDt;
+      var projectEndDt;
 
         $(document).ready(function(){
             getProject();
@@ -47,6 +58,17 @@
                 if($(this).val().length > 200){
                     $(this).val($(this).val().substring(0,200));
                 }
+            });
+            // 프로젝트 일정 minDate, maxDate 설정
+            $("#textinput-5").datepicker({
+                onSelect: function(selected) {
+                $("#textinput-6").datepicker("option","minDate", selected)
+            }
+            });
+            $("#textinput-6").datepicker({
+                onSelect: function(selected) {
+                $("#textinput-5").datepicker("option","maxDate", selected)
+            }
             });
         });
 
@@ -74,13 +96,14 @@
                             "<div style='display:none; text-align:center; width:100%;' id='"
                             + parseProjectResult[i].project_code  + "'>"
                             + parseProjectResult[i].start_ymd +  " ~ " + parseProjectResult[i].end_ymd  + "</div>"
-                        )
-                    $("#select-1").selectmenu("refresh", true);
+                        );
                     }
+                    $("#select-1").selectmenu("refresh", true);
                 } else {
                 $("#select-1").append(
                            "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
                    );
+
             }
             //프로젝트 기간
             getProjectTerm();
@@ -143,12 +166,18 @@
                 alert('일정일을 확인해주세요.');
             }*/
         }
-        //프로젝트 기간 나오게
+        //선택한 프로젝트의 기간 조회
         function getProjectTerm(){
-            $(".project-term-container div").css('display','none');
-            var projectCode = document.getElementById('select-1');
-            project_code = projectCode.options[projectCode.selectedIndex].value;
-            $(`div[id="${project_code}"]`).css('display','block');
+            $(".project-term-container div").css('display','none');                 //진행중 프로젝트기간 리스트 숨김
+            var projectCode = document.getElementById('select-1');                  //프로젝트명 셀렉트박스 선택
+            project_code = projectCode.options[projectCode.selectedIndex].value;    //선택된 현재 프로젝트 코드 가져오기
+            $(`div[id="${project_code}"]`).css('display','block');                  //id값으로 현재 프로젝트 기간 보이기
+            var projectTerm = $(`div[id="${project_code}"]`).text();                //id값으로 현재 프로젝트 기간 가져오기
+            console.log("날짜자르기" + projectTerm);
+            var projectTerm1 = projectTerm.split('~');   //날짜자르기
+            projectStartDt = projectTerm1[0].trim();   //프로젝트시작일에 값 저장
+            projectEndDt = projectTerm1[1].trim();     //프로젝트종료일에 값 저장
+
         }
     </script>
 </head>
