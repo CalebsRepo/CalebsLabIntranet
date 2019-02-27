@@ -392,6 +392,7 @@ public class MainActivity extends AppCompatActivity {
         /* 연차사용내역 엑셀 파일 생성 및 공유 */
         @JavascriptInterface
         public void saveExcel(final String result){
+            Toast.makeText(getApplicationContext(),"Excel 파일을 생성 중 입니다.",Toast.LENGTH_SHORT).show();
             int idx = result.indexOf("@");
             String result1 =  "";
             String result2 =  "";
@@ -541,7 +542,7 @@ public class MainActivity extends AppCompatActivity {
                         int workYear = Integer.parseInt(joinYear)+1;
                         String workingDate = "";
                         double wd80 = 0;
-                        double holidayCnt = 15;     // 기본 연차 발생일
+
                         int cellIdx = 6;            // 연차내역 시작위치 초기화
 
                         /* 최대 근무년차 계산*/
@@ -591,6 +592,8 @@ public class MainActivity extends AppCompatActivity {
                         cell.setCellStyle(dataStyle);
 
                         for(int i=0; i <workYear; i++){
+                            double holidayCal = 0;
+                            double holidayCnt = 15;     // 기본 연차 발생일
 
                             JSONObject jObject2 = arr2.getJSONObject(userIdx++);
 
@@ -601,17 +604,16 @@ public class MainActivity extends AppCompatActivity {
                             /* 연차발생일 계산 */
                             int workingYear = 0;
                             workingYear = (Integer.parseInt(hsYmd.substring(0,4))  -  Integer.parseInt(joinYmd.substring(0,4))) +1;
-
                             if (workingYear == 3) {
                                 holidayCnt = holidayCnt + 1;
                             }else if (workingYear > 3) {
-                                double holidayCal = holidayCnt + 1 + Math.floor((workingYear - 3)/2);
+                                holidayCal = holidayCnt + 1 + Math.floor((workingYear - 3)/2);
                                 holidayCnt = (holidayCal > 25) ? 25 : holidayCal;
 
                             }else if (joinDay < wd80 ){
                                 holidayCnt = joinMon *1;
                             }
-
+                            Log.d("holidayCnt", "================================ holidayCnt ================" + holidayCnt);
                             Double holidayLeft = holidayCnt - Float.parseFloat(holidayUsed);
 
                             /* 연차정보 입력*/
@@ -674,8 +676,6 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            //Toast.makeText(getApplicationContext(),xlsFile.getAbsolutePath()+"에 저장되었습니다",Toast.LENGTH_SHORT).show();
-            Toast.makeText(getApplicationContext(),"Excel 파일을 생성 중 입니다.",Toast.LENGTH_SHORT).show();
             if (Build.VERSION.SDK_INT >= 24) { // Android Nougat ( 7.0 ) and later
                 Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider",xlsFile);
                 Intent intent = new Intent(Intent.ACTION_SEND);
