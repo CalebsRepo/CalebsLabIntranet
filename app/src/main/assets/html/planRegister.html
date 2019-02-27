@@ -35,150 +35,173 @@
         }
     });
     </script>
-
+    <style>
+       div#ui-datepicker-div{z-index: 10 !important};
+    </style>
     <script>
       var trigger = "";
       var paramJSON = new Object();
       var projectTerm = new Object();
-      var projectStartDt;
-      var projectEndDt;
+      var projectStartDt ;
+      var projectEndDt ;
+      var doubleRegisterFlag = false;
 
-        $(document).ready(function(){
-            getProject();
-            $('.datepicker').datepicker();
+      var sendPushMessage = {
+        title   : pushTitle,    // push 제목
+        body    : pushBody,     // push 내용
+        token   : setToken,     // push 토큰
+        type    : "picture",     // push 전송처리 구분
+        //picture : imgURL
+        //token   : tokenArray
+      };
 
-            //일정명 글자수 25자 제한
-            $("#textinput-3").on('keyup',function(){
-                if($(this).val().length > 25){
-                    $(this).val($(this).val().substring(0,25));
-                }
-            });
-            //일정 설명 글자수 200자 제한
-           $("#textarea-7").on('keyup',function(){
-                if($(this).val().length > 200){
-                    $(this).val($(this).val().substring(0,200));
-                }
-            });
-            // 프로젝트 일정 minDate, maxDate 설정
-            $("#textinput-5").datepicker({
-                onSelect: function(selected) {
-                $("#textinput-6").datepicker("option","minDate", selected)
+    $(document).ready(function(){
+        getProject();
+        $(".datepicker").datepicker();
+        //일정명 글자수 25자 제한
+        $("#textinput-3").on('keyup',function(){
+            if($(this).val().length > 25){
+                $(this).val($(this).val().substring(0,25));
             }
-            });
-            $("#textinput-6").datepicker({
-                onSelect: function(selected) {
-                $("#textinput-5").datepicker("option","maxDate", selected)
-            }
-            });
         });
-
-      function getProject() {
-            trigger = "during";
-            paramJSON.trigger = trigger;
-            navigate(paramJSON, "getAllProjectList.json", projectSelectSuccess, "" );
-       }
-      function projectSelectSuccess(result) {
-            console.log("성공");
-            var projectSelectResult="";
-            var parseProjectResult="";
-            console.log("============================================");
-            projectSelectResult=JSON.stringify(result);
-            parseProjectResult=JSON.parse(projectSelectResult);
-            console.log("projectSelectSuccess>>>>>" + projectSelectResult);
-            console.log("============================================");
-
-            if (parseProjectResult.length != 0) {
-                for(var i=0; i<parseProjectResult.length; i++) {
-                    $("#select-1").append(
-                           "<option value='"+parseProjectResult[i].project_code + "'>" + parseProjectResult[i].project_name +"</option>"
-                      );
-                    $(".project-term-container").append(
-                            "<div style='display:none; text-align:center; width:100%;' id='"
-                            + parseProjectResult[i].project_code  + "'>"
-                            + parseProjectResult[i].start_ymd +  " ~ " + parseProjectResult[i].end_ymd  + "</div>"
-                        );
-                    }
-                    $("#select-1").selectmenu("refresh", true);
-                } else {
-                $("#select-1").append(
-                           "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
-                   );
-
+        //일정 설명 글자수 200자 제한
+       $("#textarea-7").on('keyup',function(){
+            if($(this).val().length > 200){
+                $(this).val($(this).val().substring(0,200));
             }
-            //프로젝트 기간
-            getProjectTerm();
-      }
-      function doPlanRegister(){
+        });
+    });
+  function doubleRegisterCheck(){
+    if(doubleRegisterFlag){
+        return doubleRegisterFlag;
+    }else{
+        doubleRegisterFlag = true;
+        return false;
+    }
+  }
+  function getProject() {
+        trigger = "during";
+        paramJSON.trigger = trigger;
+        navigate(paramJSON, "getAllProjectList.json", projectSelectSuccess, "" );
+   }
+  function projectSelectSuccess(result) {
+        console.log("성공");
+        var projectSelectResult="";
+        var parseProjectResult="";
+        console.log("============================================");
+        projectSelectResult=JSON.stringify(result);
+        parseProjectResult=JSON.parse(projectSelectResult);
+        console.log("projectSelectSuccess>>>>>" + projectSelectResult);
+        console.log("============================================");
 
-            //값 가져오기
-            var projectCode = document.getElementById('select-1');
-            var kindSelect  = document.getElementById('select-4');
-
-            var id             = loginUser.id;
-            var project_code   = projectCode.options[projectCode.selectedIndex].value;
-            var schedule_name  = $("#textinput-3").val();
-            var kind_code      = kindSelect.options[kindSelect.selectedIndex].value;
-            var start_dt       = ($("#textinput-5").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
-            var end_dt         = ($("#textinput-6").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
-            var contents       = $("#textarea-7").val();
-
-            //DateCheck 값 체크 함수 호출
-
-            // paramJSON.에 태우기
-            paramJSON.id              = id;
-            paramJSON.project_code    = project_code;
-            paramJSON.schedule_name   = schedule_name;
-            paramJSON.kind_code       = kind_code;
-            paramJSON.start_dt        = start_dt
-            paramJSON.end_dt          = end_dt;
-            paramJSON.contents        = contents;
-
-            //중복 추가되지 않게 함수
-
-            navigate(paramJSON, "planRegister.json", planRegisterSuccess, "" );
-
-        }
-        function planRegisterSuccess(result){
-            //DB 수행 반환값 체크
-            console.log("등록 후 반환 값 >>>>>>> "+ result);
-            alert('등록 성공');
-            //목록 으로
-            movePage('planList.html');
-
-           /* if( 반환값 == ok ){
-                if(confirm('일정이 정상적으로 추가되었습니다. '){
-                    document.write("목록으로 이동");
-                    navigate(목록화면으로);
-                }else{
-                    document.write("다른 일정 등록");
-                    navigate(일정등록화면으로);
+        if (parseProjectResult.length != 0) {
+            for(var i=0; i<parseProjectResult.length; i++) {
+                $("#select-1").append(
+                       "<option value='"+parseProjectResult[i].project_code + "'>" + parseProjectResult[i].project_name +"</option>"
+                  );
+                $(".project-term-container").append(
+                        "<div style='display:none; text-align:center; width:100%;' id='"
+                        + parseProjectResult[i].project_code  + "'>"
+                        + YMDFormatter(parseProjectResult[i].start_ymd) +  " ~ " + YMDFormatter(parseProjectResult[i].end_ymd)  + "</div>"
+                    );
                 }
-            }else{
-                alert(일정이 정상적으로 추가되지 않았습니다. );
-                navigate(일정목록 화면으로);
-            }*/
-        }
-        function DateCheck(){
-            //날짜 체크하기
-            /*if(시작일 =< 종료일 || 시작일 =< 프로젝트 시작일 || 종료일 =< 프로젝트 종료일){
-                // 일정 날짜 정상
-            }else{
-                alert('일정일을 확인해주세요.');
-            }*/
-        }
-        //선택한 프로젝트의 기간 조회
-        function getProjectTerm(){
-            $(".project-term-container div").css('display','none');                 //진행중 프로젝트기간 리스트 숨김
-            var projectCode = document.getElementById('select-1');                  //프로젝트명 셀렉트박스 선택
-            project_code = projectCode.options[projectCode.selectedIndex].value;    //선택된 현재 프로젝트 코드 가져오기
-            $(`div[id="${project_code}"]`).css('display','block');                  //id값으로 현재 프로젝트 기간 보이기
-            var projectTerm = $(`div[id="${project_code}"]`).text();                //id값으로 현재 프로젝트 기간 가져오기
-            console.log("날짜자르기" + projectTerm);
-            var projectTerm1 = projectTerm.split('~');   //날짜자르기
-            projectStartDt = projectTerm1[0].trim();   //프로젝트시작일에 값 저장
-            projectEndDt = projectTerm1[1].trim();     //프로젝트종료일에 값 저장
+                $("#select-1").selectmenu("refresh", true);
+            } else {
+            $("#select-1").append(
+                       "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
+               );
 
         }
+        //프로젝트 기간
+        getProjectTerm();
+  }
+  function doPlanRegister(){
+
+        //값 가져오기
+        var projectCode = document.getElementById('select-1');
+        var kindSelect  = document.getElementById('select-4');
+
+        var id             = loginUser.id;
+        var project_code   = projectCode.options[projectCode.selectedIndex].value;
+        var schedule_name  = $("#textinput-3").val();
+        var kind_code      = kindSelect.options[kindSelect.selectedIndex].value;
+        var start_dt       = $("#textinput-5").val(); //($("#textinput-5").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
+        var end_dt         = $("#textinput-6").val(); //($("#textinput-6").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
+        var contents       = $("#textarea-7").val();
+
+        //값 체크 및 알림창
+        if(schedule_name == "" || schedule_name.length == 0){
+            alert("일정명을 입력해주세요.");
+            return false;
+        }else if( (start_dt == "" )|| (start_dt.length == 0 )|| (end_dt == "") || (end_dt.length == 0) ){
+            alert("일정 날짜를 입력해주세요.");
+            return false;
+        }else if(end_dt < start_dt){
+            alert("일정 날짜를 확인해주세요.");
+            return false;
+        }else if(contents == "" || contents.length == 0){
+            alert("일정내용을 입력해주세요.");
+            return false;
+        }
+
+        // paramJSON.에 태우기
+        paramJSON.id              = id;
+        paramJSON.project_code    = project_code;
+        paramJSON.schedule_name   = schedule_name;
+        paramJSON.kind_code       = kind_code;
+        paramJSON.start_dt        = start_dt
+        paramJSON.end_dt          = end_dt;
+        paramJSON.contents        = contents;
+
+        //중복 등록방지 함수
+        if(doubleRegisterCheck()){
+            return;
+         }else{
+          navigate(paramJSON, "planRegister.json", planRegisterSuccess, "" );
+          }
+    }
+    //등록 결과 메시지 및 처리
+    function planRegisterSuccess(resultData){
+        var RegisterResult="";
+        var ParseRegisterResult="";
+        console.log("============================================");
+        RegisterResult=JSON.stringify(resultData);
+        ParseRegisterResult=JSON.parse(RegisterResult);
+        console.log("ParseRegisterResultSuccess >>>>>" + ParseRegisterResult);
+        console.log("============================================");
+        var registerResult;
+        for(var i=0; i<ParseRegisterResult.length; i++) {
+            registerResult= ParseRegisterResult[0].result;
+            }
+        console.log("registerResult" + registerResult);
+        if(registerResult == "success"){
+            alert('프로젝트 일정이 등록되었습니다.');        //등록 성공 메시지
+            movePage('planList.html');                    //목록페이지 이동
+        }else if(registerResult == "fail"){
+            alert('일정등록에 실패하였습니다.<br> 다시 시도해주시기 바랍니다.');     //등록 실패 메시지
+            movePage('planRegister.html');                 //등록페이지 이동
+        }
+    }
+    //선택한 프로젝트의 기간 조회
+    function getProjectTerm(){
+        $(".project-term-container div").css('display','none');                 //진행중 프로젝트기간 리스트 숨김
+        var projectCode = document.getElementById('select-1');                  //프로젝트명 셀렉트박스 선택
+        project_code = projectCode.options[projectCode.selectedIndex].value;    //선택된 현재 프로젝트 코드 가져오기
+        $(`div[id="${project_code}"]`).css('display','block');                  //id값으로 현재 프로젝트 기간 보이기
+        var projectTerm = $(`div[id="${project_code}"]`).text();                //id값으로 현재 프로젝트 기간 가져오기
+        var projectTerm = projectTerm.split('~');                               //날짜자르기
+        projectStartDt = projectTerm[0].trim();                   //프로젝트시작일 input에 값 저장
+        projectEndDt = projectTerm[1].trim();                     //프로젝트종료일 input에 값 저장
+        planMinAndMaxDateSet();
+    }
+    //일정기간을 프로젝트기간 내 선택되도록 함
+    function planMinAndMaxDateSet(){projectStartDt
+        $("#textinput-5").datepicker("option","maxDate", projectEndDt);
+        $("#textinput-5").datepicker("option","minDate", projectStartDt);
+        $("#textinput-6").datepicker("option","maxDate", projectEndDt);
+        $("#textinput-6").datepicker("option","minDate", projectStartDt);
+    }
+
     </script>
 </head>
 
@@ -218,7 +241,8 @@
                 <h3>• 프로젝트 일정 등록 </h3>
             </div>
         </div>
-
+        <input type="hidden" id="projectStartDt" name="projectStartDt" value="">
+        <input type="hidden" id="projectEndDt" name="projectEndDt" value="">
         <!--프로젝트 리스트화면-->
         <div class="gird-pt detail-form">
             <form>
@@ -260,15 +284,15 @@
                         </div>
                 </div>
                 <div class="ui-field-contain">
-                    <label for="textarea-7">설명:</label>
-                    <textarea type="textarea" name="textarea-7" id="textarea-7" placeholder="요구사항 및 내용을 입력해주세요(200자 이내)" value="" ></textarea>
+                    <label for="textarea-7">일정내용:</label>
+                    <textarea type="textarea" name="textarea-7" id="textarea-7" placeholder="일정의 세부내용을 입력해주세요(200자 이내)" value="" ></textarea>
                 </div>
             </form>
         </div>
 
         <div class="btn-area-1">
             <div class="grid-pt">
-                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all">취소</a></div>
+                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all" onclick="movePage('planList.html')">취소</a></div>
                 <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="doPlanRegister()">등록</a></div>
             </div>
         </div>
