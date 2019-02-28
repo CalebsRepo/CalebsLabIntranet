@@ -73,14 +73,14 @@
 
     $(document).ready(function() {
 
-        var userData    = JSON.parse(getUserData());
+        var userData = JSON.parse(getUserData());
 
-        session_id       = userData.id;
-        sessionAdm_flag = userData.adm_flag;
+        session_id          = userData.id;
+        sessionAdm_flag     = userData.adm_flag;
 
         if(sessionStorage.getItem(temp_key) != undefined && sessionStorage.getItem(temp_key) != null && sessionStorage.getItem(temp_key) != "") {
 
-            var value       = JSON.parse(sessionStorage.getItem(temp_key));
+            var value = JSON.parse(sessionStorage.getItem(temp_key));
 
             gubun = value.gubun;
 
@@ -250,11 +250,11 @@
 
         /* 휴가구분 선택 */
         $("#h_type"             ).val(h_type).prop("selected", true);
-        //$("#h_type"             ).selectmenu("refresh", true);
+        //$("#h_type"           ).selectmenu("refresh", true);
 
         /* 휴가종류 선택 */
         $("#h_flag"             ).val(h_flag).prop("selected", true);
-        //$("#h_flag"             ).selectmenu("refresh", true);
+        //$("#h_flag"           ).selectmenu("refresh", true);
 
         /* 휴가 시작일, 휴가 종료일 세팅*/
         $("#start_ymd"          ).val(start_ymd.substring(0,4)  + "-" + start_ymd.substring(4,6)    + "-" + start_ymd.substring(6,8));
@@ -262,15 +262,15 @@
 
         /* 휴가일수 선택 */
         $("#apply_count"        ).val(apply_count).prop("selected", true);
-        //$("#apply_count"        ).selectmenu("refresh", true);
+        //$("#apply_count"      ).selectmenu("refresh", true);
 
         /* 휴가사유 출력 */
         $("#apply_content"      ).html(apply_content);
 
         /* 신청처리 결과 선택 */
         $("#approval_flag"      ).val(approval_flag).prop("selected", true);
-        //$("#approval_flag"      ).selectmenu("refresh", true);
-        //$("approval_flag_div"    ).html("(" + approval_date + ")");
+        //$("#approval_flag"    ).selectmenu("refresh", true);
+        //$("approval_flag_div" ).html("(" + approval_date + ")");
 
         /* 결재사항 출력 */
         $("#approval_comment"   ).html(approval_comment);
@@ -477,6 +477,8 @@
                 }
             }
 
+            apply_content_val = apply_content_val.replace(/(?:\r\n|\r|\n)/g, "<br />"); // textarea 줄바꿈 변환
+
             var params = {
                 apply_seq_no     : apply_seq_no,
                 approval_comment : approval_comment_val,
@@ -514,16 +516,31 @@
 
         //var imgURL = "http://calebslab1.cdn3.cafe24.com/imployeeInfo/sign/20190122_142122.jpg";
 
+        /* 디바이스 내에서 전송 시
         var sendPushMessage = {
             title   : pushTitle,    // push 제목
             body    : pushBody,     // push 내용
             token   : setToken,     // push 토큰
-            type    : "picture",     // push 전송처리 구분
+            type    : "holiday",     // push 전송처리 구분
+            //picture : imgURL
+            //token   : tokenArray
+        };
+        */
+
+        /* 서버에서 전송 시 */
+        var sendPushMessage = {
+            flag    : "single",
+            title   : pushTitle,    // push 제목
+            body    : pushBody,     // push 내용
+            token   : setToken,     // push 토큰
+            type    : "holiday"     // push 전송처리 구분
             //picture : imgURL
             //token   : tokenArray
         };
 
-        sendFirebase(sendPushMessage, "single"); // push 전송
+        pushNavigate(sendPushMessage, "sendFCM.json");  // 서버에서 push 전송
+
+        //sendFirebase(sendPushMessage, "single", "", ""); // 디바이스 내에서 push 전송
 
 
         var sendMail = new Array();
@@ -542,6 +559,7 @@
             setTimeout(function() { movePage("holidayList.html") }, 1200)
 
         );
+
 
     }
 
@@ -696,35 +714,16 @@
    </script>
 
     <style>
-        /*
-        #h_type_div label {
-            border-bottom: solid 1px gray;
-        }
-        */
+
         #apply_seq_div, #h_type_div, #h_flag_div, #holiday_period_div, #apply_count_div, #holiday_detail_info_div, #apply_content_div, #approval_flag_div, #approval_comment_div {
             margin-bottom : 20px;
         }
 
 
-
-        /*
-        #apply_seq_div, #h_type_div, #h_flag_div, #holiday_period_div, #apply_count_div, #holiday_detail_info_div, #apply_content_div, #approval_flag_div, #approval_comment_div{
-            border:none !important; padding:20px; background:white !important;
-            margin-bottom:10px; box-shadow: 0 1px 3px rgba(0,0,0,.4);
-        }
-        */
-
         label {
             font-family: 'Nanum Gothic', sans-serif;
             border-bottom: solid 1px gray;
         }
-        /*
-       #holiday_detail_count{
-            border: 2px solid #F9F9F9;  background : #F9F9F9;
-            margin-top : 0px;
-            color : #999;
-        }
-        */
 
         table {
             width:100%; border:0; border-spacing:0; border-collapse:collapse; table-layout:fixed;}

@@ -1257,9 +1257,9 @@ public class MainActivity extends AppCompatActivity {
         startManagingCursor(cursor);
         int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
-        Log.d("파일 실제경로:", cursor.getString(columnIndex));
+        //Log.d("파일 실제경로:", cursor.getString(columnIndex));
 
-        imgRealPath.add(cursor.getString(columnIndex));
+        //imgRealPath.add(cursor.getString(columnIndex));
         return cursor.getString(columnIndex);
     }
 
