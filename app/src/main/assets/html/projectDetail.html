@@ -18,14 +18,19 @@
         // 전역변수 선언
         var parseCompanyResult=""; // 발주회사 정보
         var parseEmployeeResult=""; // 사원목록 정보
+        var parseCarrerResult  = ""; // 경력정보
         var projectSelectInfoJSON = ""; // 프로젝트 조회 정보
         var selectMemberProjectInfo = ""; // 프로젝트 참여 멤버정보
         var sessionID = ""; // 로그인ID
-        var isEditor = ""; // 관리자여부
+        var isEditor = ""; // 수정가능여부
         var projectCode = ""; // 프로젝트 코드
         var ind=0; // 동적으로 생성될 listview의 index정보
 
         $(document).ready(function(){
+            projectCode = getStorageItem(); // 세션스토리지에서 프로젝트코드값을 가져온다
+            projectCode = projectCode.replace(/^"(.*)"$/, '$1'); // 프로젝트코드값에 ""제거
+            console.log("projectCode = "+projectCode);
+
             // 세션에서 로그인 유저 정보를 가져옴
             var sessionData = JSON.parse(getUserData());
             sessionID = sessionData.id;
@@ -38,11 +43,15 @@
                 isEditor = false;
             }
 
+            var  selectParam = {
+                load_page : "detail",
+                code : projectCode
+            };
             // db에서 값을 가져와 화면에 출력해줘야 하는 데이터를 받아온다
-            navigate("", "getPrintInfo.json", getPrintInfoSuccess);
+            navigate(selectParam, "getPrintInfo.json", getPrintInfoSuccess);
         });
 
-        <!--화면에 출력해줘야 하는 데이터 select 성공-->
+        // 화면에 출력해줘야 하는 데이터 select 성공
         function getPrintInfoSuccess(result) {
             printInfoResult="";
             //console.log("============================================");
@@ -53,6 +62,7 @@
 
             parseCompanyResult = parsePrintResult.company;
             parseEmployeeResult = parsePrintResult.employee;
+            parseCarrerResult   = parsePrintResult.carrer  ;
 
             <!--ID로 select태그를 찾아 변수에 Mapping-->
             var selbox = document.getElementById('projectComp');
@@ -71,10 +81,6 @@
                 selbox.options.add(op);
             }
 
-            projectCode = getStorageItem(); // 세션스토리지에서 프로젝트코드값을 가져온다
-            console.log("projectCode = "+projectCode);
-            projectCode = projectCode.replace(/^"(.*)"$/, '$1'); // 프로젝트코드값에 ""제거
-            console.log("projectCode = "+projectCode);
             var  selectParam = {
                 projectCode : projectCode
             };
@@ -165,6 +171,10 @@
                 iHTML += '                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input type="text" id="rollTxt'+ind+'" name="memberRoll" readonly></div>';
                 iHTML += '            </div>';
                 iHTML += '        </li>';
+                iHTML += '        <li class="carrer ui-field-contain ui-li-static ui-body-inherit">';
+                iHTML += '            <label>총 경력</label>';
+                iHTML += '            <div id="carrer'+ind+'"></div>';
+                iHTML += '        </li>';
                 iHTML += '    </ul>';
                 iHTML += '</div>';
             }
@@ -221,6 +231,7 @@
                 $("#rollSel"+j).val(selectMemberProjectInfo[j-1].charge_job).prop("selected", true); // 참여형태와 일치하는 옵션을 selected
                 $("#rollSel"+j+"-button > span").text(selectMemberProjectInfo[j-1].charge_job); // 선택된 값을 selectBox Span에 출력
                 document.getElementById(rollInputID).value = selectMemberProjectInfo[j-1].charge_job; // 참여형태
+                printCarrer(j); // 총 경력 표시
 
                 // db에 key가 되는 이름은 수정이 되지 않도록 disabled 설정한다
                 $("#memberSel"+j).attr("disabled", true);
@@ -250,6 +261,9 @@
                     $("#putDt"+j).datepicker({
                         onSelect: function(selected) {
                             $("#withdrawDt"+j).datepicker("option","minDate", selected)
+                        },
+                        onSelect: function() {
+                            printCarrer(j);
                         }
                     });
                     $("#putDt"+j).datepicker("option","maxDate", $("#withdrawDt"+j).val());
@@ -257,6 +271,9 @@
                     $("#withdrawDt"+j).datepicker({
                         onSelect: function(selected) {
                             $("#putDt"+j).datepicker("option","maxDate", selected)
+                        },
+                        onSelect: function() {
+                            printCarrer(j);
                         }
                     });
                     $("#withdrawDt"+j).datepicker("option","minDate", $("#putDt"+j).val());
@@ -351,6 +368,10 @@
             iHTML += '                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input type="text" id="rollTxt'+ind+'" name="memberRoll" readonly></div>';
             iHTML += '            </div>';
             iHTML += '        </li>';
+            iHTML += '        <li class="carrer ui-field-contain ui-li-static ui-body-inherit">';
+            iHTML += '            <label>총 경력</label>';
+            iHTML += '            <div id="carrer'+ind+'"></div>';
+            iHTML += '        </li>';
             iHTML += '    </ul>';
             iHTML += '</div>';
 
@@ -381,12 +402,18 @@
             $("#putDt"+ind).datepicker({
                 onSelect: function(selected) {
                     $("#withdrawDt"+ind).datepicker("option","minDate", selected)
+                },
+                onSelect: function() {
+                    printCarrer(ind);
                 }
             });
 
             $("#withdrawDt"+ind).datepicker({
                 onSelect: function(selected) {
                     $("#putDt"+ind).datepicker("option","maxDate", selected)
+                },
+                onSelect: function() {
+                    printCarrer(ind);
                 }
             });
         }
@@ -396,6 +423,7 @@
             var selID = 'memberSel' + index;
             var inputID = 'memberName' + index;
             changeSelect(selID, inputID);
+            printCarrer(index);
         }
         <!--rollSel select-->
         function rollSelect(index) {
@@ -517,11 +545,11 @@
                         return false;
                     }
                     // 프로젝트 기간과 참여기간의 비교
-                    if(diffDate(projectStartDt, memberInfoPutDt[index].value, "start") == false) { // 프로젝트 시작일이 투입일보다 큰 경우
+                    if(diffDate(projectStartDt, memberInfoPutDt[index].value) < 0) { // 투입일이 프로젝트 시작일보다 작은 경우
                         alert("투입일은 프로젝트 시작일보다 작을 수 없습니다.");
                         return false;
                     }
-                    if(diffDate(projectStartDt, memberInfoPutDt[index].value, "end") == false) { // 프로젝트 종료일이 철수일보다 작은 경우
+                    if(diffDate(projectStartDt, memberInfoPutDt[index].value) > 0) { // 철수일이 프로젝트 종료일보다 큰 경우
                         alert("철수일은 프로젝트 시작일보다 클 수 없습니다.");
                         return false;
                     }
@@ -677,27 +705,55 @@
             movePage('projectList.html');
         }
 
-        function diffDate(projectDate, memberDate, trigger) {
-            var splitDate1 = projectDate.split('/');
-            var splitDate2 = memberDate.split('/');
-            var resultData = "";
-            var da1 = new Date(splitDate1[0], splitDate1[1], splitDate1[2]);
-            var da2 = new Date(splitDate2[0], splitDate2[1], splitDate2[2]);
-            var dif = da2 - da1;
-            var cDay = 24 * 60 * 60 * 1000;// 시 * 분 * 초 * 밀리세컨
-            if(trigger == "start") {
-                if(parseInt(dif/cDay) >= 0) {
-                    resultData = true;
+        // 경력을 X년 X개월 형식으로 화면에 표시하기 위해 계산
+        function printCarrer(index) {
+            var inputID = 'memberName' + index;
+            var putDtID = 'putDt' + index;
+            var withdrawDtID = 'withdrawDt' + index;
+
+            var putDt = document.getElementById(putDtID).value; // 투입일자
+            var withdrawDt = document.getElementById(withdrawDtID).value; // 철수일자
+
+            // ID와 이름을 분리
+            var tempStr = document.getElementById(inputID).value; // 이름+id값을 변수에 저장
+            if(tempStr == "") {
+                alert("투입인력을 먼저 선택해주세요");
+                return false;
+            }
+            var cutStartIndex = tempStr.indexOf("("); // "("의 index값을 구한다.
+            var id = ""; // ID값
+            var name = ""; // 이름값
+            var carrer = ""; // 경력일수
+
+            if(cutStartIndex == -1) { // 괄호가 포함되어 있지 않은 경우(직접입력)
+                id   = "free";
+                name = tempStr;
+            } else { // select box에서 선택한경우
+                var cutEndIndex = tempStr.indexOf(")"); // ")"의 index값을 구한다.
+                id   = tempStr.substring(cutStartIndex+1, cutEndIndex);
+                name = tempStr.substr(0, cutStartIndex);
+            }
+
+            // 조회된 경력데이터를 찾는다
+            for(var i = 0; i < parseCarrerResult.length; i++){
+                if(parseCarrerResult[i].id == id && parseCarrerResult[i].name == name) { // 아이디와 이름이 일치하는 경우
+                    carrer = parseCarrerResult[i].carrer;
+                    break;
                 } else {
-                    resultData = false;
-                }
-            } else if(trigger == "end") {
-                if(parseInt(dif/cDay) <= 0) {
-                    resultData = true;
-                } else {
-                    resultData = false;
+                    carrer = 0;
                 }
             }
+
+            if(putDt != "" && withdrawDt != "") { // 날짜를 선택한 경우에만 선택한 투입일을 포함
+                var diffDateValue = diffDate(putDt, withdrawDt); // 투입일수 계산
+                carrer += diffDateValue;
+            }
+
+            // 경력일수로 년/개월 구하기
+            var carrerYear = parseInt(carrer / 365); // 365일로 나눈 몫
+            var carrerMonth = Math.round((carrer % 365) * 12 / 365 *100)/100; // 365일:나머지 일수 = 12개월:개월수로 개월수를 구한 후 소수점 2자리까지 반올림
+            var carrerDivID = 'carrer' + index;
+            document.getElementById(carrerDivID).innerHTML = carrerYear + "년 " + carrerMonth + "개월";
         }
     </script>
 </head>
@@ -714,7 +770,7 @@
         <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
         <ul id="menuPanelList"data-role="listview">
             <p>내정보</p>
-            <li><a onclick= "movePage('employeeDetail.html')" >마이페이지</a></li>
+            <li><a onclick= "movePage('employeeDetail.html', 'myPage')" >마이페이지</a></li>
             <p>프로젝트</p>
             <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
             <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
