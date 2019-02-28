@@ -6,11 +6,13 @@
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
     <!--<script src="https://www.gstatic.com/firebasejs/5.8.2/firebase.js"></script>-->
     <script src="../js/common.js"></script>
+    <script src="../js/login.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script src="https://smtpjs.com/v3/smtp.js"></script>
     <!--<link rel="stylesheet" href="../css/holidayDetail.css">-->
     <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:800" rel="stylesheet">
+    <link rel="stylesheet" href="../css/menu.css">
 
     <script language = "javascript">
 
@@ -765,6 +767,34 @@
 <body>
 <div id="holidayForm" data-role="page">
 
+
+    <!-- header -->
+    <header data-role="header">
+        <h1>CalebsLab</h1>
+        <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
+    </header>
+
+    <div data-role="panel" class="menuPanel"id="menuPanel" data-position="right"  data-display="overlay" data-theme="a">
+        <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
+        <ul id="menuPanelList"data-role="listview">
+            <p>내정보</p>
+            <li><a onclick= "movePage('employeeDetail.html')" >마이페이지</a></li>
+            <p>프로젝트</p>
+            <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
+            <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
+            <p>휴가</p>
+            <li><a onclick= "movePage('holidayDetail.html')" >휴가신청</a></li>
+            <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
+            <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
+            <p>게시판</p>
+            <li><a onclick= "movePage('qnaList.html')" >FAQ</a></li>
+            <p class="admMenu">관리</p>
+            <li class="admMenu"><a onclick= "movePage('employeeDetail.html', 'myPage')" >사원등록</a></li>
+            <li class="admMenu"><a onclick= "movePage('employeeInfo.html')" >사원목록</a></li>
+            <li class="admMenu"><a onclick= "movePage('holidayCondition.html')">휴가현황</a></li>
+        </ul>
+    </div>
+
     <div id="applicationForm_div" data-role="content">
         <!--   <div id="title_div" data-role="">
                <h1 id="title">휴가 신청 정보</h1>
@@ -909,6 +939,19 @@
 
     </div>
 
+    <!-- footer -->
+    <div class="footer" data-role="footer" data-position="fixed">
+        <div data-role="navbar">
+            <ul>
+                <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
+                <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
+                <li><a onclick="movePage('holidayDetail.html')" data-icon="calendar">휴가신청</a></li>
+                <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
+            </ul>
+        </div>
+    </div>
+
 </div>
+
 </body>
 </html>
