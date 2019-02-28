@@ -149,11 +149,11 @@
         if(doubleRegisterCheck()){
             return;
          }else{
-          navigate(paramJSON, "planRegister.json", planRegisterSuccess, "" );
+          navigate(paramJSON, "insPlanSelPush.json", insPlanSelPushSuccess, "" );
           }
     }
     //등록 결과 메시지 및 처리
-    function planRegisterSuccess(resultData){
+    function insPlanSelPushSuccess(resultData){
         var RegisterResult="";
         var ParseRegisterResult="";
         console.log("============================================");
@@ -182,7 +182,7 @@
         var sendPushMessage = {
         flag    : "multi",
         title   : "프로젝트에 새로운 일정이 등록되었습니다.",    // push 제목
-        body    : $("#textarea-7").val(),                   // push 내용
+        body    : $("#textinput-3").val(),                   // push 내용
         token   : tokenArray,                               // push 토큰
         type    : "noti"                                    // push 전송처리 구분
        };
