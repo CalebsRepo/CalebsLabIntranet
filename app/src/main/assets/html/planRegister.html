@@ -45,15 +45,7 @@
       var projectStartDt ;
       var projectEndDt ;
       var doubleRegisterFlag = false;
-
-      var sendPushMessage = {
-        title   : pushTitle,    // push 제목
-        body    : pushBody,     // push 내용
-        token   : setToken,     // push 토큰
-        type    : "picture",     // push 전송처리 구분
-        //picture : imgURL
-        //token   : tokenArray
-      };
+      var tokenArray = new Array();
 
     $(document).ready(function(){
         getProject();
@@ -125,8 +117,8 @@
         var project_code   = projectCode.options[projectCode.selectedIndex].value;
         var schedule_name  = $("#textinput-3").val();
         var kind_code      = kindSelect.options[kindSelect.selectedIndex].value;
-        var start_dt       = $("#textinput-5").val(); //($("#textinput-5").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
-        var end_dt         = $("#textinput-6").val(); //($("#textinput-6").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
+        var start_dt       = $("#textinput-5").val();
+        var end_dt         = $("#textinput-6").val();
         var contents       = $("#textarea-7").val();
 
         //값 체크 및 알림창
@@ -169,18 +161,33 @@
         ParseRegisterResult=JSON.parse(RegisterResult);
         console.log("ParseRegisterResultSuccess >>>>>" + ParseRegisterResult);
         console.log("============================================");
-        var registerResult;
-        for(var i=0; i<ParseRegisterResult.length; i++) {
-            registerResult= ParseRegisterResult[0].result;
+
+        var registerResult = resultData.result;
+        for(var i=0; i<resultData.pushMember.length; i++) {
+             tokenArray[i] = resultData.pushMember[i].push_token;
             }
         console.log("registerResult" + registerResult);
+        console.log("resultData.pushMember[0].push_token" + resultData.pushMember[0].push_token);
         if(registerResult == "success"){
             alert('프로젝트 일정이 등록되었습니다.');        //등록 성공 메시지
+            sendPush()
             movePage('planList.html');                    //목록페이지 이동
         }else if(registerResult == "fail"){
             alert('일정등록에 실패하였습니다.<br> 다시 시도해주시기 바랍니다.');     //등록 실패 메시지
             movePage('planRegister.html');                 //등록페이지 이동
         }
+    }
+    //프로젝트 멤버에 푸시전송
+    function sendPush(){
+        var sendPushMessage = {
+        flag    : "multi",
+        title   : "프로젝트에 새로운 일정이 등록되었습니다.",    // push 제목
+        body    : $("#textarea-7").val(),                   // push 내용
+        token   : tokenArray,                               // push 토큰
+        type    : "noti"                                    // push 전송처리 구분
+       };
+       // 푸시 전송
+       pushNavigate(sendPushMessage, "sendFCM.json");
     }
     //선택한 프로젝트의 기간 조회
     function getProjectTerm(){
