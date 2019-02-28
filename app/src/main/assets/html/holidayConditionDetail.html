@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<!--************************************************************************
+*  화면명: 휴가현황상세
+*  작성일지: 1) 이승환 (20190228) 최초작성
+*  업무구분: 관리 > 휴가현황 > 휴가현황상세
+*  내용: 해당사원의 선택년도와 선택년도의 전년도 휴가사용내역을 출력
+**************************************************************************-->
 <html>
 <head>
     <meta charset="UTF-8">
@@ -56,7 +62,7 @@
                                 +"<div> 연차 발생기간 : " + ajaxResult[i].hs_ymd +" ~ " + ajaxResult[i].he_ymd  + "</div>"
                                 +"<div> 연차 발생 일수 : " + holidayCnt +" 일 </div>"
                                 +"<div> 연차 사용 일수 : " + usingHolilday +" 일 </div>"
-                                +"<div> 남은 연차일수 : " + holidayResult + " 일</div>"
+                                +"<div> 남은 연차일수 : " + minusCheck(holidayResult) + " 일</div>"
 
             var holidayInfo2 = document.getElementById("info-banner2");
             if (workingYear2 != 0) {
@@ -64,7 +70,7 @@
                                         +"<div> 연차 발생기간 : " + ajaxResult[i].chs_ymd +" ~ " + ajaxResult[i].che_ymd  + "</div>"
                                         +"<div> 연차 발생 일수 : " + holidayCnt2 +" 일 </div>"
                                         +"<div> 연차 사용 일수 : " + usingHolilday2 +" 일 </div>"
-                                        +"<div> 남은 연차일수 : " + holidayResult2 + " 일</div>"
+                                        +"<div> 남은 연차일수 : " + minusCheck(holidayResult2) + " 일</div>"
             }else {
                 $(".divider").hide();
                 $(".info-text2").children().remove();
@@ -201,20 +207,32 @@
                                 +"<div> 연차 발생기간 : " + ajaxResult[i].hs_ymd +" ~ " + ajaxResult[i].he_ymd  + "</div>"
                                 +"<div> 연차 발생 일수 : " + holidayCnt +" 일 </div>"
                                 +"<div> 연차 사용 일수 : " + usingHolilday +" 일 </div>"
-                                +"<div> 남은 연차일수 : " + holidayResult + " 일</div>"
+                                +"<div> 남은 연차일수 :  " + minusCheck(holidayResult) + " 일</div>"
 
             if (workingYear2 != 0) {
                 holidayInfo2.innerHTML ="<div><h3 style='margin: 0;'>"+ workingYear2 +" 년차</h3></div>"
                                         +"<div> 연차 발생기간 : " + ajaxResult[i].chs_ymd +" ~ " + ajaxResult[i].che_ymd  + "</div>"
                                         +"<div> 연차 발생 일수 : " + holidayCnt2 +" 일 </div>"
                                         +"<div> 연차 사용 일수 : " + usingHolilday2 +" 일 </div>"
-                                        +"<div> 남은 연차일수 : " + holidayResult2 + " 일</div>"
+                                        +"<div> 남은 연차일수 : " + minusCheck(holidayResult2) + " 일</div>"
             }else {
                 $(".divider").hide();
                 $(".info-text2").children().remove();
             }
         }
     }
+
+    // 값이 음수일경우 텍스트 붉은색 처리
+    function minusCheck(data){
+        var minus = "";
+       if(data < 0){
+            minus = "<span style='color:red'> "+ data +" </span>"
+            return minus;
+       } else {
+            return data;
+       }
+    }
+
     function calculationHoliday(joinYear,joinMon,joinDay) {
         var holidayCnt = 15;
         var wd_80 = 292;                                     //  입사 후 1년 80% 근무일수
