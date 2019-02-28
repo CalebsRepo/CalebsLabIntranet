@@ -1,3 +1,10 @@
+<!--************************************************************************
+*  화면명: FAQ 상세 / FAQ 수정 / FAQ 삭제
+*  작성일지: 1) 임규하 (20190213) 최초작성
+*  업무구분: 메뉴바 > FAQ > 게시글 클릭
+*  내용: FAQ 상세조회, 수정 삭제 기능
+**************************************************************************-->
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -48,8 +55,9 @@
 
     	});// end of $(document).ready()-----------------------------------------------
 
-
-    	// reqnum으로 정보가져오기
+    	/**
+        * 내용 : 게시판 시퀀스번호로 정보가져오기
+        **/
     	function showQnaDetail() {
 
     		var form_data = { regnum : sessionStorage.getItem('regnum') };
@@ -58,7 +66,12 @@
 
     	}// end of showQnaDetail()---------------------------------------
 
-    	// insert update delete 작업을 해주는 함수
+    	/**
+        * 내용 : insert update delete 작업을 해주는 함수
+        * param num : 1이면 등록, 2이면 수정, 3이면 삭제
+        * param str : alert으로 보여줄 문자(등록,수정,삭제)
+        * return : 포멧된 문자열
+        **/
     	function commit(num, str) {
 
            if( confirm(str + "하시겠습니까?") == false ) {
@@ -79,18 +92,22 @@
 
             /*
     		if( checkSpecial($("#qna-title").val()) || checkSpecial($("#qna-content").val()) ) {
-    			console.log("특수문자 있어용");
+    			console.log("특수문자 있어요");
     			return;
     		}else {
     			console.log("특수문자 없어요");
     		}
             */
+
+            var contents = $("#qna-content").val();
+            contents = contents.replace(/(?:\r\n|\r|\n)/g, '<br>');
+
     		var form_data = {
     		                  regnum   : sessionStorage.getItem('regnum'),
     						  id       : userInfo.id,
     						  name     : userInfo.name,
     						  subject  : $("#qna-title").val(),
-    						  contents : $("#qna-content").val(),
+    						  contents : contents,
     						  bbs_code : $("#qna-part").val()
     						};
 
@@ -109,10 +126,13 @@
 
 			}// end of switch(num)--------------------------
 
-    	}// end of commit(num)-------------------------------------------
+    	}// end of commit(num, str)-------------------------------------------
 
 
-    	// 특수문자 확인 정규식
+    	/**
+        * 내용 : 특수문자 확인 정규식(미사용 중)
+        * param str : 정규식 확인할 문자열
+        **/
     	function checkSpecial(str) {
 
     		var special_pattern = /[`<>@#$%^&*|\\\'\";:\/]/gi;
@@ -125,6 +145,10 @@
 
     	}// end of checkSpecial()---------------------------------------
 
+        /**
+        * 내용 : qnaDetail.json 호출 이후 처리
+        * param data : FAQ 내역 상세 json 데이터
+        **/
     	function successQnaDetail(data) {
 
     	    $("#qna-title").val(data[0].subject);
@@ -155,23 +179,33 @@
 
     	}// end of successQnaDetail(data) -------------------------------------------
 
+        /**
+        * 내용 : qnaInsert.json 호출 이후 처리
+        * param data : 성공여부 json 데이터
+        **/
         function successInsert(data) {
 
             alert("등록되었습니다.");
 
              var sendPushMessage = {
+                flag    : "multi",
                 title   : '새로 등록된 공지가 있습니다',
                 body    : $("#qna-title").val(),
                 token   : tokenArray,
                 type    : 'noti'
-            };
+             };
+
             // 전체 알림
-            sendFirebase(sendPushMessage, "multi");
+            pushNavigate(sendPushMessage, "sendFCM.json");
 
 			movePage("qnaList.html");
 
         }// end of successInsert(data) ---------------------------------------
 
+        /**
+        * 내용 : qnaUpdate.json 호출 이후 처리
+        * param data : 성공여부 json 데이터
+        **/
         function successUpdate(data) {
 
             alert("수정 완료.");
@@ -179,6 +213,10 @@
 
         }// end of successInsert(data) ---------------------------------------
 
+        /**
+        * 내용 : qnaDelete.json 호출 이후 처리
+        * param data : 성공여부 json 데이터
+        **/
         function successDelete(data) {
 
             alert("삭제하였습니다.");
@@ -187,6 +225,10 @@
 
         }// end of successInsert(data) ---------------------------------------
 
+        /**
+        * 내용 : getMemberAllToken 호출 이후 처리
+        * param data : 전체 멤버의 Token값 json 데이터
+        **/
         function succesGetTokens(data) {
 
             for(var i=0; i<data.length; i++){
@@ -227,7 +269,7 @@
         <p>게시판</p>
         <li><a onclick= "movePage('qnaList.html')" >FAQ</a></li>
         <p class="admMenu">관리</p>
-        <li class="admMenu"><a onclick= "movePage('employeeDetail.html')" >사원등록</a></li>
+        <li class="admMenu"><a onclick= "movePage('employeeDetail.html', 'myPage')" >사원등록</a></li>
         <li class="admMenu"><a onclick= "movePage('employeeInfo.html')" >사원목록</a></li>
         <li class="admMenu"><a onclick= "movePage('holidayCondition.html')">휴가현황</a></li>
     </ul>

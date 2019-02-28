@@ -1,9 +1,15 @@
+<!--************************************************************************
+*  화면명: 휴가 캘린더
+*  작성일지: 1) 임규하 (20190124) 최초작성
+*  업무구분: 메뉴바 > 휴가캘린더
+*  내용: 승인받은 휴가내역을 달력에 출력해주는 기능
+**************************************************************************-->
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
-    <!--<meta name="viewport" content="width=1,initial-scale=1,user-scalable=no" />-->
     <title></title>
 
     <link href="../css/jquery.mobile-1.4.5.css" rel="stylesheet">
@@ -22,30 +28,35 @@
 
     <script type="text/javascript">
 
-       var eventsArr = [];
+       var eventsArr = []; // 캘린더에 출력해줄 배열
        var colorArr = ['51bec9', '24afd6', 'ffaf51', 'fd8497', 'f7d17c', '51d5a1', '21b4aa', 'aed551', 'f9916a', '99837a'];
        var cnt = 0;
 
        $(document).ready(function() {
 
-          // 승인된 휴가정보를 가져오는 함수
-           navigate({}, "calander.json", successFunction);
+           // 승인된 휴가정보 가져오기
+           navigate({}, "calander.json", successCalendar);
 
-      }); // end of $(document).ready()------------------------
+       }); // end of $(document).ready()------------------------
 
-      function successFunction(data) {
+        /**
+        * 내용 : calander.json 호출 이후 처리
+        * param data : 승인된 휴가정보 json 데이터
+        **/
+       function successCalendar(data) {
             for(var i=0; i<data.length; i++) {
 
                 var titleVal = data[i].name ;
                 var descriptionVal = data[i].h_flag + " " + data[i].apply_count + "일";
 
-                var startday = data[i].start_ymd;
-                startday = startday.substring(0,4) + "-" + startday.substring(4,6) + "-" + startday.substring(6,8);
+                var startDay = data[i].start_ymd;
+                startDay = startDay.substring(0,4) + "-" + startDay.substring(4,6) + "-" + startDay.substring(6,8);
 
-                var endday = data[i].end_ymd;
-                endday = endday.substring(0,4) + "-" + endday.substring(4,6) + "-" + endday.substring(6,8);
+                var endDay = data[i].end_ymd;
+                endDay = endDay.substring(0,4) + "-" + endDay.substring(4,6) + "-" + endDay.substring(6,8);
+
                 // 날짜 하루 더해주기
-                var addEndday = dayAdd(endday);
+                var addEndDay = dayAdd(endDay);
                 var colorVal = "#"+colorArr[cnt ++];
 
                 if(cnt > 9) {
@@ -53,23 +64,26 @@
                 }
 
                 var str  = 	{
-                             title       : titleVal,
-                             description : descriptionVal,
-                             start       : startday,
-                             end         : addEndday,
-                             color       : colorVal
-                            }
+                             title       : titleVal,        // 타이틀 내용
+                             description : descriptionVal,  // 클릭시 보여줄 내용
+                             start       : startDay,        // 시작일
+                             end         : addEndDay,       // 종료일(종료일 - 1만큼 그려짐)
+                             color       : colorVal         // 색상
+                            };
                 eventsArr.push(str);
 
-         }// end of for ------------------------------------------------
-         CalendarLoad();
+             }// end of for ------------------------------------------------
+            CalendarLoad();
 
-      }// end of successFunction(data)-----------------------------------------
+        }// end of successCalendar(data)-----------------------------------------
 
-      // 달력 만들어주는 함수
-      function CalendarLoad() {
+        /**
+        * 내용 : 캘린더를 만들어주는 함수
+        **/
+       function CalendarLoad() {
 
             $("#calendar").fullCalendar({
+
                 header: {
                     left: 'prevYear prev',
                     center: 'title',
@@ -96,35 +110,42 @@
 
             }); // end of $("#calendar").fullCalendar()--------------------------------------
 
-      } // end of CalendarLoad() --------------------------------------------
+       } // end of CalendarLoad() --------------------------------------------
 
-      // 날짜를 하루 더하는 함수
-      function dayAdd(pdate){
 
-          // console.log("pdate : " + pdate);
-          var arr = pdate.split('-');
-          var date = new Date(arr[0], arr[1]-1, arr[2]);
-          date.setDate(date.getDate()+1);
+        /**
+        * 내용 : 파라미터의 날짜를 하루 더하는 함수
+        * param pdate : 포멧 대상 문자열(yyyy-mm-dd)
+        * return : 포멧된 문자열(yyyy-mm-dd)
+        **/
+       function dayAdd(pdate){
 
-          var year = date.getFullYear();
-          var month = new String(date.getMonth()+1);
-          var day = new String(date.getDate());
+            var arr = pdate.split('-');
+            var date = new Date(arr[0], arr[1]-1, arr[2]);
+            date.setDate(date.getDate()+1);
 
-          // 한자리수일 경우 0을 채워준다.
-          if(month.length == 1){
-            month = "0" + month;
-          }
-          if(day.length == 1){
-            day = "0" + day;
-          }
-          return year + "-" + month + "-" + day;
+            var year = date.getFullYear();
+            var month = new String(date.getMonth()+1);
+            var day = new String(date.getDate());
 
-      }
-      // 오늘 날짜를 알아오는 함수
+            // 한자리수일 경우 0을 채워준다.
+            if(month.length == 1) {
+                month = "0" + month;
+            }
+            if(day.length == 1) {
+                day = "0" + day;
+            }
+            return year + "-" + month + "-" + day;
+
+       }// end of dayAdd(pdate) ----------------------------------------
+
+       /**
+       * 내용 : 오늘 날짜를 알아오는 함수
+       * return : 포멧된 문자열(yyyy-mm-dd)
+       **/
       function getToday(){
 
           var date = new Date();
-
           var year = date.getFullYear();
           var month = new String(date.getMonth()+1);
           var day = new String(date.getDate());
@@ -138,7 +159,7 @@
           }
           return year + "-" + month + "-" + day;
 
-      }
+      }// end of getToday() ------------------------
 
     </script>
 

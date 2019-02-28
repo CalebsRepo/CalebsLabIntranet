@@ -45,21 +45,40 @@ function commonUtil_getRemoveFormat(val) {
         return val;
     }
 }
-//날짜 YYYY/MM/DD 포맷
-function YMDFormatter(num){
-     if(!num) return "";
-     var formatNum = '';
+// 날짜 YYYY/MM/DD 포맷
+/**
+* 내용 : YYYYMMDD 날짜를 YYYY/MM/DD 형태로 Format해준다
+* param date : YYYYMMDD 형태 문자형 날짜
+* return : YYYY/MM/DD 형태로 포맷팅된 값
+**/
+function YMDFormatter(date){
+     if(!date) return "";
+     var formatDate = '';
 
      // 공백제거
-     num=num.replace(/\s/gi, "");
+     date=date.replace(/\s/gi, "");
 
      try{
-          if(num.length == 8) {
-               formatNum = num.replace(/(\d{4})(\d{2})(\d{2})/, '$1/$2/$3');
+          if(date.length == 8) {
+               formatDate = date.replace(/(\d{4})(\d{2})(\d{2})/, '$1/$2/$3');
           }
      } catch(e) {
-          formatNum = num;
+          formatDate = date;
           console.log(e);
      }
-     return formatNum;
+     return formatDate;
 }
+
+// 두 일자의 차이일수를 계산하여 return
+function diffDate(date1, date2) {
+    var splitDate1 = date1.split('/');
+    var splitDate2 = date2.split('/');
+    var resultData = "";
+    var da1 = new Date(splitDate1[0], splitDate1[1], splitDate1[2]);
+    var da2 = new Date(splitDate2[0], splitDate2[1], splitDate2[2]);
+    var dif = da2 - da1;
+    var cDay = 24 * 60 * 60 * 1000;// 시 * 분 * 초 * 밀리세컨
+    resultData = parseInt(dif/cDay);
+    console.log("날짜차이 = " + resultData);
+    return resultData;
+ }

@@ -1,3 +1,10 @@
+<!--************************************************************************
+*  화면명: FAQ
+*  작성일지: 1) 임규하 (20190208) 최초작성
+*  업무구분: 메뉴바 > FAQ
+*  내용: 게시된 공지사항을 보여주는 기능
+**************************************************************************-->
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,13 +35,16 @@
             }
 
 			// 더보기 버튼
-			$("#btMore").click(function(){
+			$("#btMore").click(function() {
 				showQnaList(2);
 			});// end of $("#btMore").click() ----------
 
-		});
+		});// end of $(document).ready() --------------------------
 
-		// 게시판 리스트를 보여주는 함수(num 이 1이면 처음화면 2이면 더보기)
+		/**
+        * 내용 : 게시판 리스트를 보여주는 함수
+        * param num : 1이면 조회 2이면 더보기
+        **/
 		function showQnaList(num){
 
 			var form_data = {  pageNum : $("#pageNum").val() };
@@ -48,6 +58,10 @@
 		}// end of showQnaList(num)------------------------------------
 
 		// 페이지 이동전 sessionStorage 값 넣어주기
+		/**
+        * 내용 : 상세페이지 이동
+        * param num : 상세페이지 시퀀스번호
+        **/
 		function addSessionStorage(num) {
 
 		    sessionStorage.setItem('regnum', num);
@@ -55,7 +69,9 @@
 
 		}// end of addSessionStorage(num)-------------------------------------
 
-        // 게시물 추가페이지로 이동
+        /**
+        * 내용 : 게시물 추가페이지로 이동
+        **/
 		function moveQnaDetail() {
             // 페이지 이동전 regnum 값 삭제
 		    sessionStorage.removeItem('regnum');
@@ -63,6 +79,10 @@
 
 		}// end of moveQnaAdd()-----------------------------------
 
+        /**
+        * 내용 : qnaList.json 호출 이후 처리
+        * param data : FAQ 내역 json 데이터
+        **/
         function successQnaList(data) {
 
             $("#qnaList").empty();
@@ -108,6 +128,10 @@
 
         }// end of successQnaList(data) ---------------------------------------------
 
+        /**
+        * 내용 : qnaList.json 호출 이후 처리(더보기)
+        * param data : FAQ 내역 json 데이터
+        **/
         function successMoreList(data) {
 
             var html = "";
@@ -139,8 +163,6 @@
 
         }// end of successMoreList() -------------------------------
 
-
-
 	</script>
 
 </head>
@@ -167,7 +189,7 @@
         <p>게시판</p>
         <li><a onclick= "movePage('qnaList.html')" >FAQ</a></li>
         <p class="admMenu">관리</p>
-        <li class="admMenu"><a onclick= "movePage('employeeDetail.html')" >사원등록</a></li>
+        <li class="admMenu"><a onclick= "movePage('employeeDetail.html', 'myPage')" >사원등록</a></li>
         <li class="admMenu"><a onclick= "movePage('employeeInfo.html')" >사원목록</a></li>
         <li class="admMenu"><a onclick= "movePage('holidayCondition.html')">휴가현황</a></li>
     </ul>

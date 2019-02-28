@@ -15,6 +15,8 @@
 
     <title></title>
     <script language = "javascript">
+    var userInfo = JSON.parse(getUserData());
+    var tokenArray = new Array();               // 토큰 배열
 
     $(function(){
         searchMore();
@@ -29,6 +31,7 @@
     <!--전체검색: 더보기 누르면 append로 더 붙여져야함-->
     function searchMore(){
         var employeeName= document.getElementById('nameWrite').value;
+
         var params = {
                 rowNum : rowNum,
                 employeeName : employeeName
@@ -87,7 +90,7 @@
 
                 cell1.innerHTML = "<input type=checkbox id='"+ajaxResult2[i].ID+"' data-value1='"+ajaxResult2[i].NAME+"' data-value2='"+ajaxResult2[i].HP_NUM+"' data-value3='"+ajaxResult2[i].EMAIL+"'>";
                 cell2.innerHTML = "아이디:"+ajaxResult2[i].ID+
-                                  "<br>"+"이름:"+"<a href='#' onclick='getEmployeeDetail(this)' data-value='"+ajaxResult2[i].ID+"'>"+ajaxResult2[i].NAME+"</a>"+
+                                  "<br>"+"이름:"+"<a href='#' onclick='getEmployeePage(this)' data-value='"+ajaxResult2[i].ID+"'>"+ajaxResult2[i].NAME+"</a>"+
                                   "<br>"+"직급:"+ajaxResult2[i].GRADE+
                                   "<br>"+"전화번호:"+"<a href='tel:"+ajaxResult2[i].HP_NUM+"'>"+ajaxResult2[i].HP_NUM+"</a>"+
                                   "<br>"+"이메일:"+"<a href='mailto:"+ajaxResult2[i].EMAIL+"'>"+ajaxResult2[i].EMAIL+"</a>"+
@@ -104,18 +107,19 @@
 
 
     <!--사원 상세보기 : 바꿀내용=>먼저 권한 체크 하고 난 다음에 조회해서 result값을 넘겨줘야함-->
-    function getEmployeeDetail(obj){
+    function getEmployeePage(obj){
        var employeeId= $(obj).attr('data-value');
-       var params = {
-            "employeeId": employeeId
-        };
-        navigate(params, "employeeDetail.json", detailSuccess);
         <!--navigate(params,"employeeDetail.json", detailSuccess, detailError);-->
+       sessionStorage.setItem('selectId', employeeId);
+      movePage('employeeDetail.html',employeeId);
+
     }
 
+<!--
     function detailSuccess(result){
        movePage('employeeDetail.html',result);
     }
+-->
 
     function detailError(result){
         alert("권한이 없소!");
@@ -173,7 +177,35 @@
 </head>
 <body>
 <section id="page1" data-role="page">
-    <div data-role="content" class="plan-detail">
+    <!-- header -->
+    <header data-role="header">
+        <h1>사원 목록</h1>
+        <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
+    </header>
+
+    <div data-role="panel" class="menuPanel"id="menuPanel" data-position="right"  data-display="overlay" data-theme="a">
+        <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
+        <ul id="menuPanelList"data-role="listview">
+            <p>내정보</p>
+            <li><a onclick= "movePage('employeeDetail.html','myPage')" >마이페이지</a></li>
+            <p>프로젝트</p>
+            <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
+            <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
+            <p>휴가</p>
+            <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+            <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
+            <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
+            <p>게시판</p>
+            <li><a onclick= "movePage('qnaList.html')" >FAQ</a></li>
+            <p class="admMenu">관리</p>
+
+            <li class="admMenu"><a onclick= "movePage('employeeDetail.html')" >사원등록</a></li>
+            <li class="admMenu"><a onclick= "movePage('employeeInfo.html')" >사원목록</a></li>
+            <li class="admMenu"><a onclick= "movePage('holidayCondition.html')">휴가현황</a></li>
+        </ul>
+    </div>
+    <!-- content -->
+    <div data-role="content" class="employee-list">
         <!--제목-->
         <div  class="title-area">
             <div class="gird-pt">
@@ -184,28 +216,28 @@
             div#select-2-button { padding: 7.5px 5px; background:#ffffff;}
             div#select-2-button span { text-align: left; font-weight: 600;}
         </style>
-        <!--프로젝트 리스트화면-->
+        <!--사원 목록-->
         <div class="btn-area-3">
             <div class="grid-pt">
-                    <input type="text" id="nameWrite" placeholder="이름으로 검색">
-                    <div class="grid-cd-3">
-                        <a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" id="nameSearch" onclick="javascript:nameSearch(); return false;">검색</a>
-                    </div>
+                <input type="text" id="nameWrite" placeholder="이름으로 검색">
+                <div class="grid-cd-3">
+                    <a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" id="nameSearch" onclick="javascript:nameSearch(); return false;">검색</a>
                 </div>
+            </div>
         </div>
-    <button id="addressGet" onclick="javascript:addressGet(); return false;">가져오기</button>
-    <table id="my-table">
-        <thead>
+        <button id="addressGet" onclick="javascript:addressGet(); return false;">가져오기</button>
+        <table id="my-table">
+            <thead>
             <th>선택</th>
             <th>사용자번호</th>
-        </thead>
-        <tbody id="my-tbody"></tbody>
-    </table>
+            </thead>
+            <tbody id="my-tbody"></tbody>
+        </table>
         <span id="resultMsg" style="display:none;">검색 결과가 없습니다</span>
         <div class="gird-pt" id>
             <button class="ui-btn ui-corner-all ui-btn-b" id="searchMore" onclick="javascript:searchMore();return false;" >더보기</button>
         </div>
-</div>
+    </div>
     </div>
 </section>
 </body>

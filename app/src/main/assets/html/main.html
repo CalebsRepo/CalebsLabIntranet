@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<!--************************************************************************
+*  화면명: 메인페이지
+*  작성일지: 1) 이승환 (20190228) 최초작성
+*  업무구분: 메인페이지
+*  내용: 로그인 유저의 당해년도 연차정보 및 현재 참여중인 프로젝트 출력
+**************************************************************************-->
 <html>
 <head>
     <meta charset="UTF-8">
@@ -15,29 +21,30 @@
     var loginUserId = loginUser.id;
     var loginUserName = loginUser.name;
     var loginUserAdmFlag = loginUser.adm_flag;
-    var params = {
-                sessionId : loginUserId,
-                sessionName : loginUserName
-    };
-    console.log(loginUserAdmFlag)
+    var params = { sessionId : loginUserId };
 
-    $(document).ready(function(){
-         if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
+    $(document).ready(function() {
+
+        // 로그인 유저 권한 체크
+        if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
             $(".admMenu").show();
         }
 
-        navigate(params, "getMyHoliday.json", sucessFncMyHoliday, "");
-        navigate(params, "myProject.json", sucessFncMyProject, "");
+        navigate(params, "getMyHoliday.json", sucessFncMyHoliday, "");  // 당해년도 연차정보 조회
+        navigate(params, "myProject.json", sucessFncMyProject, "");     // 현재 참여중인 프로젝트 조회
     });
 
-    <!-- 연차정보 ajax통신 성공-->
+    /**
+    * 내용 : 당해년도 연차정보 조회
+    * param result : 사원 및 연차 JSON data
+    **/
     function sucessFncMyHoliday(result) {
-        var ajaxResult=result
+        var ajaxResult = result;
 
-        for(var i=0; i<ajaxResult.length; i++) {
+        for(var i=0; i < ajaxResult.length; i++) {
             var holidayListview = document.getElementById('holidayListview');
 
-            var holidayCnt = 15;                                //  기본휴가일수
+            var holidayCnt = 15;                                //  기본연차일수
             var wd_80 = 292;                                    //  입사 후 1년 80% 근무일수
             var join_year = ajaxResult[i].join_year;            //  근무년수
             var join_mon = ajaxResult[i].join_mon;              //  근무월수
@@ -46,7 +53,7 @@
             var workingYear = join_year + 1;                    //  근무년차
 
             /*
-             ***근무년차에 따른 연차 계산
+             *  근무년차에 따른 연차 계산
              *  연차 최대일수는 25일
              *  근속년수 80% 미만 : 1개월마다 1일의 연차
              *  1년 이상 3년 미만 : 15일 연차
@@ -64,42 +71,60 @@
             var holidayResult = holidayCnt - usingHolilday;
 
             $("#holidayListview").append("<li class='ui-corner-all'>"
-                                    +"<a  class='list-detail ui-btn  ui-corner-all'>"
-                                    +"<div class='holiyday user-name'> 이름 : " + ajaxResult[i].name + "</div>"
-                                    +"<div class='holiyday holidy-date'> 연차 발생기간 : " + ajaxResult[i].hs_ymd +" ~ " + ajaxResult[i].he_ymd  + "</div>"
-                                    +"<div class='holiyday holidy-cnt'> 당해연도 발생연차 : " + holidayCnt +" 일 </div>"
-                                    +"<div class='holiyday holidy-leftCnt'> 남은 연차일수 : " + holidayResult + " 일</div>"
-                                    + "</a>"
-                                + "<li>");
+                                            +"<a  class='list-detail ui-btn  ui-corner-all'>"
+                                            +"<div class='holiyday user-name'> 이름 : " + ajaxResult[i].name + "</div>"
+                                            +"<div class='holiyday holidy-date'> 연차 발생기간 : " + ajaxResult[i].hs_ymd +" ~ " + ajaxResult[i].he_ymd  + "</div>"
+                                            +"<div class='holiyday holidy-cnt'> 당해연도 발생연차 : " + holidayCnt +" 일 </div>"
+                                            +"<div class='holiyday holidy-leftCnt'> 남은 연차일수 : " + minusCheck(holidayResult) + " 일</div>"
+                                            + "</a>"
+                                            + "<li>");
         }
-    } // --- End of sucessFncMyHoliday
+    };
 
-    <!-- 프로젝트 ajax통신 성공 -->
+    /**
+    * 내용 : 현재 참여중인 프로젝트 조회
+    * param result : 프로젝트정보 JSON data
+    **/
     function sucessFncMyProject(result) {
         var ajaxResult=result
 
         for(var i=0; i<ajaxResult.length; i++) {
             var projectListview = document.getElementById('projectListview');
+            var project_code = ajaxResult[i].project_code;
+            console.log("========================================================" + project_code);
             if (ajaxResult[i].project_cnt != 0) {
                 $("#projectListview").append("<li class='ui-corner-all'>"
-                                        +"<a onclick= movePage('projectList.html') class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
-                                        +"<div class='plan plan-name'> 프로젝트명 : " + ajaxResult[i].project_name + "</div>"
-                                        +"<div class='plan plan-date'> 기간 : " + ajaxResult[i].start_ymd +" ~ " + ajaxResult[i].end_ymd  + "</div>"
-                                        +"<div class='plan plan-teamCnt'> 참여인원 : " + ajaxResult[i].project_cnt +" 명 </div>"
-                                        +"<div class='plan plan-state'> 상태 : 프로젝트 진행중</div>"
-                                        + "</a>"
-                                    + "<li>");
+                                                +" <a onclick='movePage(\"projectDetail.html\", \""+project_code+"\")' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
+                                                +"<div class='plan plan-name'> 프로젝트명 : " + ajaxResult[i].project_name + "</div>"
+                                                +"<div class='plan plan-date'> 기간 : " + ajaxResult[i].start_ymd +" ~ " + ajaxResult[i].end_ymd  + "</div>"
+                                                +"<div class='plan plan-teamCnt'> 참여인원 : " + ajaxResult[i].project_cnt +" 명 </div>"
+                                                +"<div class='plan plan-state'> 상태 : 프로젝트 진행중</div>"
+                                                + "</a>"
+                                                + "<li>");
             } else {
                 $("#projectListview").append("<li class='ui-corner-all'>"
-                                        +"<span class='list-detail ui-corner-all info-box'>"
-                                        +"<div class='plan plan-state'> 현재 진행중인 프로젝트가 없습니다.</div>"
-                                        + "</span>"
-                                        + "<li>");
+                                                +"<span class='list-detail ui-corner-all info-box'>"
+                                                +"<div class='plan plan-state'> 현재 진행중인 프로젝트가 없습니다.</div>"
+                                                + "</span>"
+                                                + "<li>");
             }
         }
-    } // --- End of sucessFncMyProject
+    };
 
-
+    /**
+    * 내용 : 값이 음수일 경우 텍스트 색상 변경
+    * param data : 체크할 숫자
+    * return : 값이 음수일경우 텍스트 색상 빨간색, 아닐경우 data 그대로 리턴
+    **/
+    function minusCheck(data){
+        var minus = "";
+       if(data < 0){
+            minus = "<span style='color:red'> "+ data +" </span>"
+            return minus;
+       } else {
+            return data;
+       }
+    };
     </script>
 </head>
 <body>
@@ -152,8 +177,8 @@
             <ul>
                 <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
                 <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
-                <li><a href="#" data-icon="calendar">휴가신청</a></li>
-                <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
+                <li><a onclick="movePage('holidayDetail.html')" data-icon="calendar">휴가신청</a></li>
+                <li><a onclick="javascript:callLogout()"; data-icon="power" >로그아웃</a></li>
             </ul>
         </div>
     </div>

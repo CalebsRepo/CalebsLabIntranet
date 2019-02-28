@@ -1,3 +1,11 @@
+<!--
+*********************************************
+*  화면명: 프로젝트 등록
+*  작성일지: 1) 김정진 (20190228) 최초작성
+*  업무구분: 프로젝트 목록 > 프로젝트 등록
+*  내용: 프로젝트 및 참여인원 등록 페이지
+*********************************************
+-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,6 +23,11 @@
     <!--DatePicker--><script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="../js/datepicker.js"></script>
     <script type="text/javascript">
+        // 전역변수 선언
+        var parseCompanyResult = ""; // 발주회사 정보
+        var parseEmployeeResult= ""; // 사원목록 정보
+        var parseCarrerResult  = ""; // 경력정보
+        var ind=0;
         var loginUser = JSON.parse(getUserData());
         var loginUserAdmFlag = loginUser.adm_flag;
 
@@ -35,19 +48,25 @@
                 $(".admMenu").show();
             }
 
-            <!--발주회사정보를 db에서 가져와 화면에 뿌려줌-->
-            navigate("", "getCompany.json", getCompanyInfoSuccess);
+            var  selectParam = {
+                load_page : "register"
+            };
+            // db에서 값을 가져와 화면에 출력해줘야 하는 데이터를 받아온다
+            navigate(selectParam, "getPrintInfo.json", getPrintInfoSuccess);
         });
 
-        <!--발주회사 정보 select 성공-->
-        function getCompanyInfoSuccess(result) {
-            var companyInfoResult="";
-            var parseCompanyResult="";
+        // 화면에 출력해줘야 하는 데이터 select 성공
+        function getPrintInfoSuccess(result) {
+            printInfoResult="";
             //console.log("============================================");
-            companyInfoResult=JSON.stringify(result);
-            parseCompanyResult=JSON.parse(companyInfoResult);
-            //console.log("getCompanyInfoSuccess>>>>>" + companyInfoResult);
+            var printInfoResult=JSON.stringify(result);
+            var parsePrintResult=JSON.parse(printInfoResult);
+            console.log("getPrintInfoSuccess>>>>>" + printInfoResult);
             //console.log("============================================");
+
+            parseCompanyResult  = parsePrintResult.company ;
+            parseEmployeeResult = parsePrintResult.employee;
+            parseCarrerResult   = parsePrintResult.carrer  ;
 
             <!--ID로 select태그를 찾아 변수에 Mapping-->
             var selbox = document.getElementById('projectComp');
@@ -56,7 +75,7 @@
                 //console.log(parseCompanyResult[i].comp_id);
                 //console.log(parseCompanyResult[i].comp_name);
 
-                <!--멤버 id와 이름을 가져와 option에 value, text와 Mapping-->
+                // 발주회사 id와 이름을 가져와 option에 value, text와 Mapping
                 var op = new Option();
 
                 op.value = parseCompanyResult[i].comp_id;
@@ -66,7 +85,6 @@
                 selbox.options.add(op);
             }
         }
-        var ind=0;
 
         <!--참여인원 삭제버튼 클릭 이벤트-->
         function btnDel() {
@@ -102,7 +120,7 @@
             iHTML += '    <label style="width:22px"><div class="ui-checkbox"><input type="checkbox" id="listChb'+ind+'" name="listChb" style="position: unset; left: unset;"></div></label>';
             iHTML += '    <ul data-role="listview" data-inset="true" class="list-area  ui-listview ui-listview-inset ui-corner-all ui-shadow">';
             iHTML += '        <li class="member-name ui-field-contain ui-li-static ui-body-inherit ui-first-child">';
-            iHTML += '            <label>참여인원</label>';
+            iHTML += '            <label>참여자명</label>';
             iHTML += '            <div class="member">';
             iHTML += '                <div class="ui-select"><div id="memberSel'+ind+'-button" class="ui-btn ui-icon-carat-d ui-btn-icon-right ui-corner-all ui-shadow"><span class="memberSel">선택하세요</span><select id="memberSel'+ind+'" name="memberSel" class="memberSel" onchange="memberSelect('+ind+')" style="z-index: 0;">';
             iHTML += '                    <option value="">선택하세요</option>';
@@ -145,36 +163,16 @@
             iHTML += '                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input type="text" id="rollTxt'+ind+'" name="memberRoll" readonly></div>';
             iHTML += '            </div>';
             iHTML += '        </li>';
+            iHTML += '        <li class="carrer ui-field-contain ui-li-static ui-body-inherit">';
+            iHTML += '            <label>총 경력</label>';
+            iHTML += '            <div id="carrer'+ind+'"></div>';
+            iHTML += '        </li>';
             iHTML += '    </ul>';
             iHTML += '</div>';
 
             $("#listviewArea").append(iHTML);
-            navigate("", "getFullemployee.json", getEmployeeInfoSuccess);
-            $("#putDt"+ind).datepicker({
-                numberOfMonths: 1,
-                onSelect: function(selected) {
-                    $("#withdrawDt"+ind).datepicker("option","minDate", selected)
-                }
-            });
 
-            $("#withdrawDt"+ind).datepicker({
-                numberOfMonths: 1,
-                onSelect: function(selected) {
-                    $("#putDt"+ind).datepicker("option","maxDate", selected)
-                }
-            });
-        }
-         <!--직원정보select 성공-->
-        function getEmployeeInfoSuccess(result) {
-            var employeeInfoResult="";
-            var parseEmployeeResult="";
-            //console.log("============================================");
-            employeeInfoResult=JSON.stringify(result);
-            parseEmployeeResult=JSON.parse(employeeInfoResult);
-            //console.log("getEmployeeInfoSuccess>>>>>" + employeeInfoResult);
-            //console.log("============================================");
-
-            <!--name으로 select태그를 찾아 변수에 Mapping-->
+            // name으로 select태그를 찾아 변수에 Mapping
             var selID = "memberSel" + ind;
             var selbox = document.getElementById(selID);
 
@@ -182,57 +180,80 @@
                 //console.log(parseEmployeeResult[i].ID);
                 //console.log(parseEmployeeResult[i].NAME);
 
-                <!--멤버 id와 이름을 가져와 option에 value, text와 Mapping-->
+                // 멤버 id와 이름을 가져와 option에 value, text와 Mapping
                 var op = new Option();
 
                 op.value = parseEmployeeResult[i].ID;
-                op.text = parseEmployeeResult[i].NAME;
+                op.text = parseEmployeeResult[i].NAME + "(" + parseEmployeeResult[i].ID + ")";
 
-                <!--selectBox에 option 추가-->
+                // selectBox에 option 추가
                 selbox.options.add(op);
             }
-            <!--직접입력 option 추가-->
+
+            // 직접입력 option 추가
             var op = new Option();
-            op.value = "write";
+            op.value = "free";
             op.text = "직접입력";
 
             selbox.options.add(op);
+
+            $("#putDt"+ind).datepicker({
+                numberOfMonths: 1,
+                onSelect: function(selected) {
+                    $("#withdrawDt"+ind).datepicker("option","minDate", selected)
+                },
+                onSelect: function() {
+                    printCarrer(ind);
+                }
+            });
+
+            $("#withdrawDt"+ind).datepicker({
+                numberOfMonths: 1,
+                onSelect: function(selected) {
+                    $("#putDt"+ind).datepicker("option","maxDate", selected)
+                },
+                onSelect: function() {
+                    printCarrer(ind);
+                }
+            });
         }
 
-        <!--memberSel select-->
+        // memberSel select
         function memberSelect(index) {
             var selID = 'memberSel' + index;
             var inputID = 'memberName' + index;
             changeSelect(selID, inputID);
+            printCarrer(index);
         }
-        <!--rollSel select-->
+
+        // rollSel select
         function rollSelect(index) {
             var selID = 'rollSel' + index;
             var inputID = 'rollTxt' + index;
             changeSelect(selID, inputID);
         }
-        <!--gradeSel select-->
+
+        // gradeSel select
         function gradeSelect(index) {
             var selID = 'gradeSel' + index;
             changeSelect(selID);
         }
-        <!--selectBox 선택 이벤트-->
+
+        // selectBox 선택 이벤트
         function changeSelect(selID, inputID) {
             console.log("selID>>>>>" + selID);
-            <!--이벤트가 발생한 selBox 찾기-->
+            // 이벤트가 발생한 selBox 찾기
             var memSelect = document.getElementById(selID);
 
-            <!--select element에서 선택된 option의 value가 저장된다.-->
-            var selectValue = memSelect.options[memSelect.selectedIndex].value;
-            <!--select element에서 선택된 option의 text가 저장된다.-->
-            var selectText = memSelect.options[memSelect.selectedIndex].text;
+            var selectValue = memSelect.options[memSelect.selectedIndex].value; // select element에서 선택된 option의 value가 저장된다
+            var selectText = memSelect.options[memSelect.selectedIndex].text; // select element에서 선택된 option의 text가 저장된다
             console.log("selectText>>>>" + selectText);
 
              $("#"+selID+"-button > span").text(selectText); // 선택된 값을 selectBox Span에 출력
 
             if(inputID != null) {
                 console.log("inputID>>>>>" + inputID);
-                <!--선택한 값을 띄울 input-->
+                // 선택한 값을 띄울 input
                 var viewInput = document.getElementById(inputID);
                  if(selectText == '직접입력') {
                     viewInput.readOnly = false;
@@ -243,6 +264,58 @@
             }
         }
 
+        // 경력을 X년 X개월 형식으로 화면에 표시하기 위해 계산
+        function printCarrer(index) {
+            var inputID = 'memberName' + index;
+            var putDtID = 'putDt' + index;
+            var withdrawDtID = 'withdrawDt' + index;
+
+            var putDt = document.getElementById(putDtID).value; // 투입일자
+            var withdrawDt = document.getElementById(withdrawDtID).value; // 철수일자
+
+            // ID와 이름을 분리
+            var tempStr = document.getElementById(inputID).value; // 이름+id값을 변수에 저장
+            if(tempStr == "") {
+                alert("투입인력을 먼저 선택해주세요");
+                return false;
+            }
+            var cutStartIndex = tempStr.indexOf("("); // "("의 index값을 구한다.
+            var id = ""; // ID값
+            var name = ""; // 이름값
+            var carrer = ""; // 경력일수
+
+            if(cutStartIndex == -1) { // 괄호가 포함되어 있지 않은 경우(직접입력)
+                id   = "free";
+                name = tempStr;
+            } else { // select box에서 선택한경우
+                var cutEndIndex = tempStr.indexOf(")"); // ")"의 index값을 구한다.
+                id   = tempStr.substring(cutStartIndex+1, cutEndIndex);
+                name = tempStr.substr(0, cutStartIndex);
+            }
+
+            // 조회된 경력데이터를 찾는다
+            for(var i = 0; i < parseCarrerResult.length; i++){
+                if(parseCarrerResult[i].id == id && parseCarrerResult[i].name == name) { // 아이디와 이름이 일치하는 경우
+                    carrer = parseCarrerResult[i].carrer;
+                    break;
+                } else {
+                    carrer = 0;
+                }
+            }
+
+            if(putDt != "" && withdrawDt != "") { // 날짜를 선택한 경우에만 선택한 투입일을 포함
+                var diffDateValue = diffDate(putDt, withdrawDt); // 투입일수 계산
+                carrer += diffDateValue;
+            }
+
+            // 경력일수로 년/개월 구하기
+            var carrerYear = parseInt(carrer / 365); // 365일로 나눈 몫
+            var carrerMonth = Math.round((carrer % 365) * 12 / 365 *100)/100; // 365일:나머지 일수 = 12개월:개월수로 개월수를 구한 후 소수점 2자리까지 반올림
+            var carrerDivID = 'carrer' + index;
+            document.getElementById(carrerDivID).innerHTML = carrerYear + "년 " + carrerMonth + "개월";
+        }
+
+        // 프로젝트 등록
         function projectRegist() {
             var projectInfoJSON = new Object();
             projectInfoJSON.loginID = loginUser.id;
@@ -325,11 +398,11 @@
                         return false;
                     }
                     // 프로젝트 기간과 참여기간의 비교
-                    if(diffDate(projectStartDt, memberInfoPutDt[index].value, "start") == false) { // 프로젝트 시작일이 투입일보다 큰 경우
+                    if(diffDate(projectStartDt, memberInfoPutDt[index].value) < 0) { // 투입일이 프로젝트 시작일보다 작은 경우
                         alert("투입일은 프로젝트 시작일보다 작을 수 없습니다.");
                         return false;
                     }
-                    if(diffDate(projectStartDt, memberInfoPutDt[index].value, "end") == false) { // 프로젝트 종료일이 철수일보다 작은 경우
+                    if(diffDate(projectStartDt, memberInfoPutDt[index].value) > 0) { // 철수일이 프로젝트 종료일보다 큰 경우
                         alert("철수일은 프로젝트 시작일보다 클 수 없습니다.");
                         return false;
                     }
@@ -352,7 +425,17 @@
                         return false;
                     }
                     var memberInfoJSON = new Object();
-                    memberInfoJSON.name = memberInfoName[index].value;
+                    // ID와 이름을 분리
+                    var tempStr = memberInfoName[index].value; // 이름+id값을 변수에 저장
+                    var cutStartIndex = tempStr.indexOf("("); // "("의 index값을 구한다.
+                    if(cutStartIndex == -1) { // 괄호가 포함되어 있지 않은 경우(직접입력)
+                        memberInfoJSON.id   = "free";
+                        memberInfoJSON.name = tempStr;
+                    } else { // select box에서 선택한경우
+                        var cutEndIndex = tempStr.indexOf(")"); // ")"의 index값을 구한다.
+                        memberInfoJSON.id   = tempStr.substring(cutStartIndex+1, cutEndIndex);
+                        memberInfoJSON.name = tempStr.substr(0, cutStartIndex);
+                    }
                     memberInfoJSON.putDt = memberInfoPutDt[index].value;
                     memberInfoJSON.withdrawDt = memberInfoWithdrawDt[index].value;
                     memberInfoJSON.skill = memberInfoSkill[index].value;
@@ -395,29 +478,6 @@
              code = company+ "_" + year  + "_" + month + "_" + day; // 회사코드 뒤에 현재날짜를 append
              return code;
         }
-
-        function diffDate(projectDate, memberDate, trigger) {
-            var splitDate1 = projectDate.split('/');
-            var splitDate2 = memberDate.split('/');
-            var resultData = "";
-            var da1 = new Date(splitDate1[0], splitDate1[1], splitDate1[2]);
-            var da2 = new Date(splitDate2[0], splitDate2[1], splitDate2[2]);
-            var dif = da2 - da1;
-            var cDay = 24 * 60 * 60 * 1000;// 시 * 분 * 초 * 밀리세컨
-            if(trigger == "start") {
-                if(parseInt(dif/cDay) >= 0) {
-                    resultData = true;
-                } else {
-                    resultData = false;
-                }
-            } else if(trigger == "end") {
-                if(parseInt(dif/cDay) <= 0) {
-                    resultData = true;
-                } else {
-                    resultData = false;
-                }
-            }
-        }
     </script>
 </head>
 
@@ -433,7 +493,7 @@
         <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
         <ul id="menuPanelList"data-role="listview">
             <p>내정보</p>
-            <li><a onclick= "movePage('employeeDetail.html')" >마이페이지</a></li>
+            <li><a onclick= "movePage('employeeDetail.html', 'myPage')" >마이페이지</a></li>
             <p>프로젝트</p>
             <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
             <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>

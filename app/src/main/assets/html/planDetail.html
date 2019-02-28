@@ -16,65 +16,30 @@
     <!--DatePicker--><script src="../js/datepicker.js"></script>
 
     <title></title>
-    <!--로그인 세션 공통-->
+
     <script>
-    var paramJSON = Object();
+    // 전역변수
     var scheduleSeq = getStorageItem();         // 일정 시퀀스
-    var RegisterId = "";
     var loginUser = JSON.parse(getUserData());  // 로그인 정보
-    var loginUserId = loginUser.id;
-    var loginUserAdmFlag = loginUser.adm_flag;  // 관리자여부 A = 관리자 G = 그룹멤버
-    $(document).ready(function(){
-         if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
+    var loginUserAdmFlag = loginUser.adm_flag;  // 관리자여부 A = 일반관리자 G = 그룹관리자
+    var projectStartDt = ""; // 프로젝트 시작일
+    var projectEndDt = ""; // 프로젝트 종료일
+
+    $(document).ready(function() {
+         if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){ // 로그인유저가 관리자인 경우
             $(".admMenu").show();
         }
-        getProject();
-        getPlanDetail(scheduleSeq);
+
+        var selectJSON = new Object();
+        selectJSON.schedule_seq = scheduleSeq;
+	    navigate(selectJSON, "getPlanDetail.json", getPlanDetailSuccess,""); // 일정 상세정보 조회
     });
-    //프로젝트리스트 가져오기
-     function getProject() {
-        var trigger = "during";
-        paramJSON.trigger = trigger;
-        navigate(paramJSON, "getAllProjectList.json", projectSelectSuccess, "" );
-     }
-     //프로젝트 리스트 가져오기
-      function projectSelectSuccess(result) {
-        console.log("성공");
-        var projectSelectResult="";
-        var parseProjectResult="";
-        console.log("============================================");
-        projectSelectResult=JSON.stringify(result);
-        parseProjectResult=JSON.parse(projectSelectResult);
-        console.log("projectSelectSuccess>>>>>" + projectSelectResult);
-        console.log("============================================");
-        $("#select-choice-1").empty();
 
-        if (parseProjectResult.length != 0) {
-            for(var i=0; i<parseProjectResult.length; i++) {
-                $("#select-1").append(
-                       "<option value='"+parseProjectResult[i].project_code + "'>" + parseProjectResult[i].project_name + "</option>"
-                  );
-                $("#select-1").selectmenu("refresh", true);
-                }
-            } else {
-            $("#select-1").append(
-                       "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
-               );
-        }
-    }
-    function getPlanDetail(scheduleSeq){
-        console.log("getPlanDetail 플랜 디테일 함수 실행 ");
-        paramJSON.schedule_seq = scheduleSeq;
-	    navigate(paramJSON, "getPlanDetail.json", getPlanDetailSuccess,"");
-	    console.log("getPlanDetail 플랜 디테일 네비게이트 실행 ");
-    }
+    function getPlanDetailSuccess(result) {
+        console.log("성공");
+        console.log("============================================");
         var selectResult="";
-        var parseSelectResult="";
-    function getPlanDetailSuccess(result){
-
-
-        console.log("성공");
-        console.log("============================================");
+        var parseSelectResult=""; // 조회데이터 파싱결과
         selectResult=JSON.stringify(result);
         parseSelectResult=JSON.parse(selectResult);
         console.log("selectResult>>>>>" + selectResult);
@@ -82,98 +47,168 @@
         console.log("============================================");
 
         if (parseSelectResult.length != 0) {
-            //값 넣어주기
+            //조회데이터 화면에 Set
             for(var i=0; i<parseSelectResult.length; i++) {
-                RegisterId = parseSelectResult[i].id;
-                $("#select-1").val(parseSelectResult[i].project_code);
-                $("#textinput-2").val(parseSelectResult[i].schedule_name);
-                $("#select-3").val(parseSelectResult[i].kind_code);
-                $("#textinput-4").val(YMDFormatter(parseSelectResult[i].start_dt));
-                $("#textinput-5").val(YMDFormatter(parseSelectResult[i].end_dt));
-                $("#textarea-6").val(parseSelectResult[i].contents);
-              }
-              $("#select-1").selectmenu("refresh", true);
-              $("#select-3").selectmenu("refresh", true);
-                //input, select 수정불가
-               readMode();
+                var registerId = parseSelectResult[i].id; // 등록자
+                document.getElementById('projectName').value = parseSelectResult[i].project_name; // 프로젝트명
+                document.getElementById('scheduleName').value = parseSelectResult[i].schedule_name; // 일정명
+                $("#kindCode").val(parseSelectResult[i].kind_code).prop("selected", true); // 구분값과 일치하는 옵션을 selected
+                $("#kindCode-button > span").text(parseSelectResult[i].kind_code); // 구분값을 select 박스에 출력
+                document.getElementById('startDt').value = YMDFormatter(parseSelectResult[i].schedule_start_dt); // 시작일
+                document.getElementById('endDt').value = YMDFormatter(parseSelectResult[i].schedule_end_dt); // 종료일
+                document.getElementById('contents').value = parseSelectResult[i].contents; // 설명
+
+                projectStartDt = parseSelectResult[i].project_start_dt; // 프로젝트 시작일을 전역변수에 저장
+                projectEndDt = parseSelectResult[i].project_end_dt; // 프로젝트 종료일을 전역변수에 저장
+            }
+
+            $("#kindCode").attr('disabled','disabled'); // 조회시에는 select 박스가 선택되지 않도록 disabled처리
         }else{
             alert("일정을 불러올 수 없습니다.");
             movePage('planList.html');
         }
-        userCheck(RegisterId);
-    }
-    //사용자에 따라 버튼 다르게 보여주기
-    function userCheck(RegisterId){
-        if (RegisterId == loginUserId || loginUserAdmFlag == "A"){
-            //목록 수정 삭제 버튼
+
+        // 로그인 유저 수정권한 check
+        if (registerId == loginUser.id || loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){ // 등록자 or 관리자(A-Admin, G-GroupAdmin)
+            //취소 수정 삭제 버튼
             $(".btn-area-3").css("display","block");
-        }else {
+        } else {
             //목록 버튼
             $(".btn-area-2").css("display","block");
         }
     }
-    //수정모드
-    function planEdit(){
-        //input, select 수정가능
-        editMode();
 
+    //읽기모드 - input, select 수정불가
+    function readMode() {
+        $(".title-area h3").text("• 프로젝트 일정 상세");
+        $("#btnEdit").css("display","inline-flex"); // 수정버튼 화면표시
+        $("#btnSave").css("display","none"); // 저장버튼 숨김
+
+        $("#scheduleName").attr('readonly',true); // 일정명
+
+        $("#startDt").attr('readonly',true); // 시작일
+        $("#endDt").attr('readonly',true); // 종료일
+        $("#contents").attr('readonly',true); // 설명
     }
-    //input, select 수정불가
-    function readMode(){
-          $(".title-area h3").text("• 프로젝트 일정 상세");
-          $(".edit-btn").css("display","inline-flex");
-          $(".save-btn").css("display","none");
 
-          $("#select-1").attr('disabled','disabled');
-          $("#textinput-2").attr('readonly',true);
-          $("#select-3").attr('disabled','disabled');
-          $("#textinput-4").attr('readonly',true);
-          $("#textinput-5").attr('readonly',true);
-          $("#textarea-6").attr('readonly',true);
-    }
-    //input, select 수정가능
-    function editMode(){
-          $(".title-area h3").text("• 프로젝트 일정 수정");
-          $(".edit-btn").css("display","none");
-          $(".save-btn").css("display","inline-flex");
-          $("#select-1").removeAttr('disabled');
-          $("#textinput-2").attr('readonly',false);
-          $("#select-3").removeAttr('disabled');
-          $("#textinput-4").attr('readonly',false);
-          $("#textinput-5").attr('readonly',false);
-          $("#textarea-6").attr('readonly',false);
-    }
-    function planUpdate(){
-            //값 가져오기
-            var projectCode = document.getElementById('select-1');
-            var kindSelect  = document.getElementById('select-3');
+    //수정모드 - input, select 수정가능
+    function editMode() {
+        $(".title-area h3").text("• 프로젝트 일정 수정");
+        $("#btnEdit").css("display","none"); // 수정버튼 숨김
+        $("#btnSave").css("display","inline-flex"); // 저장버튼 화면표시
 
-            var id             = loginUserId;      //로그인 아이디
-            var project_code   = projectCode.options[projectCode.selectedIndex].value;
-            var schedule_name  = $("#textinput-2").val();
-            var kind_code      = kindSelect.options[kindSelect.selectedIndex].value;
-            var start_dt       = ($("#textinput-4").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
-            var end_dt         = ($("#textinput-5").val()).replace(/[^0-9]/g,'');  // 숫자만 남기고 모두 제거
-            var contents       = $("#textarea-6").val();
+        $("#scheduleName").attr('readonly',false); // 일정명
+        $("#kindCode").removeAttr('disabled'); // 구분
 
-            //필수값 체크
-            if( !id || !project_code || !schedule_name || !kind_code || !start_dt || !end_dt || !contents){
-                alert('일정 내용을 모두 채워주세요.');
-            }else{
-                paramJSON.id              = id;
-                paramJSON.project_code    = project_code;
-                paramJSON.schedule_name   = schedule_name;
-                paramJSON.kind_code       = kind_code;
-                paramJSON.start_dt        = start_dt
-                paramJSON.end_dt          = end_dt;
-                paramJSON.contents        = contents;
-
-                navigate(JSONData, planUpdate.json, planUpdateSuccess,"");
+        // 종료일이 시작일 이후로만 선택되도록 datepicker를 설정
+        $("#startDt").datepicker({
+            onSelect: function(selected) { // 날짜가 선택되었을때 함수
+                $("#endDt").datepicker("option","minDate", selected) // 종료일의 최소 선택일자를 선택한 날짜로 설정(시작일 이전으로 선택하지 못하도록)
             }
+        });
+        $("#startDt").datepicker("option","maxDate", $("#endDt").val()); // 시작일의 최대 선택일자를 종료일로 설정(종료일 이후로 선택하지 못하도록)
+
+        $("#endDt").datepicker({
+            onSelect: function(selected) { // 날짜가 선택되었을때 함수
+                $("#startDt").datepicker("option","maxDate", selected) // 시작일의 최대 선택일자를 선택한 날짜로 설정(종료일 이후로 선택하지 못하도록)
+            }
+        });
+        $("#endDt").datepicker("option","minDate", $("#startDt").val()); // 종료일의 최소 선택일자를 시작일로 설정(시작일 이전으로 선택하지 못하도록)
+        $("#contents").attr('readonly',false); // 설명
     }
-    function checkValidate(){
 
+    function planUpdate() {
+        // 값 가져오기
+        var kindSelect  = document.getElementById('kindCode');
 
+        var scheduleName  = document.getElementById('scheduleName').value; // 일정명
+        var kindCode      = kindSelect.options[kindSelect.selectedIndex].value; // 구분값
+        var startDt       = document.getElementById('startDt').value; // 시작일
+        var endDt         = document.getElementById('endDt').value; // 종료일
+        var contents      = document.getElementById('contents').value; // 설명
+
+        // Validation Check
+        // 정규식 정리
+        var patternNum = /^[0-9]+$/; // 숫자만 체크
+        var patternSpecial = /^[`~!@#$%^&*|\\\'\";:\/?]+$/; // 특수문자만 체크
+
+        // 일정명
+        if(scheduleName == "") { // 프로젝트명을 입력하지 않은 경우
+            alert("일정명을 입력해주세요");
+            return false;
+        }
+        if(patternNum.test(scheduleName) || patternSpecial.test(scheduleName)) { // 일정명이 숫자나 특수문자만으로 구성되어 있는 경우
+            alert("일정명을 확인해주세요");
+            return false;
+        }
+
+        // 발주회사
+        if(kindCode == "") { // 구분값을 선택하지 않은 경우
+            alert("구분값을 선택해주세요");
+            return false;
+        }
+
+        // 일정 시작 종료일
+        if(startDt == "" || endDt == "") { // 날짜를 입력하지 않은 경우
+            alert("시작/종료일을 입력해주세요");
+            return false;
+        }
+
+        // 일정기간과 프로젝트기간의 비교
+        if(diffDate(YMDFormatter(projectStartDt), startDt) < 0) { // 시작일이 프로젝트 시작일보다 작은 경우
+            alert("일정 시작일은 프로젝트 시작일보다 작을 수 없습니다.");
+            return false;
+        }
+        console.log("endDt = " + endDt + " projectEndDt = " + YMDFormatter(projectEndDt));
+        if(diffDate(YMDFormatter(projectEndDt), endDt) > 0) { // 종료일이 프로젝트 종료일보다 큰 경우
+            alert("일정 종료일은 프로젝트 시작일보다 클 수 없습니다.");
+            return false;
+        }
+
+        // 설명
+        if(contents == "") {
+            alert("설명을 입력해주세요.");
+            return false;
+        }
+
+        var updateJSON = new Object();
+        updateJSON.schedule_seq  = scheduleSeq  ; // pk값인 seq값(WHERE 조건)
+        updateJSON.schedule_name = scheduleName; // 일정명
+        updateJSON.kind_code     = kindCode    ; // 구분값
+        updateJSON.start_dt      = startDt     ; //시작일
+        updateJSON.end_dt        = endDt       ; // 종료일
+        updateJSON.contents      = contents     ; // 설명
+
+        // navigate(updateJSON, "planUpdate.json", planUpdateSuccess);
+    }
+
+    function planUpdateSuccess(result) {
+        if(result == 1) { // spring에서 update 성공시 반환값은 1
+            console.log("성공");
+            console.log(JSON.stringify(result));
+            alert("저장되었습니다.");
+            movePage('planList.html');
+        } else {
+            alert("저장에 실패했습니다.");
+        }
+    }
+
+    function planDelete() {
+        var deleteJSON = new Object();
+        deleteJSON.schedule_seq  = scheduleSeq; // pk값인 seq값(WHERE 조건)
+
+        navigate(deleteJSON, "planDelete.json", planDeleteSuccess);
+    }
+
+    function planDeleteSuccess(result) {
+        if(result > 0) { // spring에서 delete 성공시 delete row count 반환
+            console.log("성공");
+            console.log(JSON.stringify(result));
+            alert("삭제되었습니다.");
+            movePage('planList.html');
+        } else {
+            alert("삭제에 실패했습니다.");
+        }
     }
     </script>
 
@@ -182,7 +217,7 @@
 <body>
 <section id="page1" data-role="page" class="container">
     <header data-role="header">
-        <h1>프로젝트 일정</h1>
+        <h1>프로젝트 일정 상세조회</h1>
         <a class="ui-btn ui-corner-all ui-btn-inline ui-mini footer-button-left ui-btn-icon-left ui-icon-carat-l" href="javascript:history.back()">back</a>
         <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
     </header>
@@ -191,7 +226,7 @@
         <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
         <ul id="menuPanelList"data-role="listview">
             <p>내정보</p>
-            <li><a onclick= "movePage('employeeDetail.html')" >마이페이지</a></li>
+            <li><a onclick= "movePage('employeeDetail.html', 'myPage')" >마이페이지</a></li>
             <p>프로젝트</p>
             <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
             <li><a onclick= "movePage('planList.html')" >프로젝트일정<br> 목록</a></li>
@@ -220,18 +255,19 @@
         <div class="gird-pt detail-form">
             <form>
                 <div class="ui-field-contain">
-                    <label for="select-1">프로젝트명:</label>
-                    <select name="select-1" id="select-1" class="ui-corner-all" onchange="getProjectTerm()" >
-                        <!--진행중 프로젝트 리스트-->
-                    </select>
+                    <label for="projectName">프로젝트명:</label>
+                    <input type="text" name="projectName" id="projectName" value="" readonly>
+                    <!--<select name="select-1" id="select-1" class="ui-corner-all" onchange="getProjectTerm()" >-->
+                        <!--&lt;!&ndash;진행중 프로젝트 리스트&ndash;&gt;-->
+                    <!--</select>-->
                 </div>
                 <div class="ui-field-contain">
-                    <label for="textinput-2">일정명:</label>
-                    <input type="text" name="textinput-2" id="textinput-2" placeholder="25자 이내로 입력해주세요." value="">
+                    <label for="scheduleName">일정명:</label>
+                    <input type="text" name="scheduleName" id="scheduleName" value="" readonly>
                 </div>
                 <div class="ui-field-contain">
-                    <label for="select-3">구분:</label>
-                    <select name="select-3" id="select-3" class="ui-corner-all" disabled>
+                    <label for="kindCode">구분:</label>
+                    <select name="kindCode" id="kindCode" class="ui-corner-all" style="z-index:0;">
                         <option value="업무">업무</option>
                         <option value="휴가">휴가</option>
                         <option value="회사">회사</option>
@@ -239,35 +275,35 @@
                     </select>
                 </div>
                 <div class="ui-field-contain">
-                    <label for="textinput-4">시작일:</label>
-                    <div id="textinput-4 datepicker" class="picker">
-                        <input type="text" name="textinput-4" id="textinput-4" class="datepicker" placeholder="시작일을 선택해주세요" value="" readonly>
-                    </div>
+                    <label for="startDt">시작일:</label>
+                    <input type="text" name="startDt" id="startDt" value="" readonly>
+                    <!--<div id="textinput-4 datepicker" class="picker">-->
+                    <!--</div>-->
                 </div>
                 <div class="ui-field-contain">
-                    <label for="textinput-5">종료일:</label>
-                    <div id="textinput-5 datepicker" class="picker">
-                        <input type="text" name="textinput-5" id="textinput-5" class="datepicker" placeholder="종료일을 선택해주세요" value="" readonly>
-                    </div>
+                    <label for="endDt">종료일:</label>
+                    <input type="text" name="endDt" id="endDt" value="" readonly>
+                    <!--<div id="textinput-5 datepicker" class="picker">-->
+                    <!--</div>-->
                 </div>
                 <div class="ui-field-contain">
-                    <label for="textarea-6">설명:</label>
-                    <textarea type="textarea" name="textarea-6" id="textarea-6" placeholder="요구사항 및 내용을 입력해주세요(200자 이내)" value="" readonly></textarea>
+                    <label for="contents">설명:</label>
+                    <textarea type="textarea" name="contents" id="contents" value="" readonly></textarea>
                 </div>
             </form>
         </div>
 
         <div class="btn-area-2" style="display:none;">
             <div class="gird-pt">
-                <button class="ui-btn ui-corner-all ui-btn-b" onclick="movePage('planList.html')">목록</button>
+                <button id="btnList" class="ui-btn ui-corner-all ui-btn-b" onclick="movePage('planList.html')">목록</button>
             </div>
         </div>
         <div class="btn-area-3" style="display:none;">
             <div class="grid-pt">
-                <div class="grid-cd-1"><a href="#" class="ui-btn ui-shadow ui-corner-all" onclick="movePage('planList.html')">취소</a></div>
-                <div class="grid-cd-2"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="planDelete()">삭제</a></div>
-                <div class="grid-cd-3 edit-btn" style="display:none;"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="planEdit()">수정</a></div>
-                <div class="grid-cd-3 save-btn" style="display:none;"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="planUpdate()">저장</a></div>
+                <div class="grid-cd-1"><a href="#" id="btnCancel" class="ui-btn ui-shadow ui-corner-all" onclick="movePage('planList.html')">취소</a></div>
+                <div class="grid-cd-2"><a href="#" id="btnDelete" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="planDelete()">삭제</a></div>
+                <div id="btnEdit" class="grid-cd-3 edit-btn"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="editMode()">수정</a></div>
+                <div id="btnSave" class="grid-cd-3 save-btn" style="display:none;"><a href="#" class="ui-btn ui-shadow ui-corner-all ui-btn-b" onclick="planUpdate()">저장</a></div>
             </div>
         </div>
         <!-- footer -->

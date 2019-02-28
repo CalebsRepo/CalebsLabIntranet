@@ -48,7 +48,7 @@
             <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
             <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
             <p>휴가</p>
-            <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+            <li><a onclick= "movePage('holidayDetail.html')" >휴가신청</a></li>
             <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
             <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
             <p>게시판</p>
@@ -65,7 +65,7 @@
         <button type="button" id="btContacts" onclick="movePage('contacts.html')">연락처가져오기</button>
     </div>
     <div class="content" data-role="content">
-        <button type="button" id="btGallery" onclick="movePage('employeeDetail.html')"> 마이페이지</button>
+        <button type="button" id="btGallery" onclick="movePage('employeeDetail.html','myPage')"> 마이페이지</button>
     </div>
     <div class="content" data-role="content">
         <button type="button" id="btServer" onclick="movePage('employeeInfo.html')"> 사원정보</button>
@@ -110,8 +110,8 @@
             <ul>
                 <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
                 <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
-                <li><a href="#" data-icon="calendar">휴가신청</a></li>
-                <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
+                <li><a onclick="movePage('holidayDetail.html')" data-icon="calendar">휴가신청</a></li>
+                <li><a onclick="javascript:callLogout()"; data-icon="power" >로그아웃</a></li>
             </ul>
         </div>
     </div>

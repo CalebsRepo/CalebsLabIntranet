@@ -2,6 +2,7 @@ package calebslab.calebslabintranet;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -35,11 +38,16 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,7 +65,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 
@@ -70,9 +82,14 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 
 public class MainActivity extends AppCompatActivity {
+    /* 엑셀 파일 저장 관련 변수 */
+    Context context;
+    String exportFolderName = "/Download";
+    String outputFileName = "test.xls";
+    File xlsFile;
+
 
     final Context myApp = this;
-
     WebView web; // 웹뷰 선언
     JSONObject jsonData; // 자바스크립트에서 값을 받을 json 변수 선언
     JSONArray jsonContacts; // 전화번호부에서 이름, 전화번호를 받아와 jsonarray형태로 변환 후 web단으로 넘기기 위한 변수
@@ -98,12 +115,14 @@ public class MainActivity extends AppCompatActivity {
     OnSwipeTouchListener onSwipeTouchListener;
     private String urlPath = "file:///android_asset/html/";
 
+    public MyProgressDialog progressDialog;
+
     @SuppressLint({"JavascriptInterface", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        context = this.getBaseContext();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);  //세로모드 고정
         web = (WebView) findViewById(R.id.webview); //웹뷰 선언
         web.setWebViewClient(new WebViewClient());
@@ -140,7 +159,31 @@ public class MainActivity extends AppCompatActivity {
         });
 
         web.setWebViewClient(new android.webkit.WebViewClient() {
-
+            // 페이지 시작시 (로딩다이얼로그)
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                if (!web.getUrl().equals("file:///android_asset/html/login.html")) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressDialog = MyProgressDialog.show(myApp,"","",true,true,null);
+                            handler.postDelayed( new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        if (progressDialog!=null&&progressDialog.isShowing()){
+                                            progressDialog.dismiss();
+                                        }
+                                    }
+                                    catch ( Exception e ) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, 600);
+                        }
+                    } );
+                    super.onPageStarted(view, url, favicon);
+                }
+            }
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 //************************************************************************
@@ -347,169 +390,309 @@ public class MainActivity extends AppCompatActivity {
             contacts.callPhone(phoneNum);
         }
 
-        // 휴가내역 엑셀 다운로드
+        /* 연차사용내역 엑셀 파일 생성 및 공유 */
         @JavascriptInterface
         public void saveExcel(final String result){
-            Log.d("이승환", "result>>>>>>>>>>>>>>>"+result);
-//            int idx = result.indexOf("@");
-//            String result1 =  "";
-//            String result2 =  "";
-//            result1 = result.substring(0, idx);
-//            result2 = result.substring(idx+1);
-//            Log.d("이승환", "result11>>>>>>>>>>>>>>>"+result1);
-//            Log.d("이승환", "result22>>>>>>>>>>>>>>>"+result2);
+            Toast.makeText(getApplicationContext(),"Excel 파일을 생성 중 입니다.",Toast.LENGTH_SHORT).show();
+            int idx = result.indexOf("@");
+            String result1 =  "";
+            String result2 =  "";
+            result1 = result.substring(0, idx);
+            result2 = result.substring(idx+1);
 
-            Workbook workbook = new HSSFWorkbook();
+            Date today = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
-            Sheet sheet = workbook.createSheet("휴가현황"); // 새로운 시트 생성
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            HSSFSheet sheet = workbook.createSheet("연차사용내역");
+            HSSFRow titleRow = sheet.createRow(0);
+            HSSFRow headerRow = sheet.createRow(1);
+            HSSFCell cell;
 
-            Row row = sheet.createRow(0); // 새로운 행 생성
-            Cell cell;
+            /* 셀스타일*/
+            sheet.setColumnWidth((short)0, (short)1000);
+            sheet.setColumnWidth((short)1, (short)4000);
+            sheet.setColumnWidth((short)4, (short)3000);
+            sheet.setColumnWidth((short)5, (short)3000);
 
-            cell = row.createCell(0); // 1번 셀 생성
-            cell.setCellValue("No."); // 1번 셀 값 입력
+            titleRow.setHeight((short)512);
 
-            cell = row.createCell(1); // 2번 셀 생성
-            cell.setCellValue("아이디"); // 2번 셀 값 입력
+            Font titleFont;
+            titleFont = workbook.createFont();
+            titleFont.setBold(true);
+            titleFont.setFontHeightInPoints((short) 16);
+            titleFont.setColor(IndexedColors.BLACK.getIndex());
 
-            cell = row.createCell(2); // 3번 셀 생성
-            cell.setCellValue("이름"); // 3번 셀 값 입력
+            Font headerFont;
+            headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 12);
+            headerFont.setColor(IndexedColors.BLACK.getIndex());
 
-            cell = row.createCell(3); // 4번 셀 생성
-            cell.setCellValue("직급"); // 4번 셀 값 입력
+            Font dataFont;
+            dataFont = workbook.createFont();
+            dataFont.setFontHeightInPoints((short) 10);
+            dataFont.setColor(IndexedColors.BLACK.getIndex());
 
-            cell = row.createCell(4); // 5번 셀 생성
-            cell.setCellValue("입사일"); // 5번 셀 값 입
+            HSSFCellStyle titleStyle = workbook.createCellStyle();
+            titleStyle.setFont(titleFont);
+            titleStyle.setBorderTop(BorderStyle.DOUBLE);
+            titleStyle.setBorderLeft (BorderStyle.THIN);
+            titleStyle.setBorderRight(BorderStyle.THIN);
+            titleStyle.setBorderBottom(BorderStyle.THIN);
+            titleStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+            titleStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            titleStyle.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
+            titleStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
 
-            cell = row.createCell(5); // 6번 셀 생성
-            cell.setCellValue("근속기간"); // 6번 셀 값 입
+            HSSFCellStyle titleStyle2 = workbook.createCellStyle();
+            titleStyle2.setFont(headerFont);
+            titleStyle2.setBorderTop(BorderStyle.DOUBLE);
+            titleStyle2.setBorderLeft (BorderStyle.THIN);
+            titleStyle2.setBorderRight(BorderStyle.THIN);
+            titleStyle2.setBorderBottom(BorderStyle.THIN);
+            titleStyle2.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+            titleStyle2.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
+            titleStyle2.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
 
-            cell = row.createCell(6); // 7번 셀 생성
-            cell.setCellValue("근무년차"); // 7번 셀 값 입
+            HSSFCellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFont(headerFont);
+            headerStyle.setBorderTop(BorderStyle.THIN);
+            headerStyle.setBorderLeft (BorderStyle.THIN);
+            headerStyle.setBorderRight(BorderStyle.THIN);
+            headerStyle.setBorderBottom(BorderStyle.THIN);
+            headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+            headerStyle.setFillForegroundColor(HSSFColor.PALE_BLUE.index);
+            headerStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
 
+            HSSFCellStyle dataStyle = workbook.createCellStyle();
+            dataStyle.setFont(dataFont);
+            dataStyle.setBorderTop(BorderStyle.THIN);
+            dataStyle.setBorderLeft (BorderStyle.THIN);
+            dataStyle.setBorderRight(BorderStyle.THIN);
+            dataStyle.setBorderBottom(BorderStyle.THIN);
+            dataStyle.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+
+            /* title 로우*/
+            cell = titleRow.createCell(0);
+            cell.setCellValue("갈렙스랩 연차사용내역");
+            cell.setCellStyle(titleStyle);
+            cell = titleRow.createCell(1);
+            cell.setCellStyle(titleStyle);
+            cell = titleRow.createCell(2);
+            cell.setCellStyle(titleStyle);
+            cell = titleRow.createCell(3);
+            cell.setCellStyle(titleStyle);
+            cell = titleRow.createCell(4);
+            cell.setCellStyle(titleStyle);
+            cell = titleRow.createCell(5);
+            cell.setCellStyle(titleStyle);
+
+            cell = titleRow.createCell(6);
+            cell.setCellValue("Date : " + sdf.format(today));
+            cell.setCellStyle(titleStyle2);
+
+            // 셀병합
+            sheet.addMergedRegion(new CellRangeAddress(0,0,0,4));
+
+            /* 헤더로우 */
+            cell = headerRow.createCell(0);
+            cell.setCellValue("No.");
+            cell.setCellStyle(headerStyle);
+
+            cell = headerRow.createCell(1);
+            cell.setCellValue("아이디");
+            cell.setCellStyle(headerStyle);
+
+            cell = headerRow.createCell(2);
+            cell.setCellValue("이름");
+            cell.setCellStyle(headerStyle);
+
+            cell = headerRow.createCell(3);
+            cell.setCellValue("직급");
+            cell.setCellStyle(headerStyle);
+
+            cell = headerRow.createCell(4);
+            cell.setCellValue("입사일");
+            cell.setCellStyle(headerStyle);
+
+            cell = headerRow.createCell(5);
+            cell.setCellValue("근속기간");
+            cell.setCellStyle(headerStyle);
 
             if (result != null) {
                 try {
-                    JSONArray arr = new JSONArray(result);   // 사원정보
-                    Log.d("이승환", "arr>>>>>>>>>>>>>>>"+arr);
-                    for(int i=0; i < arr.length(); i++) {
-                        JSONObject jObject = arr.getJSONObject(i);
-                        Log.d("이승환", "arr>>>>>>>>>>>>>>>"+jObject);
+                    JSONArray arr = new JSONArray(result1);     // 사원정보
+                    JSONArray arr2 = new JSONArray(result2);    // 연차사용내역
 
-                        // 직원수 2번데이터에만 있는컬럼 값 null아닐경우로 해도 될듯
-                        if(i< 11){
-                            String id = jObject.getString("id");
-                            String name = jObject.getString("name");
-                            String joinYear = jObject.getString("join_year");
-                            String joinMon = jObject.getString("work_mon");
-                            String hsYmd =  jObject.getString("hs_ymd");
-                            String heYmd =  jObject.getString("he_ymd");
-                            String workingDate = "";
+                    int userIdx = 0;        // 안쪽 for문 대상멤버 선택을 위한 변수
+                    int MaxWorkYear = 0;
 
-                            if (Integer.parseInt(joinYear) > 0) {
-                                workingDate = joinYear +"년" +joinMon + "개월";
-                            }else {
-                                workingDate = joinMon + "개월";
-                            }
+                    /* 전체사원정보 */
+                    for(int memberIdx=0; memberIdx < arr.length(); memberIdx++) {
+                        JSONObject jObject = arr.getJSONObject(memberIdx);
 
-                            row = sheet.createRow(i+1); // 행추가
-                            cell = row.createCell(0);
-                            cell.setCellValue(i+1);
-                            cell = row.createCell(1);
-                            cell.setCellValue(jObject.getString("id"));
-                            cell = row.createCell(2);
-                            cell.setCellValue(jObject.getString("name"));
-                            cell = row.createCell(3);
-                            cell.setCellValue(jObject.getString("grade"));
-                            cell = row.createCell(4);
-                            cell.setCellValue(jObject.getString("join_ymd"));
-                            cell = row.createCell(5);
-                            cell.setCellValue(workingDate);
-                            cell = row.createCell(6);       // 근무년차 : 연차발생기간 ~
-                            cell.setCellValue(hsYmd+ "~" + heYmd);
-                        } else {
-                            // 아이디 비교
-                            // 기간
+                        String id =jObject.getString("id");
+                        String name = jObject.getString("name");
+                        String grade = jObject.getString("grade");
+                        String joinYmd = jObject.getString("join_ymd");
+                        String joinYear = jObject.getString("join_year");
+                        int joinMon = jObject.getInt("join_mon");
+                        int workMon = joinMon - (Integer.parseInt(joinYear)*12);
+                        int joinDay = jObject.getInt("join_day");
+                        int workYear = Integer.parseInt(joinYear)+1;
+                        String workingDate = "";
+                        double wd80 = 0;
 
+                        int cellIdx = 6;            // 연차내역 시작위치 초기화
 
-
+                        /* 최대 근무년차 계산*/
+                        if(Integer.parseInt(joinYear) > MaxWorkYear) {
+                            MaxWorkYear = Integer.parseInt(joinYear);
+                        }
+                        /* 근속년월 Format */
+                        if (Integer.parseInt(joinYear) > 0) {
+                            workingDate = joinYear +"년" +workMon + "개월";
+                        }else {
+                            workingDate = workMon + "개월";
                         }
 
+                        GregorianCalendar cal = new GregorianCalendar();
+                        if (cal.isLeapYear(cal.get(Calendar.YEAR))) {
+                            wd80 = 366 * 0.8;       // 윤년
+                        }
+                        else {
+                            wd80 = 365 * 0.8;       // 평년
+                        }
+
+                        /* 사원정보 입력 */
+                        HSSFRow dataRow = sheet.createRow(memberIdx+2);
+
+                        cell = dataRow.createCell(0);     // no
+                        cell.setCellValue(memberIdx+1);
+                        cell.setCellStyle(dataStyle);
+
+                        cell = dataRow.createCell(1);     // 아이디
+                        cell.setCellValue(id);
+                        cell.setCellStyle(dataStyle);
+
+                        cell = dataRow.createCell(2);     // 이름
+                        cell.setCellValue(name);
+                        cell.setCellStyle(dataStyle);
+
+                        cell = dataRow.createCell(3);     // 직급
+                        cell.setCellValue(grade);
+                        cell.setCellStyle(dataStyle);
+
+                        cell = dataRow.createCell(4);     // 입사일
+                        cell.setCellValue(joinYmd);
+                        cell.setCellStyle(dataStyle);
+
+                        cell = dataRow.createCell(5);     // 근속기간
+                        cell.setCellValue(workingDate);
+                        cell.setCellStyle(dataStyle);
+
+                        for(int i=0; i <workYear; i++){
+                            double holidayCal = 0;
+                            double holidayCnt = 15;     // 기본 연차 발생일
+
+                            JSONObject jObject2 = arr2.getJSONObject(userIdx++);
+
+                            String hsYmd = jObject2.getString("hs_ymd");
+                            String heYmd = jObject2.getString("he_ymd");
+                            String holidayUsed = jObject2.getString("holiday_used");
+
+                            /* 연차발생일 계산 */
+                            int workingYear = 0;
+                            workingYear = (Integer.parseInt(hsYmd.substring(0,4))  -  Integer.parseInt(joinYmd.substring(0,4))) +1;
+                            if (workingYear == 3) {
+                                holidayCnt = holidayCnt + 1;
+                            }else if (workingYear > 3) {
+                                holidayCal = holidayCnt + 1 + Math.floor((workingYear - 3)/2);
+                                holidayCnt = (holidayCal > 25) ? 25 : holidayCal;
+
+                            }else if (joinDay < wd80 ){
+                                holidayCnt = joinMon *1;
+                            }
+                            Log.d("holidayCnt", "================================ holidayCnt ================" + holidayCnt);
+                            Double holidayLeft = holidayCnt - Float.parseFloat(holidayUsed);
+
+                            /* 연차정보 입력*/
+                            cell = dataRow.createCell(cellIdx++);     // 연차발생기간
+                            cell.setCellValue(hsYmd+" ~ "+ heYmd);
+                            cell.setCellStyle(dataStyle);
+
+                            cell = dataRow.createCell(cellIdx++);     // 연차발생일
+                            cell.setCellValue(holidayCnt);
+                            cell.setCellStyle(dataStyle);
+
+                            cell = dataRow.createCell(cellIdx++);     // 연차사용일
+                            cell.setCellValue(holidayUsed);
+                            cell.setCellStyle(dataStyle);
+
+                            cell = dataRow.createCell(cellIdx++);     // 연차잔여일
+                            cell.setCellValue(holidayLeft);
+                            cell.setCellStyle(dataStyle);
+                        }
                     }
+
+                    /* 최대 근무년차만큼 헤더로우 추가 */
+                    int headerIdx = 0;
+                    for(int i=0; i<=MaxWorkYear; i++) {
+
+                        sheet.setColumnWidth(MaxWorkYear + headerIdx, (short)5000);
+                        cell = headerRow.createCell(MaxWorkYear + headerIdx++);
+                        cell.setCellValue("연차발생기간");
+                        cell.setCellStyle(headerStyle);
+
+                        sheet.setColumnWidth(MaxWorkYear + headerIdx, (short)3000);
+                        cell = headerRow.createCell(MaxWorkYear + headerIdx++);
+                        cell.setCellValue("발생일");
+                        cell.setCellStyle(headerStyle);
+
+                        sheet.setColumnWidth(MaxWorkYear + headerIdx, (short)3000);
+                        cell = headerRow.createCell(MaxWorkYear + headerIdx++);
+                        cell.setCellValue("사용일");
+                        cell.setCellStyle(headerStyle);
+
+                        sheet.setColumnWidth(MaxWorkYear + headerIdx, (short)3000);
+                        cell = headerRow.createCell(MaxWorkYear + headerIdx++);
+                        cell.setCellValue("잔여일");
+                        cell.setCellStyle(headerStyle);
+                    }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            }
-//
-//                    JSONArray arr = new JSONArray(result1);   // 사원정보
-//                    Log.d("이승환", "arr1>>>>>>>>>>>>>>>"+arr);
-//
-//                    JSONArray arr2 = new JSONArray(result2);   // 근무년차별 사용내역
-//                    Log.d("이승환", "arr2>>>>>>>>>>>>>>>"+arr2);
-//
-//                    for(int i=0; i < arr.length(); i++) {
-//
-//                        JSONObject jObject = arr.getJSONObject(i);  // JSONObject 추출
-//                        JSONObject jObject2 = arr2.getJSONObject(i);  // JSONObject 추출
-//
-//                        /* 사원정보 관련*/
-//                        String id = jObject.getString("id");
-//                        String name = jObject.getString("name");
-//                        String joinYear = jObject.getString("join_year");
-//                        String joinMon = jObject.getString("work_mon");
-//                        String hsYmd =  jObject.getString("hs_ymd");
-//                        String heYmd =  jObject.getString("he_ymd");
-//                        String workingDate = "";
-//
-//                        if (Integer.parseInt(joinYear) > 0) {
-//                            workingDate = joinYear +"년" +joinMon + "개월";
-//                        }else {
-//                            workingDate = joinMon + "개월";
-//                        }
-//
-//                        row = sheet.createRow(i+1); // 행추가
-//                        cell = row.createCell(0);
-//                        cell.setCellValue(i+1);
-//                        cell = row.createCell(1);
-//                        cell.setCellValue(jObject.getString("id"));
-//                        cell = row.createCell(2);
-//                        cell.setCellValue(jObject.getString("name"));
-//                        cell = row.createCell(3);
-//                        cell.setCellValue(jObject.getString("grade"));
-//                        cell = row.createCell(4);
-//                        cell.setCellValue(jObject.getString("join_ymd"));
-//                        cell = row.createCell(5);
-//                        cell.setCellValue(workingDate);
-//                        cell = row.createCell(6);       // 근무년차 : 연차발생기간 ~
-//                        cell.setCellValue(hsYmd+ "~" + heYmd);
-//
-//
-//
-//                    }
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
 
-            File xlsFile = new File(getExternalFilesDir(null),"test.xls");
+            }
+
+            // 저장할 폴더 및 파일명
+            xlsFile = new File(getExternalFilesDir(null),"휴가사용내역.xls");
+
             try{
                 FileOutputStream os = new FileOutputStream(xlsFile);
-                workbook.write(os); // 외부 저장소에 엑셀 파일 생성
+                workbook.write(os); // 지정된 외부 저장소에 엑셀 파일 생성
             }catch (IOException e){
                 e.printStackTrace();
             }
-            Toast.makeText(getApplicationContext(),xlsFile.getAbsolutePath()+"에 저장되었습니다",Toast.LENGTH_SHORT).show();
 
-            Uri path = Uri.fromFile(xlsFile);
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("application/excel");
-            shareIntent.putExtra(Intent.EXTRA_STREAM,path);
-            startActivity(Intent.createChooser(shareIntent,"엑셀 내보내기"));
+            if (Build.VERSION.SDK_INT >= 24) { // Android Nougat ( 7.0 ) and later
+                Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider",xlsFile);
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setDataAndType(uri, "application/excel");
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.putExtra(Intent.EXTRA_STREAM,uri);
+                startActivity(Intent.createChooser(intent,"엑셀 내보내기"));
+
+            } else {
+                Uri uri = Uri.fromFile(xlsFile);
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("application/excel");
+                intent.putExtra(Intent.EXTRA_STREAM,uri);
+                startActivity(Intent.createChooser(intent,"엑셀 내보내기"));
+            }
         }
-
-
-
 
         //로그인 통신
         @JavascriptInterface
@@ -964,6 +1147,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"성공",Toast.LENGTH_SHORT).show();
                 }
             });
+
         } catch (Exception e) {
 
             handler.post(new Runnable() {
@@ -1077,9 +1261,9 @@ public class MainActivity extends AppCompatActivity {
         startManagingCursor(cursor);
         int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
-        Log.d("파일 실제경로:", cursor.getString(columnIndex));
+        //Log.d("파일 실제경로:", cursor.getString(columnIndex));
 
-        imgRealPath.add(cursor.getString(columnIndex));
+        //imgRealPath.add(cursor.getString(columnIndex));
         return cursor.getString(columnIndex);
     }
 

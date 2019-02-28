@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<!--************************************************************************
+*  화면명: 휴가현황
+*  작성일지: 1) 이승환 (20190228) 최초작성
+*  업무구분: 관리 > 휴가현황
+*  내용: 전체 사원의 연차정보 리스트 조회, 엑셀 파일 생성 및 공유
+**************************************************************************-->
 <html>
 <head>
     <meta charset="UTF-8">
@@ -14,34 +20,36 @@
     var loginUser = JSON.parse(getUserData());
     var loginUserId = loginUser.id;
     var loginUserAdmFlag = loginUser.adm_flag;
-    var params = {
-                sessionId : loginUserId,
-    };
-    var resultSum = "";         // AJAX 통신 결과 합쳐놓을 변수
+    var params = { sessionId : loginUserId };
 
-    <!-- 휴가현황조회-->
+    var resultSum = "";                         // 엑셀생성시 넘겨줄 값들을 담아둘 변수
+    var thisYear = new Date().getFullYear();    // 올해년도
+    var wd_80 = "";                             // 입사 후 1년 80% 근무일수
+    leapYear(thisYear);                         // 올해가 윤년인지 계산
+
     $(document).ready(function(){
         var workingYear = "0";
-        var param = {workingYear : workingYear}
-        navigate(param,"getMyHoliday.json", sucessFncMyHoliday,"" );
-        navigate("","getHolidayConditionExcell.json", sucessFncExcel,"");
+        var startParam = {workingYear : workingYear}
+        navigate(startParam,"getMyHoliday.json", sucessFncMyHoliday,"" );
     });
 
-    <!-- 휴가현황조회 ajax통신 성공 -->
+    /**
+    * 내용 : 전체 사원의 휴가현황 리스트 출력
+    * param result : 휴가현황내역 정보
+    **/
     function sucessFncMyHoliday(result) {
-        console.log (JSON.stringify(result));
         resultSum += JSON.stringify(result);
-        var ajaxResult=result
+
+        var ajaxResult=result;
         for(var i=0; i<ajaxResult.length; i++) {
             var holidayListview = document.getElementById('holidayListview');
 
             var holidayCnt = 15;                                //  기본휴가일수
-            var wd_80 = 292;                                    //  입사 후 1년 80% 근무일수
             var join_year = ajaxResult[i].join_year;            //  근무년수
             var join_mon = ajaxResult[i].join_mon;              //  근무월수
             var join_day = ajaxResult[i].join_day;              //  근무일수
             var usingHolilday = ajaxResult[i].use_holiday_cnt   //  사용휴가일수
-            var workingYear = join_year+1                       //  근무연차
+            var workingYear = join_year+1                       //  근무년차
 
             if(workingYear == 3) {
                 holidayCnt = holidayCnt + 1;
@@ -54,21 +62,51 @@
 
             var holidayResult = holidayCnt - usingHolilday;
             $("#holidayListview").append("<li class='ui-corner-all'>"
-                                    +"<a onclick='getHolidayDetail(this);'  class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
-                                    +"<input class='detailID' name='detailID' type='hidden' value='" + ajaxResult[i].id + "'> "
-                                    +"<div class='holiyday user-name'> 이름 : " + ajaxResult[i].name + "</div>"
-                                    +"<div class='holiyday user-grade'> 직급 : " + ajaxResult[i].grade + "</div>"
-                                    +"<div class='holiyday user-joinymd'> 입사일 : " + ajaxResult[i].join_ymd + "</div>"
-                                    +"<div class='holiyday holiday-date'> 연차 발생기간 : " + ajaxResult[i].hs_ymd +" ~ " + ajaxResult[i].he_ymd  + "</div>"
-                                    +"<div class='holiyday holiday-cnt'> 연차 발생 일수 : " + holidayCnt +" 일 </div>"
-                                    +"<div class='holiyday holiday-useCnt'> 연차 사용 일수 : " + usingHolilday +" 일 </div>"
-                                    +"<div class='holiyday holiday-leftCnt'> 남은 연차일수 : " + holidayResult + " 일</div>"
-                                    + "</a>"
-                                + "<li>");
+                                            +"<a onclick='getHolidayDetail(this);'  class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
+                                            +"<input class='detailID' name='detailID' type='hidden' value='" + ajaxResult[i].id + "'> "
+                                            +"<div class='holiyday user-name'> 이름 : " + ajaxResult[i].name + "</div>"
+                                            +"<div class='holiyday user-grade'> 직급 : " + ajaxResult[i].grade + "</div>"
+                                            +"<div class='holiyday user-joinymd'> 입사일 : " + ajaxResult[i].join_ymd + "</div>"
+                                            +"<div class='holiyday holiday-date'> 연차 발생기간 : " + ajaxResult[i].hs_ymd +" ~ " + ajaxResult[i].he_ymd  + "</div>"
+                                            +"<div class='holiyday holiday-cnt'> 연차 발생 일수 : " + holidayCnt +" 일 </div>"
+                                            +"<div class='holiyday holiday-useCnt'> 연차 사용 일수 : " + usingHolilday +" 일 </div>"
+                                            +"<div class='holiyday holiday-leftCnt'> 남은 연차일수 : "+  minusCheck(holidayResult) + " 일</div>"
+                                            + "</a>"
+                                            + "<li>");
         }
-    } // --- End of sucessFncMyHoliday
+    };
 
-    <!-- 휴가현황상세 페이지 이동 -->
+    /**
+    * 내용 : 값이 음수일 경우 텍스트 색상 변경
+    * param data : 체크할 숫자
+    * return : 값이 음수일경우 텍스트 색상 빨간색, 아닐경우 data 그대로 리턴
+    **/
+    function minusCheck(data){
+        var minus = "";
+       if(data < 0){
+            minus = "<span style='color:red'> "+ data +" </span>"
+            return minus;
+       } else {
+            return data;
+       }
+    }
+
+    /**
+    * 내용 : 근속년수 80% 계산시 올해가 윤년인지 평년인지 계산
+    * param year : 올해년도
+    **/
+    function leapYear(year) {
+        if(year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
+            wd_80 =  366 * 0.8;
+        }else {
+            wd_80 =  365 * 0.8;
+        }
+    }
+
+    /**
+    * 내용 : 선택한 사원의 휴가현황상세 페이지로 이동
+    * param obj : 선택한 사원 리스트 오브젝트
+    **/
     function getHolidayDetail(obj){
         var selectId = $(obj).children('.detailID').val();
         var workingYear = 0;
@@ -81,17 +119,23 @@
     function detailSuccess(result){
         movePage('holidayConditionDetail.html',result);
     }
-    var newResult = "";
-    <!-- 엑셀 ajax통신 성공 -->
+
+    /**
+    * 내용 : 엑셀버튼 클릭이벤트
+    **/
+    function getExcel(){
+        navigate("","getHolidayConditionExcel.json", sucessFncExcel,"");
+    };
+
+    /**
+    * 내용 : 엑셀에 필요한 데이터 생성, 엑셀 생성 및공유 호출
+    * param result : 연차사용내역 데이터
+    **/
     function sucessFncExcel(result) {
         resultSum += "@" + JSON.stringify(result);
-        newResult = JSON.stringify(result);
-    } // --- End of sucessFncExcel
+        window.android.saveExcel(resultSum);
+    };
 
-    function getExcel(){
-        console.log(newResult);
-        window.android.saveExcel(newResult);
-    }
     </script>
 </head>
 <body>
@@ -127,10 +171,14 @@
 
     <!-- content -->
     <div data-role="content" class="main-warp">
-        <button type="button" id="btExcell"  onclick="javascript:getExcel(); return false;">엑셀</button>
+
         <div class="gird-pt holiday-list">
-            <h2>휴가현황</h2>
+            <div>
+                <div class="page-title"><h2>휴가현황</h2></div>
+                <div class="excel-btn"><button type="button" id="btExcel"  onclick="javascript:getExcel(); return false;">Excel</button></div>
+            </div>
             <ul id="holidayListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a">
+
             </ul>
         </div>
     </div>
