@@ -39,6 +39,7 @@
                             alert("세션이 만료되었습니다.");
                             movePage("login.html");
                         }else{
+                            alert("통신 중 문제가 발생하였습니다.");
                             if(errorFunc != "" || errorFunc != null) {
                                 errorFunc.call(this, "에러Func 호출임");
                             }else{
