@@ -584,7 +584,7 @@ public class MainActivity extends AppCompatActivity {
 
         //로그인 통신
         @JavascriptInterface
-        public String callLogout(final String sndUrl) throws Exception {
+        public String callLogout(final String sndUrl, final String id) throws Exception {
             userData ="";
             Thread t2 = new Thread(new Runnable() {
                 @Override
@@ -610,7 +610,10 @@ public class MainActivity extends AppCompatActivity {
                         SessionManager sm = new SessionManager();
                         sm.setCookieHeader(myApp, conn);
 
+                        String param = "id=" + id;
+
                         wr = new DataOutputStream(conn.getOutputStream());
+                        wr.writeBytes(param);
                         wr.flush();
                         wr.close();
 
@@ -808,11 +811,6 @@ public class MainActivity extends AppCompatActivity {
             getNativePushToken();
         }
 
-        @JavascriptInterface
-        public void toastLong(String message) {
-            Toast.makeText(myApp, message, Toast.LENGTH_LONG).show();
-        }
-
         /* PUSH 토큰 보내기 */
         public void getNativePushToken() {
             Log.d("GWNAM", "Native영역 Token 정보 가져오기");
@@ -854,7 +852,7 @@ public class MainActivity extends AppCompatActivity {
     private String[] permissions = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE};//권한 설정 변수
-    private static final int MULTIPLE_PERMISSIONS = 101;//권한 동의 여부 문의 후 callback함수에 쓰일 변수
+    private static final int MULTIPLE_PERMISSIONS = 101;//권한 동의 여부 문의 후 callbackback함수에 쓰일 변수
 
 
     //사용권한 묻는 함수
@@ -1096,7 +1094,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         WebBackForwardList list = web.copyBackForwardList(); // 누적된 history 를 저장할 변수
-        Log.d("CurrentIndex1","currentIndex1: "+ list.getCurrentIndex());
         if (list.getCurrentIndex() <= 0 && !web.canGoBack() || web.getUrl().equals(urlPath + "login.html")
                 || web.getUrl().equals(urlPath + "index.html")) { // 처음 들어온 페이지이거나, history 가 없는 경우, 로그인/index 페이지
             new AlertDialog.Builder(this)
@@ -1113,8 +1110,9 @@ public class MainActivity extends AppCompatActivity {
                     .setNegativeButton("No", null)
                     .show();
             // history 가 있는 경우
-        } else if(web.getUrl().equals(urlPath + "projectList.html")|| web.getUrl().equals(urlPath + "employeeInfo.html")) {
-            Log.d("CurrentIndex2","currentIndex2: "+ list.getCurrentIndex());
+        } else if(web.getUrl().equals(urlPath + "projectList.html")|| web.getUrl().equals(urlPath + "employeeInfo.html")
+                || web.getUrl().equals(urlPath + "planList.html")|| web.getUrl().equals(urlPath + "qnaDetail.html")
+                || web.getUrl().equals(urlPath + "holidayList.html")) {
                 web.goBackOrForward(-(list.getCurrentIndex()) + 1);
             }else {
                 web.goBack();

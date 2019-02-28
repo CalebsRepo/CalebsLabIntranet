@@ -1,3 +1,9 @@
+<!--************************************************************************
+*  화면명: 로그인
+*  작성일지: 1) 김기훈 (20190213) 최초작성
+*  업무구분: 로그인
+*  내용: 아이디 / 비밀번호 입력을 통한 로그인 화면
+**************************************************************************-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,9 +19,10 @@
        var newToken = "";
 
         $(document).ready(function(){
-
+            //아이디저장 여부 가져오기
             var chkSaveId = localStorage.getItem("chkSave");
 
+            //아이디저장 여부가 Y이면 저장된 아이디를 설정
             if(chkSaveId == "Y"){
 
                 $("input:checkbox[id='saveIdIpt']").prop("checked", true);
@@ -48,13 +55,12 @@
                 return false;
             }
 
-            var param = {"id" : id, "pwd" : pwd};
-            //아이디 저장 체크 여부
-            var saveChk = $("input:checkbox[id='saveIdIpt']").is(':checked');
-            var result = callLogin(id,pwd);
+            var param = {"id" : id, "pwd" : pwd}; // was에 전달할 로그인 데이터
+            var saveChk = $("input:checkbox[id='saveIdIpt']").is(':checked'); //아이디 저장 체크 여부
+            var result = callLogin(id,pwd); //로그인 성공시 유저 데이터 리턴
 
             if(result != ""){
-
+                //아이디저장 체크 여부에 따른 localStorage에 값 저장
                 if(saveChk == true){
                     localStorage.setItem("chkSave","Y");
                     localStorage.setItem("savedId",id);
@@ -62,7 +68,7 @@
                     localStorage.setItem("chkSave","N");
                     localStorage.removeItem("savedId");
                 }
-
+               //리턴받은 로그인 유저 데이터 sessionStorage에 저장
                sessionStorage.setItem("userData",result);
 
                /* push 토큰 비교 및 업데이트 */
@@ -98,17 +104,19 @@
         }
 
     </script>
-
     <style>
-        #loginDiv {background-color:white; padding:0 10% 0 10%; height: 100%;}
-        #logoImg {max-width:100%; max-height:100%; margin:auto; display:block;}
-        #loginBtn {margin-top : 20px;}
-        #saveIdIpt {left:0em; position:relative; margin-top:0px; top:5px}
+        /*로그인*/
+        #loginDiv    {background-color:white; padding:0 10% 0 10%; height: 100%;}
+        #logoImg     {max-width:100%; max-height:100%; margin:auto; display:block;}
+        #loginBtn    {margin-top : 20px;}
+        #saveIdIpt   {left:0em; position:relative; margin-top:0px; top:5px}
         .ui-checkbox {display:inline}
+        .saveDiv     {display:inline-block; width:49%}
+        .findDiv     {display:inline-block; text-align:right;width:49%}
     </style>
 </head>
 
-<body bgcolor="#E6E6FA">
+<body>
 <header data-role="header">
     <h1>로그인</h1>
 </header>
@@ -123,11 +131,11 @@
     <div id="loginBtn" onclick="event.cancelBubble = true;">
         <button class="ui-btn ui-corner-all" onclick="login();">확인</button>
     </div>
-    <div style="display:inline-block; width:49%">
+    <div class="saveDiv">
         <input type="checkbox" id="saveIdIpt">
         <a id="saveId">ID 저장</a>
     </div>
-    <div style="display:inline-block; text-align:right;width:49%">
+    <div class="findDiv">
         <a id="findId" onclick="movePage('findId.html')">ID</a> /
         <a id="findPw" onclick="movePage('findPw.html')">PW</a> 찾기
     </div>

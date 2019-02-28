@@ -1,3 +1,9 @@
+<!--************************************************************************
+*  화면명: 아이디 찾기
+*  작성일지: 1) 김기훈 (20190215) 최초작성
+*  업무구분: 로그인 > 아이디 찾기
+*  내용: 이메일 / 생년월일 입력을 통한 아이디 찾기 화면
+**************************************************************************-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,11 +16,15 @@
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script language="JavaScript">
 
+        /**
+        * 내용 : 아이디 찾기
+        **/
         function findId(){
 
             var email = $('#email').val();
             var birth = $('#birth').val();
 
+            //이메일 체크 정규식
             var regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
 
             if(email.match(regExp) == null){
@@ -29,18 +39,29 @@
 
             var param = {"email" : email, "birth" : birth};
 
-            navigate(param,"findId.json",successFindId);
+            navigate(param,"findId.json",successFindId, errorFindId);
 
         }
 
+        /**
+        * 내용 : findId(아이디찾기) 함수의 navigate success 시 호출될 함수
+        **/
         function successFindId(result){
             movePage("resultId.html",result.result);
+        }
+
+        /**
+        * 내용 : findId(아이디찾기) 함수의 navigate error 시 호출될 함수
+        **/
+        function errorFindId(result){
+            alert("해당하는 정보의 계정이 존재하지 않습니다");
         }
 
     </script>
 
     <style>
         #findIdDiv {background-color:white; padding:10% 10% 0 10%; height: 100%;}
+        button.ui-btn {width: 49%; display: inline; !important}
     </style>
 </head>
 
@@ -53,14 +74,14 @@
     <div>
         <p>아이디 조회를 위해 생년월일과 가입시 등록한 이메일주소를 정확히 입력하여주시기 바랍니다.</p>
         <label for="email">이메일</label>
-        <input type="text" name="email" id="email" value="">
+        <input type="text" name="email" id="email" value="" placeholder="이메일을 입력해주세요">
         <label for="birth">생년월일</label>
         <input type="text" name="birth" id="birth" value="" placeholder="ex)19920807">
 
     </div>
     <div id="loginBtn" onclick="event.cancelBubble = true;">
-        <button class="ui-btn ui-corner-all" onclick="movePage('login.html')"; style="width: 49%; display: inline;">취소</button>
-        <button class="ui-btn ui-corner-all" onclick="findId();" style="width: 49%; display: inline;">확인</button>
+        <button class="ui-btn ui-corner-all" onclick="movePage('login.html')";>취소</button>
+        <button class="ui-btn ui-corner-all" onclick="findId();">확인</button>
     </div>
 
 </div>

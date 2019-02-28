@@ -1,3 +1,9 @@
+<!--************************************************************************
+*  화면명: 비밀번호 찾기
+*  작성일지: 1) 김기훈 (20190219) 최초작성
+*  업무구분: 로그인 > 비밀번호 찾기
+*  내용: 이메일, 아이디, 생년월일 입력을 통한 비밀번호 찾기
+**************************************************************************-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,14 +17,18 @@
     <script src="https://smtpjs.com/v3/smtp.js"></script>
     <script language="JavaScript">
 
-        function findId(){
+
+        /**
+        * 내용 : 비밀번호 찾기
+        **/
+        function findPw(){
 
             var email = $('#email').val();
             var birth = $('#birth').val();
             var id = $('#id').val();
 
             if(email == null || email ==''){
-                alert("이메일 입력해주세요");
+                alert("이메일을 입력해주세요");
                 return false;
             }
 
@@ -38,46 +48,26 @@
 
         }
 
+        /**
+        * 내용 : findPw(비밀번호찾기) 함수의 navigate success 시 호출될 함수
+        **/
         function successFindId(result){
 
             if(result.pwd != null){
 
-               toastLong("메일 전송중");
-
-               Email.send({
-                SecureToken : "1fcf4579-8e46-4fcd-a95c-94ec7fa5cae7",
-                To : result.email,
-                From : "contact@calebslab.com",
-                Subject : "[갈렙스랩 비밀번호 찾기 결과.]",
-                Body : "귀하의 비밀번호는 ["+result.pwd+"] 입니다"
-            }).then(
-                function (message) {
-                    if(message == "OK"){
-                        movePage("resultPw.html",result.pwd);
-                    }else{
-                        alert("메일전송 실패");
-                    }
-              }
-            );
-
+               movePage("resultPw.html",result.pwd);
 
             }else{
                 alert("입력된 정보가 일치하지 않습니다");
             }
 
-            /*
-                Host : "smtp.gmail.com",
-                Username : "rlxod1234@gmail.com",
-                Password : "sig9538*",
-            */
 
-
-            //movePage("resultPw.html",result.result);
         }
     </script>
 
     <style>
         #findIdDiv {background-color:white; padding:10% 10% 0 10%; height: 100%;}
+        button.ui-btn {width: 49%; display: inline; !important}
     </style>
 </head>
 
@@ -90,16 +80,16 @@
     <div>
         <p>비밀번호 찾기를 위해 생년월일, 아이디, 가입시 등록한 이메일주소를 정확히 입력하여주시기 바랍니다.</p>
         <label for="email">이메일</label>
-        <input type="text" name="email" id="email" value="">
+        <input type="text" name="email" id="email" value="" placeholder="이메일을 입력해주세요">
         <label for="id">아이디</label>
-        <input type="text" name="id" id="id" value="">
+        <input type="text" name="id" id="id" value="" placeholder="아이디를 입력해주세요">
         <label for="birth">생년월일</label>
-        <input type="text" name="birth" id="birth" value="">
+        <input type="text" name="birth" id="birth" value="" placeholder="ex)19920807">
 
     </div>
     <div id="loginBtn" onclick="event.cancelBubble = true;">
-        <button class="ui-btn ui-corner-all" onclick="movePage('login.html')"; style="width: 49%; display: inline;">취소</button>
-        <button class="ui-btn ui-corner-all" onclick="findId();" style="width: 49%; display: inline;">확인</button>
+        <button class="ui-btn ui-corner-all" onclick="movePage('login.html')";>취소</button>
+        <button class="ui-btn ui-corner-all" onclick="findPw();">확인</button>
     </div>
 
 </div>

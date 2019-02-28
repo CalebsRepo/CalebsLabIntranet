@@ -5,6 +5,7 @@
 
     /**
      * 페이지 이동
+     * param url : 이동할 주소, param : 이동 시 전달할 데이터
      */
     function movePage(url, param) {
 		console.log("movePage: "+url);
@@ -38,9 +39,10 @@
                             alert("세션이 만료되었습니다.");
                             movePage("login.html");
                         }else{
-                            alert("통신 중 문제가 발생하였습니다.");
                             if(errorFunc != "" || errorFunc != null) {
                                 errorFunc.call(this, "에러Func 호출임");
+                            }else{
+                                alert("통신 중 문제가 발생하였습니다.");
                             }
                         }
                     }
@@ -63,9 +65,10 @@
                         movePage("login.html");
 
                     }else{
-                        alert("통신 중 문제가 발생하였습니다.");
                         if(errorFunc != "" || errorFunc != null) {
                             errorFunc.call(this, "에러Func 호출임");
+                        }else{
+                            alert("통신 중 문제가 발생하였습니다.");
                         }
                     }
 
@@ -174,8 +177,3 @@
         });
     }
 
-    function toastLong(String){
-
-        window.android.toastLong(String);
-
-    }
