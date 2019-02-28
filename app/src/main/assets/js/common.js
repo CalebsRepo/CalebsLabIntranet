@@ -173,3 +173,19 @@
              }
         });
     }
+
+    /* 서버에서 push 전송 시 */
+    function pushNavigate(param, urlAddress) {
+        sessionId = window.android.returnSessionId();
+
+        $.ajax({
+            url : sndUrl + urlAddress,
+            type : "post", dataType: "json",
+            data : param,
+            beforeSend : function(xmlHttpRequest){
+                xmlHttpRequest.setRequestHeader("AJAX", "true");
+                xmlHttpRequest.setRequestHeader("sessionId", sessionId);
+            }
+
+        });
+    }

@@ -49,13 +49,14 @@
                 var titleVal = data[i].name ;
                 var descriptionVal = data[i].h_flag + " " + data[i].apply_count + "일";
 
-                var startday = data[i].start_ymd;
-                startday = startday.substring(0,4) + "-" + startday.substring(4,6) + "-" + startday.substring(6,8);
+                var startDay = data[i].start_ymd;
+                startDay = startDay.substring(0,4) + "-" + startDay.substring(4,6) + "-" + startDay.substring(6,8);
 
-                var endday = data[i].end_ymd;
-                endday = endday.substring(0,4) + "-" + endday.substring(4,6) + "-" + endday.substring(6,8);
+                var endDay = data[i].end_ymd;
+                endDay = endDay.substring(0,4) + "-" + endDay.substring(4,6) + "-" + endDay.substring(6,8);
+
                 // 날짜 하루 더해주기
-                var addEndday = dayAdd(endday);
+                var addEndDay = dayAdd(endDay);
                 var colorVal = "#"+colorArr[cnt ++];
 
                 if(cnt > 9) {
@@ -63,11 +64,11 @@
                 }
 
                 var str  = 	{
-                             title       : titleVal,
-                             description : descriptionVal,
-                             start       : startday,
-                             end         : addEndday,
-                             color       : colorVal
+                             title       : titleVal,        // 타이틀 내용
+                             description : descriptionVal,  // 클릭시 보여줄 내용
+                             start       : startDay,        // 시작일
+                             end         : addEndDay,       // 종료일(종료일 - 1만큼 그려짐)
+                             color       : colorVal         // 색상
                             };
                 eventsArr.push(str);
 
