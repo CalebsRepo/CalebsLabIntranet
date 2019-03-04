@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        web.setWebViewClient(new android.webkit.WebViewClient() {
+        web.setWebViewClient(new WebViewClient() {
 
             //************************************************************************
             //  날짜: 20190304
@@ -263,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
             //        그 이전 버전 확인은 http://acorn-world.tistory.com/62에서 확인가능하다
             //************************************************************************
             public  boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback,
-                                              WebChromeClient.FileChooserParams fileChooserParams){
+                                              FileChooserParams fileChooserParams){
                 Log.d("MainActivity","HYJ:갤러리열기");
                 // Callback 초기화 (중요!)
                 if(filePathCallbackLollipop !=null){
@@ -837,14 +837,22 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        /* getNativePushToken() 호출 */
+        //************************************************************************
+        //  날짜: 20190213
+        //  만든이: 남기완
+        //  내용: login.html에서 pushToken() 호출하여 getNativePushToken()을 호출한다.
+        //************************************************************************
         @JavascriptInterface
         public void pushToken() {
             Log.d("GWNAM", "Web JS에서 MainActivity쪽 function 호출");
             getNativePushToken();
         }
 
-        /* PUSH 토큰 보내기 */
+        //************************************************************************
+        //  날짜: 20190213
+        //  만든이: 남기완
+        //  내용: login.html로 생성된 push토큰을 전송한다.
+        //************************************************************************
         public void getNativePushToken() {
             Log.d("GWNAM", "Native영역 Token 정보 가져오기");
             JsonToken = FirebaseInstanceId.getInstance().getToken();
