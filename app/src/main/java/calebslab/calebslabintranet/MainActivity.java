@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
     final Context myApp = this;
     WebView web; // 웹뷰 선언
+    WebViewInterface webViewInterface;  //웹뷰 javascript interface 선언
     JSONObject jsonData; // 자바스크립트에서 값을 받을 json 변수 선언
     JSONArray jsonContacts; // 전화번호부에서 이름, 전화번호를 받아와 jsonarray형태로 변환 후 web단으로 넘기기 위한 변수
 
@@ -124,9 +125,11 @@ public class MainActivity extends AppCompatActivity {
         context = this.getBaseContext();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);  //세로모드 고정
         web = (WebView) findViewById(R.id.webview); //웹뷰 선언
+        webViewInterface = new WebViewInterface(MainActivity.this, web);//임시
         web.setWebViewClient(new WebViewClient());
 
         // 웹뷰 세팅
+        web.addJavascriptInterface(webViewInterface, "temp"); //임시
         WebSettings webSet = web.getSettings();                   // 웹뷰 설정
         webSet.setJavaScriptEnabled                     (true) ; // 자바스크립트 허용
         webSet.setLoadWithOverviewMode(true);
@@ -647,79 +650,6 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(Intent.EXTRA_STREAM,uri);
                 startActivity(Intent.createChooser(intent,"엑셀 내보내기"));
             }
-        }
-
-        /**
-         * 내용 : 로그인
-         * param id : 로그인 아이디, pwd : 로그인 패스워드, sndUrl : 대상 서버 URL
-         * return : 로그인 성공 시 userData String , 실패시 null 반환
-         **/
-        @JavascriptInterface
-        public String callLogin(final String id, final String pwd, final String sndUrl) throws Exception {
-
-            userData ="";
-
-            Thread t1 = new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                    try{
-                        URL url;
-                        HttpURLConnection conn;
-                        DataOutputStream wr;
-                        String callUrl = sndUrl +"login.json";
-
-                        url = new URL(callUrl);
-                        conn = (HttpURLConnection) url.openConnection();
-                        conn.setDoOutput(true);
-                        conn.setConnectTimeout(15000);
-                        conn.setReadTimeout(10000);
-                        conn.setRequestMethod("POST");
-                        conn.connect();
-                        SessionManager sm = new SessionManager();
-
-                        String param = "id=" + id + "&pwd=" + pwd;
-
-                        wr = new DataOutputStream(conn.getOutputStream());
-                        wr.writeBytes(param);
-                        wr.flush();
-                        wr.close();
-
-                        Log.d("LOG", url + "로 HTTP 요청 전송");
-
-                        if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) { //이때 요청이 보내짐.
-
-                            Log.d("LOG", "HTTP_OK를 받지 못했습니다.");
-
-                        } else {
-
-                            InputStream in = new BufferedInputStream(conn.getInputStream());
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                            String output = "";
-                            String line;
-                            while ((line = reader.readLine()) != null) {
-                                output += line;
-                            }
-                            //전달받은 세션 아이디 android preference에 저장
-                            sm.getCookieHeader(conn, myApp);
-
-                            userData = output;
-
-                        }
-                        conn.disconnect();
-                    } catch(MalformedURLException e){
-                        e.printStackTrace();
-                    } catch (IOException e){
-                        e.printStackTrace();
-                    }
-
-                }
-            });
-
-            t1.start();
-            t1.join();
-
-            return userData;
         }
 
         /**

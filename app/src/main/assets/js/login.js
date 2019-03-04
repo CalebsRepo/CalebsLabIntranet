@@ -5,7 +5,7 @@
     **/
     function callLogin(id, pwd) {
 
-       login_result = window.android.callLogin(id, pwd, sndUrl);
+       login_result = window.temp.callLogin(id, pwd, sndUrl);
 
        return login_result;
     }
@@ -39,7 +39,7 @@
     **/
     function returnSessionId(){
 
-        sessionId = window.android.returnSessionId();
+        sessionId = window.temp.returnSessionId();
 
         return sessionId;
     }
