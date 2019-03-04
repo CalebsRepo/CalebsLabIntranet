@@ -43,7 +43,7 @@
     <!--이름으로 검색-->
     function nameSearch(){
         var employeeName= document.getElementById('nameWrite').value;
-        if(chkName(employeeName)==true){
+        if(chkName(employeeName)==true || employeeName==""){
             rowNum=0;
             ajaxCount=0;
             $("#my-tbody").children().remove();
