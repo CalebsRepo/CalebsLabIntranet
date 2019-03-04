@@ -50,7 +50,7 @@
         **/
 		function showQnaList(num){
 
-			var form_data = {  pageNum : $("#pageNum").val() };
+			var form_data = {  pageNum : $("#pageNum").val() };     // 페이징 번호
 
             if(num == 1){
                 navigate(form_data, "qnaList.json", successQnaList);
