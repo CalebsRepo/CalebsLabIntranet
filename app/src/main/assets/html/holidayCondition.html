@@ -26,6 +26,11 @@
     var resultSum = "";                         // 엑셀생성시 넘겨줄 값들을 담아둘 변수
 
     $(document).ready(function(){
+        // 로그인 유저 권한 체크
+        if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
+            $(".admMenu").show();
+        }
+
         var workingYear = "0";
         var startParam = { workingYear : workingYear }
         navigate(startParam,"getMyHoliday.json", sucessFncMyHoliday,"" );
