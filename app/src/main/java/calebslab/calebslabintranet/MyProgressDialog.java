@@ -1,3 +1,8 @@
+//************************************************************************
+//  날짜: 20190304
+//  만든이: 이승환
+//  내용: 페이지 이동시 보여줄 다이얼로그 설정
+//************************************************************************
 package calebslab.calebslabintranet;
 
 import android.app.Dialog;
@@ -30,8 +35,6 @@ public class MyProgressDialog extends Dialog {
         dialog.setTitle(title);
         dialog.setCancelable(cancelable);
         dialog.setOnCancelListener(cancelListener);
-
-        /* The next line will add the ProgressBar to the dialog. */
 
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);

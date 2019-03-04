@@ -114,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
     private Object JsonToken;
     OnSwipeTouchListener onSwipeTouchListener;
     private String urlPath = "file:///android_asset/html/";
-
     public MyProgressDialog progressDialog;
 
     @SuppressLint({"JavascriptInterface", "ClickableViewAccessibility"})
@@ -159,7 +158,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         web.setWebViewClient(new android.webkit.WebViewClient() {
-            // 페이지 시작시 (로딩다이얼로그)
+
+            //************************************************************************
+            //  날짜: 20190304
+            //  만든이: 이승환
+            //  내용: 웹뷰 페이지 이동시 로딩아이콘 설정
+            //        로그인화면으로 이동시에는 제외
+            //        로딩아이콘 노출시간은 0.6초
+            //************************************************************************
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 if (!web.getUrl().equals("file:///android_asset/html/login.html")) {
                     runOnUiThread(new Runnable() {
@@ -185,11 +191,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            /**
-             * 내용 : 웹뷰 내 링크 터치 시 새로운 창이 뜨지 않고 해당 웹뷰 안에서 새로운 페이지가 로딩되도록 함
-             * param view : 대상 WebView 객체 , url : 이동 대상 url
-             * return : boolean true
-             **/
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 //************************************************************************
@@ -644,11 +645,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        /**
-         * 내용 : 로그인
-         * param id : 로그인 아이디, pwd : 로그인 패스워드, sndUrl : 대상 서버 URL
-         * return : 로그인 성공 시 userData String , 실패시 null 반환
-         **/
+        //로그인 통신
         @JavascriptInterface
         public String callLogin(final String id, final String pwd, final String sndUrl) throws Exception {
 
@@ -692,10 +689,12 @@ public class MainActivity extends AppCompatActivity {
                             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                             String output = "";
                             String line;
+                            System.out.println("reader 전");
                             while ((line = reader.readLine()) != null) {
                                 output += line;
                             }
-                            //전달받은 세션 아이디 android preference에 저장
+
+                            System.out.println(conn.getHeaderField("Set-Cookie"));
                             sm.getCookieHeader(conn, myApp);
 
                             userData = output;
@@ -717,11 +716,7 @@ public class MainActivity extends AppCompatActivity {
             return userData;
         }
 
-        /**
-         * 내용 : 로그아웃
-         * param sndUrl : 대상 서버 URL, id : 로그아웃 아이디
-         * return : 로그아웃 성공 시 "success" 실패 시 "fail" 반환
-         **/
+        //로그인 통신
         @JavascriptInterface
         public String callLogout(final String sndUrl, final String id) throws Exception {
             userData ="";
@@ -772,6 +767,7 @@ public class MainActivity extends AppCompatActivity {
                                 result += line;
                             }
                             userData = result;
+                            Log.d("logout result", userData);
                         }
                         conn.disconnect();
                     } catch(MalformedURLException e){
@@ -788,18 +784,15 @@ public class MainActivity extends AppCompatActivity {
             return userData;
         }
 
-        /**
-         * 내용 : android preference에 저장된 세션 아이디 반환
-         * return : 세션 아이디 반환
-         **/
+
         @JavascriptInterface
         public String returnSessionId() {
 
             SharedPreferences pref = myApp.getSharedPreferences("sessionCookie", Context.MODE_PRIVATE);
-            String sessionId = pref.getString("sessionid", null);
-            sessionId = sessionId.substring(11);
+            String sessionid = pref.getString("sessionid", null);
+            sessionid = sessionid.substring(11);
 
-            return sessionId;
+            return sessionid;
         }
 
         //************************************************************************
@@ -917,7 +910,7 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         WebBackForwardList list = web.copyBackForwardList(); // 누적된 history 를 저장할 변수
         if (list.getCurrentIndex() <= 0 && !web.canGoBack() || web.getUrl().equals(urlPath + "login.html")
-                || web.getUrl().equals(urlPath + "main.html")) { // 처음 들어온 페이지이거나, history 가 없는 경우, 로그인/index 페이지
+                || web.getUrl().equals(urlPath + "index.html")) { // 처음 들어온 페이지이거나, history 가 없는 경우, 로그인/index 페이지
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     //.setTitle("Exit!")

@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="../css/menu.css">
     <script src="../js/common.js"></script>
     <script src="../js/login.js"></script>
+    <script src="../js/holidayCondition.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <title>휴가현황</title>
     <script language = "javascript">
@@ -23,9 +24,6 @@
     var params = { sessionId : loginUserId };
 
     var resultSum = "";                         // 엑셀생성시 넘겨줄 값들을 담아둘 변수
-    var thisYear = new Date().getFullYear();    // 올해년도
-    var wd_80 = "";                             // 입사 후 1년 80% 근무일수
-    leapYear(thisYear);                         // 올해가 윤년인지 계산
 
     $(document).ready(function(){
         var workingYear = "0";
@@ -44,23 +42,15 @@
         for(var i=0; i<ajaxResult.length; i++) {
             var holidayListview = document.getElementById('holidayListview');
 
-            var holidayCnt = 15;                                //  기본휴가일수
             var join_year = ajaxResult[i].join_year;            //  근무년수
             var join_mon = ajaxResult[i].join_mon;              //  근무월수
             var join_day = ajaxResult[i].join_day;              //  근무일수
-            var usingHolilday = ajaxResult[i].use_holiday_cnt   //  사용휴가일수
+            var usingHolilday = ajaxResult[i].use_holiday_cnt   //  연차사용일수
             var workingYear = join_year+1                       //  근무년차
 
-            if(workingYear == 3) {
-                holidayCnt = holidayCnt + 1;
-            }else if(workingYear > 3) {
-                holidayCal = holidayCnt + 1 + Math.floor((workingYear - 3)/2);
-                holidayCnt = (holidayCal > 25) ? 25 : holidayCal;
-            }else if(join_day < wd_80) {
-                holidayCnt = join_mon * 1;
-            }
-
+            var holidayCnt = calculationHoliday(join_year,join_mon,join_day);
             var holidayResult = holidayCnt - usingHolilday;
+
             $("#holidayListview").append("<li class='ui-corner-all'>"
                                             +"<a onclick='getHolidayDetail(this);'  class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"
                                             +"<input class='detailID' name='detailID' type='hidden' value='" + ajaxResult[i].id + "'> "
@@ -75,33 +65,6 @@
                                             + "<li>");
         }
     };
-
-    /**
-    * 내용 : 값이 음수일 경우 텍스트 색상 변경
-    * param data : 체크할 숫자
-    * return : 값이 음수일경우 텍스트 색상 빨간색, 아닐경우 data 그대로 리턴
-    **/
-    function minusCheck(data){
-        var minus = "";
-       if(data < 0){
-            minus = "<span style='color:red'> "+ data +" </span>"
-            return minus;
-       } else {
-            return data;
-       }
-    }
-
-    /**
-    * 내용 : 근속년수 80% 계산시 올해가 윤년인지 평년인지 계산
-    * param year : 올해년도
-    **/
-    function leapYear(year) {
-        if(year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
-            wd_80 =  366 * 0.8;
-        }else {
-            wd_80 =  365 * 0.8;
-        }
-    }
 
     /**
     * 내용 : 선택한 사원의 휴가현황상세 페이지로 이동
@@ -157,15 +120,15 @@
             <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
             <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
             <p>휴가</p>
-            <li><a onclick= "movePage('employeeDetail.html')" >휴가신청</a></li>
+            <li><a onclick= "movePage('holidayDetail.html')" >휴가신청</a></li>
             <li><a onclick= "movePage('holidayList.html')" >휴가신청내역</a></li>
             <li><a onclick= "movePage('calendar.html')" >휴가캘린더</a></li>
             <p>게시판</p>
             <li><a onclick= "movePage('qnaList.html')" >FAQ</a></li>
-            <p>관리</p>
-            <li><a onclick= "movePage('employeeDetail.html')" >사원등록</a></li>
-            <li><a onclick= "movePage('employeeInfo.html')" >사원목록</a></li>
-            <li><a onclick= "movePage('holidayCondition.html')">휴가현황</a></li>
+            <p class="admMenu">관리</p>
+            <li class="admMenu"><a onclick= "movePage('employeeDetail.html')" >사원등록</a></li>
+            <li class="admMenu"><a onclick= "movePage('employeeInfo.html')" >사원목록</a></li>
+            <li class="admMenu"><a onclick= "movePage('holidayCondition.html')">휴가현황</a></li>
         </ul>
     </div>
 
@@ -177,9 +140,7 @@
                 <div class="page-title"><h2>휴가현황</h2></div>
                 <div class="excel-btn"><button type="button" id="btExcel"  onclick="javascript:getExcel(); return false;">Excel</button></div>
             </div>
-            <ul id="holidayListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a">
-
-            </ul>
+            <ul id="holidayListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a"></ul>
         </div>
     </div>
 
@@ -189,8 +150,8 @@
             <ul>
                 <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
                 <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
-                <li><a href="#" data-icon="calendar">휴가신청</a></li>
-                <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
+                <li><a onclick="movePage('holidayDetail.html')" data-icon="calendar">휴가신청</a></li>
+                <li><a onclick="javascript:callLogout()"; data-icon="power" >로그아웃</a></li>
             </ul>
         </div>
     </div>
