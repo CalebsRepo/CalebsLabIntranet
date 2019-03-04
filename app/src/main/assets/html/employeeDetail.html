@@ -13,13 +13,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
     <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
     <!--DatePicker--><link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="../css/project_plan.css">
-    <link rel="stylesheet" href="../css/menu.css">
-    <script src="../js/login.js"></script>
     <script src="../js/common.js"></script>
     <script src="../js/datepicker.js"></script>
-    <script src="../js/postCodeAPI.js"></script><!--다음 지도 api-->
-    <script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script> <!--다음 지도 api-->
     <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <!--DatePicker--><script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <!--DatePicker--><script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -28,13 +23,10 @@
     <title></title>
     <script type="text/javascript">
         var userInfo = JSON.parse(getUserData());
-        var tokenArray = new Array();               // 토큰 배열
         var selectId = sessionStorage.getItem('selectId');
         var reqParam = sessionStorage.getItem('reqParam');
 
-
-
-         <!--1. 상세페이지/ 마이페이지 / 사원등록 페이지 구분 START-->
+         <!--1. 상세페이지/ 마이페이지 / 사원등록 페이지 구분-->
         $(function(){
             <!--1_1) selectId 있는지 여부로 상세페이지, 마이페이지 구분/ else: 등록페이지-->
             if(getStorageItem('selectId')!= null) {
@@ -65,6 +57,7 @@
               }
             }
 
+            <!--2. daum우편번호 값 셋팅-->
             $("#jusoAPI").hide();
 
             window.addEventListener('message', function(e) {
@@ -82,8 +75,8 @@
             $("#jusoAPI").toggle();
        }
 
-      <!--2. 페이지에 데이터 셋팅 START-->
-        <!--2_1)상세페이지 또는 마이페이지에서 해당 id(상세에서는 선택한 id, 마이페이지에서는 세션에 담겨진 id값)으로 검색-->
+      <!--3. 페이지에 데이터 셋팅-->
+        <!--3_1)상세페이지 또는 마이페이지에서 해당 id(상세에서는 선택한 id, 마이페이지에서는 세션에 담겨진 id값)으로 검색-->
         function getEmployeePage(selectId){
                var params = {
                     "employeeId": selectId
@@ -91,9 +84,9 @@
                 navigate(params, "employeeDetail.json", detailSuccess);
                 <!--navigate(params,"employeeDetail.json", detailSuccess, detailError);-->
         }
-
+        <!--3_2)데이터 셋팅-->
         function detailSuccess(result){
-                var content=JSON.stringify(result); <!--리스트내용-->
+                var content=JSON.stringify(result);
                 var ajaxResult=JSON.parse(content);
 
                 $('#pic1').attr('src',"http://calebslab1.cdn3.cafe24.com/imployeeInfo/"+ajaxResult[0].id+".png"); <!--1.프로필사진-->
@@ -119,18 +112,15 @@
                 pwdDecrypt(ajaxResult[0].pwd);
         }
 
-        <!--END-->
-
-
-        <!--3. 복호화 START-->
-            <!--3_1) 복호화-->
+        <!--4. 비밀번호 복호화 -->
+            <!--4_1) 복호화-->
             function pwdDecrypt(pwd){
                 var params = {
                         pwd: pwd
                 };
                 navigate(params, "pwdDecrypt.json", pwdSuccess);
             }
-            <!--3_2) 비밀번호 셋팅-->
+            <!--4_2) 비밀번호 셋팅-->
             function pwdSuccess(result){
                 var data=JSON.parse(JSON.stringify(result));
                 $('#employeePwd').val(data.pwd);  <!--15.비밀번호-->
@@ -139,39 +129,25 @@
         <!--END-->
 
 
-        <!--4. 사진 첨부파일 미리보기, 사진실제경로 , 서버에 사진 전송 START-->
-       var imgPathArray="";
-       var newTr = ',';
-       var count = 1;
+        <!--5. change 이벤트시 사진 첨부파일 미리보기,아이디중복체크 -->
+        var imgBeing=false;
        $(function(){
             $('#photo_upload').change(function(e){
+                 imgBeing=true;
                  $('#pic1').attr('src', URL.createObjectURL(e.target.files[0]));
-
             });
             $('#sign_upload').change(function(e){
+                 imgBeing=true;
                  $('#pic2').attr('src', URL.createObjectURL(e.target.files[0]));
 
             });
-
             $('#employeeId').change(function(e){
-                 checkResult=false;
+                 checkResult=false; <!--아이디중복체크를 눌렀어도 다시 아이디를 바꾸면 false로 -->
             });
         })
-
-        function employeeUpdate(){
-            imgPathArray="";  <!--초기화-->
-            count=1;
-            window.android.imgFtpSend();
-        }
-        <!--END-->
-
-
-
-
-
-        <!--5. 수정 또는 등록 하기전 정규식, 이미지전송 -->
+=
+        <!--6. 수정 또는 등록 하기전 정규식, 이미지전송 -->
         function commitBefore(num){
-            files_send();
             var employeeId=$("#employeeId").val();              <!--1.아이디-->
             var pwd=$('#employeePwd').val();                    <!--2.비밀번호-->
             var pwd2=$('#employeePwd2').val();                  <!--3.비밀번호 확인-->
@@ -187,7 +163,6 @@
             var address2=$('#address2').val();                  <!--13.상세주소-->
             var adm_flag=$("#adm_flag option:selected").val();  <!--14.권한-->
 
-           <!--5_1) 정규식체크 -->
            var reg_name= /^[가-힣]{1,8}$/;                                                                    <!--이름: 8자리이름까지, 자음불가-->
            var reg_id=/^[a-z0-9_]{8,12}$/;                                                                    <!--아이디: 8~12자 영문소문자, 숫자, 언더라인(_) 사용가능-->
            var reg_pwd=/^([a-zA-Z])([^a-zA-Z0-9]|.*[0-9]).{4,12}$/;                                           <!--비밀번호: 4~12자 영문대소문자, 숫자 혼합 사용-->
@@ -196,48 +171,48 @@
 
            var reg_check=true;
 
-           <!--사원상세,사원등록의 경우 이름, 직급, 권한, 입사일자, 아이디, 비밀번호, 비밀번호 확인까지만 있으면 된다-->
-                <!--1) 이름: null 체크 8자리이름까지, 자음불가, 한글만 가능-->
+           <!--6_1)사원상세,사원등록의 경우 이름, 직급, 권한, 입사일자, 아이디, 비밀번호, 비밀번호 확인까지만 있으면 된다-->
+                <!--(1) 이름: null 체크 8자리이름까지, 자음불가, 한글만 가능-->
                 if(name == "" || !reg_name.test(name)) {
                     alert("이름을 확인해주세요");
                     reg_check=false;
                 }
-                <!--2) 직급, 권한은 default로 정해져 있으므로 pass-->
-                <!--3) 입사일자: null 체크-->
+                <!--(2) 직급, 권한은 default로 정해져 있으므로 pass-->
+                <!--(3) 입사일자: null 체크-->
                 if(join_ymd == ""){
                     alert("입사일자를 확인해주세요");
                     reg_check=false;
                 }
-                <!--4-1) 아이디: null 체크  8~12자 영문소문자, 숫자, 언더라인(_) 사용가능 -->
+                <!---(4) 아이디: null 체크  8~12자 영문소문자, 숫자, 언더라인(_) 사용가능 -->
                 if(employeeId == "") {
                     alert("아이디를 확인해주세요");
                     reg_check=false;
                 }
-                <!--4-2) 아이디 중복체크 -->
+                <!--(5) 아이디 중복체크 -->
                 if(checkResult==false){
                     alert("아이디 중복체크해주세요");
                     reg_check=false;
                 }
-                <!--5) 비밀번호: null 체크 8~12자 영문대소문자, 숫자, 특수문자 혼합 사용 -->
+                <!--(6) 비밀번호: null 체크 8~12자 영문대소문자, 숫자, 특수문자 혼합 사용 -->
                 if(pwd== "") {
                     alert("비밀번호를 확인해주세요");
                     reg_check=false;
                 }
 
-                <!--6) 비밀번호 확인: null 체크 비밀번호와 값 비교-->
+                <!--비밀번호 확인: null 체크 비밀번호와 값 비교-->
                 if(pwd2== "") {
                     alert("비밀번호를 확인해주세요");
                     reg_check=false;
                 }
 
-            <!--마이페이지의 경우 모든 내용이 포함되어있어야한다-->
+            <!--6_2) 마이페이지의 경우 모든 내용이 포함되어있어야한다-->
            if(reqParam=='myPage'){
-                <!--7) 이메일: null 체크 이메일형식 체크-->
+                <!--(7) 이메일: null 체크 이메일형식 체크-->
                 if(email == "" || !reg_email.test(email)) {
                     alert("이메일을 확인해주세요");
                     reg_check=false;
                 }
-                <!--8) 연락처, 비상연락처: null체크 핸드폰 형식 체크-->
+                <!--(8) 연락처, 비상연락처: null체크 핸드폰 형식 체크-->
                 if(hp_num == "" || !reg_phone.test(hp_num)) {
                     alert("비밀번호를 확인해주세요");
                     reg_check=false;
@@ -246,12 +221,12 @@
                     alert("비상연락처를 확인해주세요");
                     reg_check=false;
                 }
-                <!--9) 생년월일: null 체크-->
+                <!--(9) 생년월일: null 체크-->
                 if(birth_ymd == "") {
                     alert("생년월일을 확인해주세요");
                     reg_check=false;
                 }
-                <!--10) 우편번호, 주소, 상세주소: null 체크-->
+                <!--(10) 우편번호, 주소, 상세주소: null 체크-->
                 if(zip_code == "") {
                     alert("주소를 확인해주세요");
                     reg_check=false;
@@ -266,13 +241,12 @@
                 }
            }
 
+            <!--6_3) 정규식체크 모두 true면 -->
            if(reg_check==true){
-            <!--5_2) 정규식체크 모두 true면 -->
-               <!--5_3) employeeUpdate() 호출해서 이미지 서버 전송-->
-               <!--if(count!=1){employeeUpdate();}-->
+               <!--(1) files_send() 호출해서 이미지 서버 전송-->
+               <!--if(imgBeing==true){files_send();}-->
 
-               <!--5_4) 실제 등록하는 함수 호출 -->
-                  <!--실제 값 셋팅해서 DB 전송-->
+               <!--(2) 실제 값 셋팅해서 DB 전송-->
                 var form_data = {
                                     id : employeeId,             <!--1.아이디-->
                                     pwd: pwd,                    <!--2.비밀번호-->
@@ -297,9 +271,34 @@
                 case 2: // 수정
                     navigate(form_data, "employeeUpdate.json", successUpdate);
                    break;
-             }// end of switch(num)--------------------------
+             }
            }
         }
+
+        <!--6_4) 수정-->
+       function successUpdate(result){
+            var data=JSON.parse(JSON.stringify(result));
+            if(data=="0"){
+                alert("실패");
+            }else{
+                alert("정상적으로 수정되었습니다");
+                movePage('employeeInfo.html');
+            }
+       }
+        <!--6_5) 등록-->
+       function successInsert(result){
+            var data=JSON.parse(JSON.stringify(result));
+            if(data=="0"){
+                alert("실패");
+            }else{
+                alert("정상적으로 등록되었습니다");
+                movePage('employeeInfo.html');
+            }
+       }
+
+       <!--END-->
+
+        <!--7.비밀번호 , 비밀번호 확인-->
        function isSame(){
             var pw=document.getElementById('employeePwd').value;
             var confirmPW = document.getElementById('employeePwd2').value;
@@ -321,63 +320,7 @@
             }
         }
 
-       <!--END-->
-
-
-        <!--6. 실제로 수정, 등록하는 부분 START: 사원상세, 마이페이지: update, 사원등록 : insert-->
-       function commit(num) {
-            <!--실제 값 셋팅해서 DB 전송-->
-            var form_data = {
-                                id : id,                     <!--1.아이디-->
-                                pwd: pwd,                    <!--2.비밀번호-->
-                                name: name,                  <!--3.이름-->
-                                birth_ymd: birth_ymd,        <!--4.생년월일-->
-                                grade: grade,                <!--5.직급-->
-                                join_ymd:join_ymd,           <!--6.입사일자-->
-                                email: email,                <!--7.이메일-->
-                                hp_num: hp_num,              <!--8.연락처-->
-                                contact_num: contact_num,    <!--9.비상연락처-->
-                                zip_code: zip_code,          <!--10.우편번호-->
-                                address1: address1,          <!--11.주소-->
-                                address2: address2,          <!--12.상세주소-->
-                                adm_flag: adm_flag           <!--13.권한-->
-                             }
-
-          switch (num) {
-            case 1: // 등록
-                navigate(form_data, "employeeInsert.json", successInsert);
-               break;
-
-            case 2: // 수정
-                navigate(form_data, "employeeUpdate.json", successUpdate);
-               break;
-         }// end of switch(num)--------------------------
-
-       }// end of commit(num)-------------------------------------------
-
-
-       function successUpdate(result){
-            var data=JSON.parse(JSON.stringify(result));
-            if(data=="0"){
-                alert("실패");
-            }else{
-                alert("정상적으로 수정되었습니다");
-                movePage('employeeInfo.html');
-            }
-       }
-
-       function successInsert(result){
-            var data=JSON.parse(JSON.stringify(result));
-            if(data=="0"){
-                alert("실패");
-            }else{
-                alert("정상적으로 등록되었습니다");
-                movePage('employeeInfo.html');
-            }
-       }
-
-       <!--END-->
-
+        <!--8. 이미지파일 send-->
        function files_send() {
             var formData = new FormData();
             var employeeId=$("#employeeId").val();
@@ -401,6 +344,7 @@
             });
         }
 
+        <!--9. 아이디중복체크-->
         function idCheck(){
             var employeeId=$("#employeeId").val();
             if(employeeId=="" || employeeId==null ){
@@ -414,6 +358,7 @@
         }
 
         var checkResult=false;
+
         function successCheck(data){
             if(data.result==1){
                 alert("중복된 아이디입니다");
@@ -423,7 +368,6 @@
                 checkResult==true;
             }
         }
-
 
     </script>
 
