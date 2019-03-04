@@ -1,3 +1,11 @@
+<!--
+*********************************************
+*  화면명: 프로젝트 목록
+*  작성일지: 1) 김정진 (20190228) 최초작성
+*  업무구분: 메뉴바 > 프로젝트 일정
+*  내용: 진행중/전체 프로젝트 일정 목록 조회
+*********************************************
+-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,150 +20,167 @@
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <title></title>
-    <!--로그인 세션 공통-->
-    <script>
-    var loginUser = JSON.parse(getUserData());
-    var loginUserAdmFlag = loginUser.adm_flag;
-    $(document).ready(function(){
-         if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
-            $(".admMenu").show();
-        }
-    });
-    </script>
     <script type="text/javascript">
-        var trigger = "";
-        var start_num = 0;
-        var paramJSON = new Object();
-        var selProject;
-       // var today = todayFormat();
+        // 전역변수
+        var startNum = 0; // 페이징처리를 위한 변수
 
         $(document).ready(function(){
-            $("#plan-summary").empty();
-            getProject();
+            var loginUser = JSON.parse(getUserData()); //세션에서 로그인유저 정보를 가져옴
+            var loginUserAdmFlag = loginUser.adm_flag; // 유저 권한
+
+            if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){ // 관리자인 경우
+                $(".admMenu").show(); // 메뉴바에 관리자 메뉴 표시
+            }
+
+            $("#plan-summary").empty(); // 일정리스트영역 초기화
+            getProject(); // select box에 들어갈 프로젝트정보 조회
         });
 
-      function getProject() {
-            var flip = document.getElementById('flip');
-            if(flip.options[flip.selectedIndex].value == "on") {
+        /**
+        * 내용 : db에서 프로젝트 정보를 조회
+        **/
+        function getProject() {
+            var flip    = document.getElementById('flip'); // flip switch
+            var trigger = ""                             ; // db select시 해당 값으로 진행중/전체의 where조건값이 달라짐
+
+            if(flip.options[flip.selectedIndex].value == "on") { // 선택된 option값이 on(진행중)
                 trigger = "during";
             } else {
                 trigger = "end";
             }
-            paramJSON.trigger = trigger;
-            navigate(paramJSON, "getAllProjectList.json", projectSelectSuccess, "" );
-       }
 
-       function projectSelectSuccess(result) {
-            console.log("성공");
-            var projectSelectResult="";
-            var parseProjectResult="";
-            console.log("============================================");
+            var paramProjectJSON = {
+                trigger : trigger
+            }
+            navigate(paramProjectJSON, "getAllProjectList.json", projectSelectSuccess); // 프로젝트 조회(AJAX통신)
+        }
+
+        /**
+        * 내용 : AJAX 통신 성공시(프로젝트조회)
+        * param result : 통신결과값
+        **/
+        function projectSelectSuccess(result) {
+            var projectSelectResult = ""; // JSON데이터로 parse하기 위해 result값을 stringify
+            var parseProjectResult  = ""; // JSON parse 데이터
+
             projectSelectResult=JSON.stringify(result);
             parseProjectResult=JSON.parse(projectSelectResult);
+
+            console.log("============================================");
             console.log("projectSelectSuccess>>>>>" + projectSelectResult);
             console.log("============================================");
-            $("#select-choice-1").empty();
+            $("#projectSelect").empty();
 
+            var selBox = document.getElementById('projectSelect');
             if (parseProjectResult.length != 0) {
                 for(var i=0; i<parseProjectResult.length; i++) {
-                    $("#select-choice-1").append(
-                           "<option value='"+parseProjectResult[i].project_code + "'>" + parseProjectResult[i].project_name + "</option>"
-                      );
-                    $("#select-choice-1").selectmenu("refresh", true);
-                    }
-                } else {
-                $("#select-choice-1").append(
-                           "<option value=''>현재 진행중인 프로젝트가 없습니다.</option>"
-                   );
-            }
-            start_num = 0;
-            getPlanList();
-        }
-        function flipChange() {
-            $("#select-choice-1").empty();
-            //$("#plan-summary").empty();
-            getProject();
-        }
-        function getPlanList(){
-             var project_name = document.getElementById("select-choice-1");
-             var param =  project_name.options[project_name.selectedIndex].value;
+                    var op = new Option();
+                    // 프로젝트 코드와 이름을 가져와 option에 value, text와 Mapping
+                    op.value = parseProjectResult[i].project_code; // 프로젝트 코드
+                    op.text  = parseProjectResult[i].project_name; // 프로젝트명
 
-             console.log("넘길값이다아아아 >>>>>>>>>> "+ param)
-            if(start_num < 10){
-                 $("#plan-summary").empty();
+                    // option 추가
+                    selBox.options.add(op);
+                }
+            } else {
+                var op = new Option();
+                op.value = "";
+                op.text  = "현재 진행중인 프로젝트가 없습니다.";
+
+                selBox.options.add(op); // option 추가
             }
+            $("#projectSelect").selectmenu("refresh", true); // select box refresh
+            startNum = 0; // 시작번호 초기화
+            $("#plan-summary").empty(); // 일정 list부분 초기화
+            getPlanList(); // 해당프로젝트의 일정 조회
+        }
+
+        /**
+        * 내용 : flip switch 선택이벤트
+        **/
+        function flipChange() {
+            $("#projectSelect").empty(); // 프로젝트 선택 select Box 초기화
+            getProject(); // 프로젝트 조회
+        }
+
+        /**
+        * 내용 : 일정리스트 조회 함수
+        **/
+        function getPlanList(){
+             var projectName = document.getElementById("projectSelect");
+             var projectCode = projectName.options[projectName.selectedIndex].value;
 
             //선택한 프로젝트, 시작넘버 보내기
-            paramJSON.project_name = param;
-            paramJSON.start_num = start_num;
-            navigate(paramJSON, "getPlanList.json", planListSuccess, "" );
+            var paramPlanJSON = new Object();
+            paramPlanJSON.project_code = projectCode;
+            paramPlanJSON.start_num = startNum;
+            navigate(paramPlanJSON, "getPlanList.json", planListSuccess);
         }
 
+        /**
+        * 내용 : 일정조회 AJAX 통신 결과 성공일시
+        * param result : 통신결과값
+        **/
         function planListSuccess(result){
-
-            console.log("planListSuccess 실행")
-            var ajaxResult="";
-            var ajaxResult2="";
-
-            console.log("successFncMultiSndSample>>>>>" + JSON.stringify(result));
+            var planSelectResult = JSON.stringify(result);
+            var parseResult=JSON.parse(planSelectResult);
             console.log("============================================");
-            console.log("============================================");
-            ajaxResult=JSON.stringify(result);
-            ajaxResult2=JSON.parse(ajaxResult);
-            console.log("successFncMultiSndSample>>>>>" + ajaxResult);
-            console.log("successFncMultiSndSample>>>>>" + ajaxResult2);
+            console.log("successFncMultiSndSample>>>>>" + planSelectResult);
             console.log("============================================");
 
-            if (ajaxResult2.length != 0) {
-            for(var i=0; i<ajaxResult2.length; i++) {
-               $("#plan-summary").append(
-                    "<li class='ui-corner-all'>"
-                        +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r' onclick='movePage(\"planDetail.html\"," + ajaxResult2[i].schedule_seq + ")'>"
-                            +"<input type='hidden' name='scheduleSeq' id='scheduleSeq' val='" +ajaxResult2[i].schedule_seq + "'>"
-                            +"<div class='plan plan-name'>일정이름 : "+ ajaxResult2[i].schedule_name + "</div>"
-                            +"<div class='plan plan-date'>기간 : "+ YMDFormatter(ajaxResult2[i].start_dt) +" ~ "+  YMDFormatter(ajaxResult2[i].end_dt) +"</div>"
-                            +"<div class='plan plan-incharge'>담당자 : "+ ajaxResult2[i].name +"</div>"
-                        +"</a>"
-                    +"</li>"
-                 );
-               }
-            } else {
+            if (parseResult.length != 0) { // 조회결과가 있는경우
+                for(var i=0; i<parseResult.data.length; i++) {
+                   $("#plan-summary").append(
+                        "<li class='ui-corner-all'>"
+                            +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r' onclick='movePage(\"planDetail.html\"," + parseResult.data[i].schedule_seq + ")'>"
+                                +"<input type='hidden' name='scheduleSeq' id='scheduleSeq' val='" +parseResult.data[i].schedule_seq + "'>"
+                                +"<div class='plan plan-name'>일정이름 : "+ parseResult.data[i].schedule_name + "</div>"
+                                +"<div class='plan plan-date'>기간 : "+ YMDFormatter(parseResult.data[i].start_dt) +" ~ "+  YMDFormatter(parseResult.data[i].end_dt) +"</div>"
+                                +"<div class='plan plan-incharge'>담당자 : "+ parseResult.data[i].name +"</div>"
+                            +"</a>"
+                        +"</li>"
+                   );
+                }
+            } else { // 조회결과가 0건
                 $("#plan-summary").append(
                      "<li class='ui-corner-all'>"
                         +"<a href='#' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r'>"
                             +"<div class='plan plan-name'> 등록된 일정이 없습니다. </div>"
                         +"</a>"
                     +"</li>"
-                  );
+                );
             }
-            start_num = start_num + 10;
-            if(ajaxResult2.length < 10){
-                $('#btnMore').hide();
+
+            startNum = startNum + 10; // 시작번호 10 증가
+
+            // 더보기 버튼 처리
+            if(parseResult.data.length < 10){ // 조회데이터가 10건이 되지 않으면 마지막 페이지
+                $('#btnMore').hide(); // 더보기 버튼 숨김
             } else {
-                $('#btnMore').show();
+                if(parseResult.ttcn[0].ttcn == startNum) { // 전체건수와 증가된 시작번호가 동일하다면 마지막페이지
+                    $('#btnMore').hide(); // 더보기 버튼 숨김
+                } else {
+                    $('#btnMore').show(); // 더보기 버튼 보여주기
+                }
             }
         }
+
+        /**
+        * 내용 : 프로젝트 select box 선택함수
+        **/
         function selectChange(){
-        start_num = 0;
-        getPlanList();
+            startNum = 0 ; // 시작번호 초기화
+            getPlanList(); // 일정 조회
         }
     </script>
 
     <style type="text/css">
-
 		.underline {
 			padding-top: 20px;
 		    padding-bottom: 3px;
 		    border-bottom: 1px solid #eee;
 		    margin: 0px 0 20px 0;
 		}
-        .ui-btn-icon-top { padding-top : 3em;}
-        .ui-bar { text-align: center; }
-        .ui-bar .header-menu { float: right; }
-        .ui-bar .header-back { float: left; }
-        .ui-panel { width : 20em;}
-        #menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
-    .ui-select{display:block;}
 	</style>
 </head>
 <body>
@@ -204,12 +229,12 @@
             </div>
             <div class="gird-pt">
                 <div class="grid-cd-3">
-                    <select name="select-choice-1" id="select-choice-1" class="ui-corner-all" onchange="selectChange()">
+                    <select name="projectSelect" id="projectSelect" class="ui-corner-all" onchange="selectChange()">
                         //select box options
                     </select>
                 </div>
                 <div class="grid-cd-4">
-                    <select name="flip" id="flip" data-role="slider"data-mini="true" onchange="flipChange()">
+                    <select name="flip" id="flip" data-role="slider" data-mini="true" onchange="flipChange()">
                         <option value="on">진행중</option>
                         <option value="off">종료</option>
                     </select>

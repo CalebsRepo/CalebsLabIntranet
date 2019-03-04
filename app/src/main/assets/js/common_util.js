@@ -45,7 +45,7 @@ function commonUtil_getRemoveFormat(val) {
         return val;
     }
 }
-// 날짜 YYYY/MM/DD 포맷
+
 /**
 * 내용 : YYYYMMDD 날짜를 YYYY/MM/DD 형태로 Format해준다
 * param date : YYYYMMDD 형태 문자형 날짜
@@ -69,7 +69,11 @@ function YMDFormatter(date){
      return formatDate;
 }
 
-// 두 일자의 차이일수를 계산하여 return
+/**
+* 내용 : 두 일자의 차이일수를 계산하여 return
+* param date1 date2 : YYYY/MM/DD 형태 문자형 날짜
+* return : date2 - date1 차이일수
+**/
 function diffDate(date1, date2) {
     var splitDate1 = date1.split('/');
     var splitDate2 = date2.split('/');
