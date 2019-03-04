@@ -189,40 +189,22 @@ public class MainActivity extends AppCompatActivity {
                 //************************************************************************
                 //  날짜: 20190213
                 //  만든이: HYJ
-                //  내용: 외부 앱 호출 START
+                //  내용: 외부 앱 호출
                 //        전화 또는 메일, 또는 그 외 앱 호출시 loadUrl 타지않고 호출하는 앱으로 연결
                 //        intent의 경우 Manifest에서 intent scheme 이용해서 사용해야함
                 //************************************************************************
-                if (url.startsWith(("tel:")) || url.startsWith("mailto:") || url.startsWith("intent:")) {
+                if (url.startsWith(("tel:")) || url.startsWith("mailto:")) {
                     if (url.startsWith("tel:")) {
                         Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
                         startActivity(intent);
-                    } else if (url.startsWith("mailto:")) {
+                    } else{
                         Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(url));
                         startActivity(intent);
-                    } else {
-                        try {
-                            Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
-
-                            Intent existPackage = getPackageManager().getLaunchIntentForPackage(intent.getPackage());
-                            if (existPackage != null) {
-                                startActivity(intent); //앱 충돌?????????? 마켓연결은 되는데 실제 외부 앱 연동이 안됨. 이거 나중에 처리하자
-                            } else {
-                                Intent marketIntent = new Intent(Intent.ACTION_VIEW);
-                                marketIntent.setData(Uri.parse("market://details?id=" + intent.getPackage()));
-                                startActivity(marketIntent);
-                            }
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    };
+                    }
                     return true;
                 }
                 //************************************************************************
-                //  날짜: 20190213
-                //  만든이: HYJ
-                //  내용: END
+                //  END
                 //************************************************************************
 
                 Log.d("MovePage", "이동 대상 URL  : " + url);
@@ -317,23 +299,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-    public void getNativeContacts() {
-        Log.d("JJKIM", "Native영역 전화번호부 정보 가져오기");
-        Contacts contacts = new Contacts();
-        jsonContacts = contacts.getContacts();
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                String args = null;
-                if(jsonContacts != null) args = jsonContacts.toString();
-                Log.d("JJKIM", "jsonContacts = "+ args);
-                web.loadUrl("javascript:printContacts('" + args + "')"); // 해당 url의 자바스크립트 함수 호출
-            }
-        });
-    }
-
     //************************************************************************
     //  날짜: 20190212
     //  만든이: 공통
@@ -367,27 +332,6 @@ public class MainActivity extends AppCompatActivity {
                     web.loadUrl("file:///android_asset/html/" + url); // url로 페이지 이동
                 }
             });
-        }
-
-        /* 전화번호부 가져오기*/
-        @JavascriptInterface
-        public void callContacts() {
-            Log.d("JJKIM", "Web JS에서 MainActivity쪽 function 호출");
-            getNativeContacts();
-        }
-
-        /* 푸시알림*/
-        @JavascriptInterface
-        public void callPush() {
-            Log.d("JJKIM", "push 메소드 호출");
-        }
-
-        /* 전화걸기 */
-        @JavascriptInterface
-        public void callPhone(String phoneNum) {
-            Log.d("JJKIM", "[전화걸기] 전화번호 : "+ phoneNum);
-            Contacts contacts = new Contacts();
-            contacts.callPhone(phoneNum);
         }
 
         /* 연차사용내역 엑셀 파일 생성 및 공유 */
@@ -844,119 +788,6 @@ public class MainActivity extends AppCompatActivity {
             return sessionid;
         }
 
-
-        //복호화
-        @JavascriptInterface
-        public String pwdTest(final String pwd) throws Exception {
-
-            pwdTest ="";
-
-            Thread t3 = new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                    try{
-                        URL url;
-                        HttpURLConnection conn;
-                        DataOutputStream wr;
-                        String callUrl = "http://192.168.10.157:8080/Caleb/pwdDecrypt.json";
-
-                        url = new URL(callUrl);
-                        conn = (HttpURLConnection) url.openConnection();
-                        conn.setDoOutput(true);
-                        conn.setConnectTimeout(15000);
-                        conn.setReadTimeout(10000);
-                        conn.setRequestMethod("POST");
-                        //해더 타입. 호출하려는 곳과 해더 타입이 맞지 않으면 오류가 발생.
-                        // 호출하려는 곳에서 xml,  json, html, text 등 리턴하는 타입을 확인하여 작성해야함
-                        conn.connect();
-                        SessionManager sm = new SessionManager();
-
-                        String param = "pwd=" + pwd;
-
-                        wr = new DataOutputStream(conn.getOutputStream());
-                        wr.writeBytes(param);
-                        wr.flush();
-                        wr.close();
-
-                        Log.d("LOG", url + "로 HTTP 요청 전송");
-
-                        if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) { //이때 요청이 보내짐.
-
-                            Log.d("LOG", "HTTP_OK를 받지 못했습니다.");
-
-                        } else {
-
-                            InputStream in = new BufferedInputStream(conn.getInputStream());
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                            String output = "";
-                            String line;
-                            System.out.println("reader 전");
-                            while ((line = reader.readLine()) != null) {
-                                output += line;
-                            }
-
-                            System.out.println(conn.getHeaderField("Set-Cookie"));
-                            sm.getCookieHeader(conn, myApp);
-
-                            pwdTest = output;
-
-                        }
-                        conn.disconnect();
-                    } catch(MalformedURLException e){
-                        e.printStackTrace();
-                    } catch (IOException e){
-                        e.printStackTrace();
-                    }
-
-                }
-            });
-
-            t3.start();
-            t3.join();
-
-            return pwdTest;
-        }
-        //************************************************************************
-        //  날짜: 20190212
-        //  만든이: HYJ
-        //  내용: 웹뷰에서 이미지 주소 얻기, FTP 파일 전송 이벤트 시작
-        //************************************************************************
-        /* 이미지 Array 찾아오기 */
-        @JavascriptInterface
-        public void imgPath(final int imgNum, final String imageInfo) {
-            Log.d("현재 올리고자하는 이미지 정보는용:",imageInfo);
-            if(imgNum==1) {
-                /*첫 호출시 imageInfo(프로필,사인여부)를 저장해놓는다*/
-                imgRealPath.set(0,imgRealPath.get(0).toString()+":"+imageInfo);
-            }else if((imgNum==2)) {
-                /*만약에 첫번째 index의 imageInfo(프로필인지, 사인인지 여부)가  두번째 index의 imageInfo와 똑같다면,
-                  이는 갤러리를 한번 더 요청해서 이미지를 바꾸려고한것이므로, 두번째 index를 지우고 해당 정보를 첫번째 index에 넣는다*/
-                if(imgRealPath.get(0).toString().contains(imageInfo)) {
-                    imgRealPath.set(0, imgRealPath.get(1).toString() + ":" + imageInfo);
-                    imgRealPath.remove(1);
-                }else{
-                    imgRealPath.set(1, imgRealPath.get(1).toString() + ":" + imageInfo);
-                }
-            }else{
-                if(imgRealPath.get(0).toString().contains(imageInfo)) {
-                    Log.d("imgRealPath2:",imgRealPath.get(0).toString());
-                    imgRealPath.set(0,imgRealPath.get(2).toString()+":"+imageInfo);
-                    imgRealPath.remove(2);
-                }else{
-                    imgRealPath.set(1,imgRealPath.get(2).toString()+":"+imageInfo);
-                    imgRealPath.remove(2);
-                }
-            }
-        }
-
-        @JavascriptInterface
-        public void imgFtpSend() {
-            checkPermissions();
-            NThread nThread = new NThread();
-            nThread.start();
-        }
-
         //************************************************************************
         //  날짜: 20190212
         //  만든이: HYJ
@@ -1012,213 +843,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
-    //************************************************************************
-    //  날짜: 20190212
-    //  만든이: HYJ
-    //  내용: FTP 이미지 전송 START
-    //       사용자 권한획득, 스레드, FTP 전송, 이미지 실제경로 method
-    //************************************************************************
-
-    /*   Handler handler = new Handler();
-     */
-    /*********  work only for Dedicated IP ***********/
-    static final String FTP_HOST= "iup.cdn3.cafe24.com";
-
-    /*********  FTP USERNAME ***********/
-    static final String FTP_USER = "calebslab1";
-
-    /*********  FTP PASSWORD ***********/
-    static final String FTP_PASS  ="wjswls!1";
-
-    private String[] permissions = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE};//권한 설정 변수
-    private static final int MULTIPLE_PERMISSIONS = 101;//권한 동의 여부 문의 후 callbackback함수에 쓰일 변수
-
-
-    //사용권한 묻는 함수
-    private boolean checkPermissions() {
-        int result;
-        List<String> permissionList = new ArrayList<>();
-        for (String pm : permissions) {
-            result = ContextCompat.checkSelfPermission(this, pm);//현재 컨텍스트가 pm 권한을 가졌는지 확인
-            if (result != PackageManager.PERMISSION_GRANTED) {//사용자가 해당 권한을 가지고 있지 않을 경우
-                permissionList.add(pm);//리스트에 해당 권한명을 추가한다
-            }
-        }
-        if (!permissionList.isEmpty()) {//권한이 추가되었으면 해당 리스트가 empty가 아니므로, request 즉 권한을 요청한다.
-            ActivityCompat.requestPermissions(this, permissionList.toArray(new String[permissionList.size()]), MULTIPLE_PERMISSIONS);
-            return false;
-        }
-        return true;
-    }
-
-    //권한 요청의 콜백 함수. PERMISSION_GRANTED 로 권한을 획득하였는지를 확인할 수 있다.
-    //아래에서는 !=를 사용했기에 권한 사용에 동의를 안했을 경우를 h 사용해서 코딩.
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MULTIPLE_PERMISSIONS: {
-                if (grantResults.length > 0) {
-                    for (int i = 0; i < permissions.length; i++) {
-                        if (permissions[i].equals(this.permissions[0])) {
-                            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                                showNoPermissionToastAndFinish();
-                            }
-                        } else if (permissions[i].equals(this.permissions[1])) {
-                            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                                showNoPermissionToastAndFinish();
-
-                            }
-                        } else if (permissions[i].equals(this.permissions[2])) {
-                            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                                showNoPermissionToastAndFinish();
-
-                            }
-                        }
-                    }
-                } else {
-                    showNoPermissionToastAndFinish();
-                }
-                return;
-            }
-        }
-    }
-
-    //권한 획득에 동의하지 않았을 경우, 아래 메시지를 띄우며 해당 액티비티를 종료.
-    private void showNoPermissionToastAndFinish() {
-        Toast.makeText(this, "권한 요청에 동의 해주셔야 이용 가능합니다. 권한 허용 하시기 바랍니다.", Toast.LENGTH_SHORT).show();
-        finish();
-    }
-
-    //안드로이드 최근 버전에서는 네크워크 통신시에 반드시 스레드를 요구한다.
-    class NThread extends Thread{
-        public NThread() {
-        }
-        @Override
-
-        public void run() {
-
-            for(int i=0; i<imgRealPath.size(); i++){
-                upload(i);
-            }
-            /*스레드가 끝나면 인덱스 clear시킨다*/
-            imgRealPath.clear();
-        }
-
-        public void upload(int i){
-            /********** Pick file from memory *******/
-            //장치로부터 메모리 주소를 얻어낸 뒤, 파일명을 가지고 찾는다.
-            //현재 이것은 내장메모리 루트폴더에 있는 것.
-
-            String filePathOrg=imgRealPath.get(i).toString();
-
-            String filePath=filePathOrg.substring(1,filePathOrg.lastIndexOf(":"));
-            String fileInfo=filePathOrg.substring(filePathOrg.lastIndexOf(":")+1);
-
-            File f = new File(filePath);
-            Log.d("파일 존재하는 디렉토리:",f.getParent().toString());
-            Log.d("파일 이름",f.getName());;
-            // Upload file
-
-            File convFile = new File(f.getParent() + "/"+"hyjlm92.png");
-            f.renameTo(convFile);
-            uploadFile(f, fileInfo);
-        }
-    }
-
-    public void uploadFile(File fileName,String fileInfo){
-
-        FTPClient client = new FTPClient();
-
-        try {
-            client.connect(FTP_HOST,21);//ftp 서버와 연결, 호스트와 포트를 기입
-            client.login(FTP_USER, FTP_PASS);//로그인을 위해 아이디와 패스워드 기입
-            client.setType(FTPClient.TYPE_BINARY);//2진으로 변경
-            client.changeDirectory("/www/imployeeInfo/"+fileInfo);//서버에서 넣고 싶은 파일 경로를 기입
-
-            client.upload(fileName, new MyTransferListener());//업로드 시작
-
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(),"성공",Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        } catch (Exception e) {
-
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(),"실패",Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            e.printStackTrace();
-            try {
-                client.disconnect(true);
-            } catch (Exception e2) {
-                e2.printStackTrace();
-            }
-        }
-
-    }
-
-    // progress 보여주기 => 추후에 사용할지 여부 결정
-    private class MyTransferListener implements FTPDataTransferListener {
-        public void started() {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    // Transfer started
-                    Toast.makeText(getBaseContext(), "파일 업로드 시작", Toast.LENGTH_SHORT).show();
-                    //System.out.println(" Upload Started ...");
-                }
-            });
-        }
-        public void transferred(int length) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    // Yet other length bytes has been transferred since the last time this
-                    // method was called
-                    Toast.makeText(getBaseContext(), "파일 전송 중", Toast.LENGTH_SHORT).show();
-                    //System.out.println(" transferred ..." + length);
-                }
-            });
-        }
-        public void completed() {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    // Transfer completed
-                    Toast.makeText(getBaseContext(), "파일 전송 완료", Toast.LENGTH_SHORT).show();
-                    //System.out.println(" completed ..." );
-                }
-            });
-        }
-        public void aborted() {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    // Transfer aborted
-                    Toast.makeText(getBaseContext(),"파일전송 중단 ,다시 시도해주세요", Toast.LENGTH_SHORT).show();
-                    //System.out.println(" aborted ..." );
-                }
-            });
-        }
-        public void failed() {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("파일전송 실패" );
-                }
-            });
-        }
-    }
 
     /*
     아래 코드가 있어야 웹뷰에서도 갤러리에 접근해서 이미지를 가져와서 웹뷰의 첨부파일로 입력이 완료됩
