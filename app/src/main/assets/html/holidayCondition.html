@@ -27,7 +27,7 @@
 
     $(document).ready(function(){
         var workingYear = "0";
-        var startParam = {workingYear : workingYear}
+        var startParam = { workingYear : workingYear }
         navigate(startParam,"getMyHoliday.json", sucessFncMyHoliday,"" );
     });
 
@@ -106,8 +106,7 @@
 
     <!-- header -->
     <header data-role="header">
-        <h1>CalebsLab</h1>
-        <a class="ui-btn ui-corner-all ui-btn-inline ui-mini footer-button-left ui-btn-icon-left ui-icon-carat-l" href="javascript:history.back()">back</a>
+        <h1>휴가현황</h1>
         <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
     </header>
 
@@ -115,7 +114,7 @@
         <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
         <ul data-role="listview">
             <p>내정보</p>
-            <li><a onclick= "movePage('employeeDetail.html')" >마이페이지</a></li>
+            <li><a onclick= "movePage('employeeDetail.html', 'myPage')" >마이페이지</a></li>
             <p>프로젝트</p>
             <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
             <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
@@ -134,7 +133,6 @@
 
     <!-- content -->
     <div data-role="content" class="main-warp">
-
         <div class="gird-pt holiday-list">
             <div>
                 <div class="page-title"><h2>휴가현황</h2></div>
