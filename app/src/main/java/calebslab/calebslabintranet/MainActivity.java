@@ -114,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
     private Object JsonToken;
     OnSwipeTouchListener onSwipeTouchListener;
     private String urlPath = "file:///android_asset/html/";
-
     public MyProgressDialog progressDialog;
 
     @SuppressLint({"JavascriptInterface", "ClickableViewAccessibility"})
@@ -159,7 +158,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         web.setWebViewClient(new android.webkit.WebViewClient() {
-            // 페이지 시작시 (로딩다이얼로그)
+
+            //************************************************************************
+            //  날짜: 20190304
+            //  만든이: 이승환
+            //  내용: 웹뷰 페이지 이동시 로딩아이콘 설정
+            //        로그인화면으로 이동시에는 제외
+            //        로딩아이콘 노출시간은 0.6초
+            //************************************************************************
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 if (!web.getUrl().equals("file:///android_asset/html/login.html")) {
                     runOnUiThread(new Runnable() {
@@ -184,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
                     super.onPageStarted(view, url, favicon);
                 }
             }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 //************************************************************************

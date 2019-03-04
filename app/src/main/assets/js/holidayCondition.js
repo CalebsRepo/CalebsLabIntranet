@@ -55,7 +55,11 @@
         return holidayCnt;
     }
 
-    <!-- 근무기간(년,개월,일) 계산 -->
+    /**
+    * 내용 : 근무일수를 근무기간(년,개월,일)로 계산 및 출력
+    * param joinDay : 근무일수
+    * return : 근무기간(년,개월,일)
+    **/
     function workingDateFormat(joinDay){
         if(joinDay < 30) {
             day = joinDay;
