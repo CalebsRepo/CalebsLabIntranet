@@ -23,9 +23,13 @@
     <title></title>
     <script>
         var userInfo = JSON.parse(getUserData());
+        var loginUserAdmFlag = userInfo.adm_flag;
         var tokenArray = new Array();               // 토큰 배열
 
     	$(document).ready(function(){
+    	    if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
+                $(".admMenu").show();
+            }
 
             $(".btn-area-2").hide();
 
@@ -258,7 +262,7 @@
     <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
     <ul id="menuPanelList"data-role="listview">
         <p>내정보</p>
-        <li><a onclick= "movePage('employeeDetail.html')" >마이페이지</a></li>
+        <li><a onclick= "movePage('employeeDetail.html', 'myPage')" >마이페이지</a></li>
         <p>프로젝트</p>
         <li><a onclick= "movePage('projectList.html')" >프로젝트</a></li>
         <li><a onclick= "movePage('planList.html')" >프로젝트일정 목록</a></li>
@@ -337,7 +341,7 @@
             <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
             <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
             <li><a onclick="movePage('holidayDetail.html')" data-icon="calendar">휴가신청</a></li>
-            <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
+            <li><a onclick="javascript:callLogout()"; data-icon="power" >로그아웃</a></li>
         </ul>
     </div>
 </div>

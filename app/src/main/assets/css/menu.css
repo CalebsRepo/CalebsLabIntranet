@@ -1,13 +1,11 @@
 <style>
-    /*전체메뉴*/
+    /* 전체메뉴 */
     .menuPanel { width : 20em !important; }
     .menuPanel p { margin: 0; padding: 10px 0 5px 5px; }
     .menuPanel img { margin: 1em; width:85%;}
-
     .admMenu {display:none;}
     .ui-listview > li.admMenu {display:none;}
 
-    /*푸터*/
+    /* footer */
     .footer { overflow: hidden; }
-    /*.footer .ui-btn-icon-top { padding-top : 3em; }*/
 </style>
