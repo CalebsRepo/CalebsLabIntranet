@@ -84,8 +84,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 public class MainActivity extends AppCompatActivity {
     /* 엑셀 파일 저장 관련 변수 */
     Context context;
-    String exportFolderName = "/Download";
-    String outputFileName = "test.xls";
     File xlsFile;
 
 

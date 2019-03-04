@@ -59,11 +59,11 @@
 		function showHolidayList(num){
 
 			var form_data = {
-			                  pageNum  : $("#pageNum").val(),
-							  checkVal : $("#approvalSel option:selected").val(),
-							  date     : $("#dateSel option:selected").val(),
-							  id       : userInfo.id,
-							  admflag  : userInfo.adm_flag
+			                  pageNum  : $("#pageNum").val(),                     // 페이징 번호
+							  checkVal : $("#approvalSel option:selected").val(), // 결제구분
+							  date     : $("#dateSel option:selected").val(),     // 날짜
+							  id       : userInfo.id,                             // 아이디
+							  admflag  : userInfo.adm_flag                        // 권한
 							 };
 
             if(num == 1) {
