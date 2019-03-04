@@ -27,11 +27,7 @@
 
     $(document).ready(function(){
         var workingYear = "0";
-        var start_num = 0;
-        var startParam = {
-            workingYear : workingYear,
-            startNum = start_num
-        }
+        var startParam = { workingYear : workingYear }
         navigate(startParam,"getMyHoliday.json", sucessFncMyHoliday,"" );
     });
 
@@ -69,10 +65,6 @@
                                             + "<li>");
         }
     };
-
-    function getListMore() {
-
-    }
 
     /**
     * 내용 : 선택한 사원의 휴가현황상세 페이지로 이동
@@ -147,10 +139,6 @@
                 <div class="excel-btn"><button type="button" id="btExcel"  onclick="javascript:getExcel(); return false;">Excel</button></div>
             </div>
             <ul id="holidayListview" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow"data-theme="a"></ul>
-        </div>
-
-        <div class="gird-pt">
-            <button class="ui-btn ui-corner-all ui-btn-b" id="btnMore" onclick="getListMore()" >더보기</button>
         </div>
     </div>
 
