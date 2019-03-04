@@ -23,13 +23,13 @@
     <!--DatePicker--><script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="../js/datepicker.js"></script>
     <script type="text/javascript">
-        // 전역변수 선언
-        var parseCompanyResult = ""; // 발주회사 정보
-        var parseEmployeeResult= ""; // 사원목록 정보
-        var parseCarrerResult  = ""; // 경력정보
-        var ind=0;
-        var loginUser = JSON.parse(getUserData());
-        var loginUserAdmFlag = loginUser.adm_flag;
+        // 전역변수
+        var parseCompanyResult = ""                       ; // 발주회사 정보
+        var parseEmployeeResult= ""                       ; // 사원목록 정보
+        var parseCarrerResult  = ""                       ; // 경력정보
+        var ind                = 0                        ; // 동적으로 생성될 listview의 index정보
+        var loginUser          = JSON.parse(getUserData()); // 세션에서 로그인유저 정보를 가져옴
+        var loginUserAdmFlag   = loginUser.adm_flag       ; // 유저 권한
 
         $(document).ready(function(){
             // 프로젝트 종료일이 시작일 이후로만 선택되도록 datepicker를 설정
@@ -38,84 +38,86 @@
                 $("#projectEndDt").datepicker("option","minDate", selected)
             }
             });
+
+            // 프로젝트 시작일이 종료일 이전으로만 선택되도록 datepicker를 설정
             $("#projectEndDt").datepicker({
             onSelect: function(selected) {
                 $("#projectStartDt").datepicker("option","maxDate", selected)
             }
             });
 
-            if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
-                $(".admMenu").show();
+
+            if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){ // 관리자인 경우
+                $(".admMenu").show(); // 메뉴바에 관리자 메뉴 표시
             }
 
+            // db에서 값을 가져와 화면에 출력해줘야 하는 데이터를 받아온다
             var  selectParam = {
                 load_page : "register"
             };
-            // db에서 값을 가져와 화면에 출력해줘야 하는 데이터를 받아온다
             navigate(selectParam, "getPrintInfo.json", getPrintInfoSuccess);
         });
 
-        // 화면에 출력해줘야 하는 데이터 select 성공
+        /**
+        * 내용 : 화면에 출력해줘야 하는 데이터 select 성공
+        * param result : 통신결과값
+        **/
         function getPrintInfoSuccess(result) {
-            printInfoResult="";
             //console.log("============================================");
             var printInfoResult=JSON.stringify(result);
             var parsePrintResult=JSON.parse(printInfoResult);
             console.log("getPrintInfoSuccess>>>>>" + printInfoResult);
             //console.log("============================================");
 
-            parseCompanyResult  = parsePrintResult.company ;
-            parseEmployeeResult = parsePrintResult.employee;
-            parseCarrerResult   = parsePrintResult.carrer  ;
+            parseCompanyResult  = parsePrintResult.company ; // 발주회사 정보를 전역변수에 저장
+            parseEmployeeResult = parsePrintResult.employee; // 직원 정보를 전역변수에 저장
+            parseCarrerResult   = parsePrintResult.carrer  ; // 경력 정보를 전역변수에 저장
 
-            <!--ID로 select태그를 찾아 변수에 Mapping-->
-            var selbox = document.getElementById('projectComp');
+            var selbox = document.getElementById('projectComp'); // 발주회사 select Tag
 
+            // 발주회사 정보를 동적으로 option 생성(value - comp_id, text - comp_name)
             for(var i=0; i<parseCompanyResult.length; i++) {
-                //console.log(parseCompanyResult[i].comp_id);
-                //console.log(parseCompanyResult[i].comp_name);
-
-                // 발주회사 id와 이름을 가져와 option에 value, text와 Mapping
                 var op = new Option();
 
-                op.value = parseCompanyResult[i].comp_id;
-                op.text = parseCompanyResult[i].comp_name;
+                // 발주회사 id와 이름을 가져와 option에 value, text와 Mapping
+                op.value = parseCompanyResult[i].comp_id  ; // 회사ID
+                op.text  = parseCompanyResult[i].comp_name; // 회사명
 
-                <!--selectBox에 option 추가-->
+                // option 추가
                 selbox.options.add(op);
             }
         }
 
-        <!--참여인원 삭제버튼 클릭 이벤트-->
+        /**
+        * 내용 : 참여인원 삭제버튼 클릭 이벤트
+        **/
         function btnDel() {
-            console.log("btnDel 함수 진입");
-            var checkbox = document.getElementsByName("listChb"); // 체크박스 Element를 배열로 Get
-            var listviewArea = document.getElementById("listviewArea");
-            var checkboxLength = checkbox.length;
-            console.log("checkboxLength = " + checkboxLength);
+            var checkbox       = document.getElementsByName("listChb")  ; // 체크박스 Element를 name값을 이용하여 배열로 Get
+            var listviewArea   = document.getElementById("listviewArea"); // listview가 출력되는 Area
+
             for(var i=0; i<checkbox.length; i++) {
-                console.log("i = " + i);
-                if(checkbox[i].checked == true) {
-                    var checkboxID = checkbox[i].id; // ID 추출
-                    console.log(checkboxID + " is checked");
-                    var index = checkboxID.replace(/[^0-9]/g,''); // list의 index를 찾기 위해 id값에서 숫자만 추출
-                    console.log("index = " + index);
-                    var memberAreaID = "memberArea" + index; // listForm의 ID를 index로 Mapping
+                if(checkbox[i].checked == true) { // 체크박스가 선택되어있는 경우
+                    var checkboxID   = checkbox[i].id                  ; // ID 추출
+                    var index        = checkboxID.replace(/[^0-9]/g,''); // list의 index를 찾기 위해 id에서 숫자만 추출
+                    var memberAreaID = "memberArea" + index            ; // list의 ID를 index로 정의
                     console.log("memberAreaID = " + memberAreaID);
-                    var removeArea = document.getElementById(memberAreaID); // Mapping한 ID로 Remove할 division을 Get
+
+                    var removeArea = document.getElementById(memberAreaID); // 정의한 ID로 Remove할 div를 Get
                     listviewArea.removeChild(removeArea); // Division 삭제
-                    i--;
-                } else {
-                    var checkboxID = checkbox[i].id;
-                    console.log(checkboxID + "is not checked");
+
+                    i--; // 윗줄에서 remove가되면 checkbox.length값이 감소하기때문에 i값을 다시 내린다
                 }
             }
         }
-        <!--참여인원 추가버튼 클릭 이벤트-->
-        function btnAdd() {
-            var iHTML = "";
-            ind++;
 
+        /**
+        * 내용 : 참여인원 추가버튼 클릭 이벤트
+        **/
+        function btnAdd() {
+            var iHTML = ""; // 동적으로 list를 생성하기 위해 작성할 태그를 담을 변수
+                ind++; // index값을 증가
+
+            // 동적으로 list 생성
             iHTML += '<div id="memberArea'+ind+'" class="member-area ui-field-contain">';
             iHTML += '    <label style="width:22px"><div class="ui-checkbox"><input type="checkbox" id="listChb'+ind+'" name="listChb" style="position: unset; left: unset;"></div></label>';
             iHTML += '    <ul data-role="listview" data-inset="true" class="list-area  ui-listview ui-listview-inset ui-corner-all ui-shadow">';
@@ -170,133 +172,148 @@
             iHTML += '    </ul>';
             iHTML += '</div>';
 
-            $("#listviewArea").append(iHTML);
+            $("#listviewArea").append(iHTML); // 생성한 list를 listviewArea div에 append
 
-            // name으로 select태그를 찾아 변수에 Mapping
+            // 참여자명 select box에 option 추가
             var selID = "memberSel" + ind;
             var selbox = document.getElementById(selID);
 
             for(var i=0; i<parseEmployeeResult.length; i++) {
-                //console.log(parseEmployeeResult[i].ID);
-                //console.log(parseEmployeeResult[i].NAME);
-
-                // 멤버 id와 이름을 가져와 option에 value, text와 Mapping
                 var op = new Option();
 
+                // 멤버 id와 이름을 가져와 option에 value, text와 Mapping
                 op.value = parseEmployeeResult[i].ID;
-                op.text = parseEmployeeResult[i].NAME + "(" + parseEmployeeResult[i].ID + ")";
+                op.text  = parseEmployeeResult[i].NAME + "(" + parseEmployeeResult[i].ID + ")"; // 이름(ID)형태
 
-                // selectBox에 option 추가
-                selbox.options.add(op);
+                selbox.options.add(op); // selectBox에 option 추가
             }
 
             // 직접입력 option 추가
             var op = new Option();
-            op.value = "free";
+            op.value = "free"; // 프리랜서
             op.text = "직접입력";
 
             selbox.options.add(op);
 
+            // 철수일자가 투입일자 이후로만 선택되도록 datepicker 설정
             $("#putDt"+ind).datepicker({
-                numberOfMonths: 1,
                 onSelect: function(selected) {
                     $("#withdrawDt"+ind).datepicker("option","minDate", selected)
                 },
                 onSelect: function() {
-                    printCarrer(ind);
+                    printCarrer(ind); // 선택한 날짜를 반영하여 총 경력을 다시 표시
                 }
             });
 
+            // 투입일자가 철수일자 이후로만 선택되도록 datepicker 설정
             $("#withdrawDt"+ind).datepicker({
-                numberOfMonths: 1,
                 onSelect: function(selected) {
                     $("#putDt"+ind).datepicker("option","maxDate", selected)
                 },
                 onSelect: function() {
-                    printCarrer(ind);
+                    printCarrer(ind); // 선택한 날짜를 반영하여 총 경력을 다시 표시
                 }
             });
         }
 
-        // memberSel select
+        /**
+        * 내용 : 참여자명 선택 이벤트
+        * param index : listview의 index값
+        **/
         function memberSelect(index) {
-            var selID = 'memberSel' + index;
-            var inputID = 'memberName' + index;
+            var selID   = 'memberSel' + index; // select 태그 ID값 Set
+            var inputID = 'memberName' + index; // input 태그 ID값 Set
+
             changeSelect(selID, inputID);
             printCarrer(index);
         }
 
-        // rollSel select
+        /**
+        * 내용 : 참여형태 선택 이벤트
+        * param index : listview의 index값
+        **/
         function rollSelect(index) {
-            var selID = 'rollSel' + index;
-            var inputID = 'rollTxt' + index;
+            var selID   = 'rollSel' + index; // select 태그 ID값 Set
+            var inputID = 'rollTxt' + index; // input 태그 ID값 Set
+
             changeSelect(selID, inputID);
         }
 
-        // gradeSel select
+        /**
+        * 내용 : 기술등급 선택 이벤트
+        * param index : listview의 index값
+        **/
         function gradeSelect(index) {
-            var selID = 'gradeSel' + index;
+            var selID = 'gradeSel' + index; // select 태그 ID값 Set
+
             changeSelect(selID);
         }
 
-        // selectBox 선택 이벤트
+        /**
+        * 내용 : listview 내부 select 태그 선택 공통 함수
+        * param selID : select태그 ID(호출하는쪽에서 ID set), inputID : intput태그 ID(호출하는쪽에서 ID Set)
+        **/
         function changeSelect(selID, inputID) {
             console.log("selID>>>>>" + selID);
-            // 이벤트가 발생한 selBox 찾기
-            var memSelect = document.getElementById(selID);
+
+            var memSelect = document.getElementById(selID); // 이벤트가 발생한 selBox 찾기
 
             var selectValue = memSelect.options[memSelect.selectedIndex].value; // select element에서 선택된 option의 value가 저장된다
-            var selectText = memSelect.options[memSelect.selectedIndex].text; // select element에서 선택된 option의 text가 저장된다
+            var selectText  = memSelect.options[memSelect.selectedIndex].text ; // select element에서 선택된 option의 text가 저장된다
             console.log("selectText>>>>" + selectText);
 
              $("#"+selID+"-button > span").text(selectText); // 선택된 값을 selectBox Span에 출력
 
             if(inputID != null) {
-                console.log("inputID>>>>>" + inputID);
-                // 선택한 값을 띄울 input
-                var viewInput = document.getElementById(inputID);
+                var viewInput = document.getElementById(inputID); // 선택한 값을 띄울 input
                  if(selectText == '직접입력') {
-                    viewInput.readOnly = false;
-                    viewInput.value = "";
+                    viewInput.readOnly = false; // readonly 설정을 입력이 가능하도록 false로 변경
+                    viewInput.value    = ""   ; // input값 초기화
                  } else {
-                    viewInput.value = selectText;
+                    viewInput.value = selectText; // 선택한 option의 text값을 input태그에 value값으로 set
                  }
             }
         }
 
-        // 경력을 X년 X개월 형식으로 화면에 표시하기 위해 계산
+        /**
+        * 내용 : 경력을 X년 X개월 형식으로 화면에 표시
+        * param index : listview의 index값
+        **/
         function printCarrer(index) {
-            var inputID = 'memberName' + index;
-            var putDtID = 'putDt' + index;
-            var withdrawDtID = 'withdrawDt' + index;
+            // 변수선언
+            var id     = ""; // ID값
+            var name   = ""; // 이름값
+            var carrer = ""; // 경력일수
 
-            var putDt = document.getElementById(putDtID).value; // 투입일자
+            // ID값 설정
+            var inputID      = 'memberName' + index; // 참여자
+            var putDtID      = 'putDt'      + index; // 투입일
+            var withdrawDtID = 'withdrawDt' + index; // 철수일
+
+            var putDt      = document.getElementById(putDtID).value     ; // 투입일자
             var withdrawDt = document.getElementById(withdrawDtID).value; // 철수일자
 
             // ID와 이름을 분리
             var tempStr = document.getElementById(inputID).value; // 이름+id값을 변수에 저장
-            if(tempStr == "") {
-                alert("투입인력을 먼저 선택해주세요");
+            if(tempStr == "") { // 참여자가 선택되지 않은 경우(또는 직접입력을 선택하고 값을 입력하지 않은 경우)
+                alert("참여자를 먼저 선택해주세요");
                 return false;
             }
             var cutStartIndex = tempStr.indexOf("("); // "("의 index값을 구한다.
-            var id = ""; // ID값
-            var name = ""; // 이름값
-            var carrer = ""; // 경력일수
 
             if(cutStartIndex == -1) { // 괄호가 포함되어 있지 않은 경우(직접입력)
-                id   = "free";
-                name = tempStr;
+                id   = "free"; // ID는 'free'로 설정
+                name = tempStr; // 입력한 이름
             } else { // select box에서 선택한경우
                 var cutEndIndex = tempStr.indexOf(")"); // ")"의 index값을 구한다.
-                id   = tempStr.substring(cutStartIndex+1, cutEndIndex);
-                name = tempStr.substr(0, cutStartIndex);
+                id   = tempStr.substring(cutStartIndex+1, cutEndIndex  ); // 괄호 사이의 값만 추출
+                name = tempStr.substr   (0              , cutStartIndex); // 괄호 이전 이름값 추출
             }
 
             // 조회된 경력데이터를 찾는다
             for(var i = 0; i < parseCarrerResult.length; i++){
                 if(parseCarrerResult[i].id == id && parseCarrerResult[i].name == name) { // 아이디와 이름이 일치하는 경우
-                    carrer = parseCarrerResult[i].carrer;
+                    carrer = parseCarrerResult[i].carrer; // 경력 총 일수
                     break;
                 } else {
                     carrer = 0;
@@ -305,23 +322,27 @@
 
             if(putDt != "" && withdrawDt != "") { // 날짜를 선택한 경우에만 선택한 투입일을 포함
                 var diffDateValue = diffDate(putDt, withdrawDt); // 투입일수 계산
-                carrer += diffDateValue;
+                carrer += diffDateValue; // 계산한 투입일수를 경력 총 일수에 플러스
             }
 
             // 경력일수로 년/개월 구하기
-            var carrerYear = parseInt(carrer / 365); // 365일로 나눈 몫
-            var carrerMonth = Math.round((carrer % 365) * 12 / 365 *100)/100; // 365일:나머지 일수 = 12개월:개월수로 개월수를 구한 후 소수점 2자리까지 반올림
+            var carrerYear  = parseInt(carrer / 365); // 365일로 나눈 몫(연단위)
+            var carrerMonth = Math.round((carrer % 365) * 12 / 365 *100)/100; // 365일:나머지 일수 = 12개월:개월수 수식으로 개월수를 구한 후 소수점 2자리까지 반올림
+
+            // 변환한 경력을 화면에 표시
             var carrerDivID = 'carrer' + index;
             document.getElementById(carrerDivID).innerHTML = carrerYear + "년 " + carrerMonth + "개월";
         }
 
-        // 프로젝트 등록
+        /**
+        * 내용 : 등록버튼 이벤트
+        **/
         function projectRegist() {
             var projectInfoJSON = new Object();
-            projectInfoJSON.loginID = loginUser.id;
+
             // 프로젝트 정보 관련 Validation Check
             // 정규식 정리
-            var patternNum = /^[0-9]+$/; // 숫자만 체크
+            var patternNum = /^[0-9]+$/                       ; // 숫자만 체크
             var patternSpecial = /^[`~!@#$%^&*|\\\'\";:\/?]+$/; // 특수문자만 체크
 
             // 프로젝트명
@@ -358,26 +379,27 @@
             }
 
             // 프로젝트 정보 make
-            projectInfoJSON.name = projectName;
-            projectInfoJSON.company = projectComp;
-            projectInfoJSON.code = makeProjectCode(projectComp);
-            projectInfoJSON.startDt = projectStartDt;
-            projectInfoJSON.endDt = projectEndDt;
-            projectInfoJSON.explain = projectExplain;
+            projectInfoJSON.loginID = loginUser.id                ; // 등록자
+            projectInfoJSON.name    = projectName                 ; // 프로젝트명
+            projectInfoJSON.company = projectComp                 ; // 발주회사
+            projectInfoJSON.code    = makeProjectCode(projectComp); // 프로젝트코드
+            projectInfoJSON.startDt = projectStartDt              ; // 프로젝트시작일
+            projectInfoJSON.endDt   = projectEndDt                ; // 프로젝트종료일
+            projectInfoJSON.explain = projectExplain              ; // 프로젝트 설명
 
 
             // 멤버 투입정보 get
-            var memerInfoArray = new Array();
-            var memberInfoName = document.getElementsByName('memberName');
-            var memberInfoPutDt = document.getElementsByName('putDt');
-            var memberInfoWithdrawDt = document.getElementsByName('withdrawDt');
-            var memberInfoSkill = document.getElementsByName('skill');
-            var memberInfoGrade = document.getElementsByName('gradeSel');
-            var memberInfoRoll = document.getElementsByName('memberRoll');
-            projectInfoJSON.listIndex = memberInfoName.length;
+            var memberInfoName       = document.getElementsByName('memberName'); // 참여인원명 - 이름(ID)형태(free의 경우는 이름만 표시)
+            var memberInfoPutDt      = document.getElementsByName('putDt'     ); // 투입일자
+            var memberInfoWithdrawDt = document.getElementsByName('withdrawDt'); // 철수일자
+            var memberInfoSkill      = document.getElementsByName('skill'     ); // 사용기술
+            var memberInfoGrade      = document.getElementsByName('gradeSel'  ); // 기술등급
+            var memberInfoRoll       = document.getElementsByName('memberRoll'); // 참여형태
 
             // 멤버 입력값이 있을때만 멤버정보 추가
             if(memberInfoName.length > 0) {
+                var memerInfoArray = new Array(); // 참여멤버 정보를 JSON형태로 만들어 Array에 담아 WAS로 보낼 JSON변수에 추가함
+
                 for(var index = 0; index < memberInfoName.length; index++) {
                     // 멤버 정보 관련 Validation Check
                     // 이름
@@ -392,6 +414,7 @@
                             return false;
                         }
                     }
+
                     // 참여기간
                     if(memberInfoPutDt[index].value == "" || memberInfoWithdrawDt[index].value == "") {
                         alert("참여기간을 입력해주세요."); // 필수값 check
@@ -424,50 +447,67 @@
                         alert("참여형태를 선택해주세요."); // 필수값 check
                         return false;
                     }
-                    var memberInfoJSON = new Object();
-                    // ID와 이름을 분리
-                    var tempStr = memberInfoName[index].value; // 이름+id값을 변수에 저장
+
+                    var memberInfoJSON = new Object(); // 멤버정보를 담을 Object 변수
+
+                    // 선택한 이름값에서 ID와 이름을 분리
+                    var tempStr       = memberInfoName[index].value; // 이름+ID값을 변수에 저장
                     var cutStartIndex = tempStr.indexOf("("); // "("의 index값을 구한다.
                     if(cutStartIndex == -1) { // 괄호가 포함되어 있지 않은 경우(직접입력)
-                        memberInfoJSON.id   = "free";
-                        memberInfoJSON.name = tempStr;
-                    } else { // select box에서 선택한경우
+                        memberInfoJSON.id   = "free"; // 프리랜서들 ID는 free로 통일하여 db에 저장됨
+                        memberInfoJSON.name = tempStr; // 입력한 이름
+                    } else { // select box에서 선택한경우(직원)
                         var cutEndIndex = tempStr.indexOf(")"); // ")"의 index값을 구한다.
-                        memberInfoJSON.id   = tempStr.substring(cutStartIndex+1, cutEndIndex);
-                        memberInfoJSON.name = tempStr.substr(0, cutStartIndex);
+
+                        memberInfoJSON.id   = tempStr.substring(cutStartIndex+1, cutEndIndex); // 괄호의 index값을 이용하여 괄호사이의 값만 추출
+                        memberInfoJSON.name = tempStr.substr(0, cutStartIndex); // 괄호 이전 값
                     }
-                    memberInfoJSON.putDt = memberInfoPutDt[index].value;
-                    memberInfoJSON.withdrawDt = memberInfoWithdrawDt[index].value;
-                    memberInfoJSON.skill = memberInfoSkill[index].value;
-                    memberInfoJSON.grade = memberInfoGrade[index].value;
-                    memberInfoJSON.roll = memberInfoRoll[index].value;
-                    memerInfoArray.push(memberInfoJSON);
-                }
-            projectInfoJSON.memberList = memerInfoArray;
+
+                    memberInfoJSON.putDt      = memberInfoPutDt[index].value     ; // 투입일자
+                    memberInfoJSON.withdrawDt = memberInfoWithdrawDt[index].value; // 철수일자
+                    memberInfoJSON.skill      = memberInfoSkill[index].value     ; // 사용기술
+                    memberInfoJSON.grade      = memberInfoGrade[index].value     ; // 기술등급
+                    memberInfoJSON.roll       = memberInfoRoll[index].value      ; // 참여형태
+
+                    memerInfoArray.push(memberInfoJSON); // JSON을 Array에 push
+                } // end of for
+
+                projectInfoJSON.memberList = memerInfoArray; // 참여정보 Array정보를 db와 통신하기 위해 사용하는 JSON에 추가
             }
+            projectInfoJSON.listIndex  = memberInfoName.length; // 멤버데이터 수(WAS에서 이 값으로 반복문처리를 진행함)
 
-            console.log("projectInfoJSON>>>>>" + JSON.stringify(projectInfoJSON));
-            console.log("memerInfoArray>>>>>" + JSON.stringify(memerInfoArray));
-
-            navigate(projectInfoJSON, "projectRegist.json", projectRegistSuccess);
+            navigate(projectInfoJSON, "projectRegist.json", projectRegistSuccess); // db처리
 
         }
 
-        function projectRegistSuccess(result) {
-            console.log("성공");
-            alert("등록되었습니다.");
-            movePage('projectList.html');
+        /**
+        * 내용 : AJAX 통신결과가 정상일때 호출되는 함수
+        * param resultData : 통신결과값
+        **/
+        function projectRegistSuccess(resultData) {
+            var registerResult = resultData.result; // 등록 결과
+
+            if(registerResult == "success"){ // 성공
+                alert('프로젝트 정보가 등록되었습니다.'); // 등록 성공 메시지
+                movePage('projectList.html'            ); // 목록페이지 이동
+            } else if(registerResult == "fail"){ // 실패
+                alert('등록에 실패하였습니다.<br> 다시 시도해주시기 바랍니다.'); // 등록 실패 메시지
+            }
         }
 
+        /**
+        * 내용 : 발주회사의 코드와 등록시점의 날짜를 이용하여 프로젝트코드를 만든다
+        * param company : 발주회사코드
+        * return : 프로젝트코드(형식 - 회사코드_년_월_일)
+        **/
         function makeProjectCode(company) {
             // 현재날짜 구하기
-            var date = new Date();
-            var year = date.getFullYear();
-            var month = new String(date.getMonth()+1);
-            var day = new String(date.getDate());
-            var code = "";
+            var date  = new Date()                   ; // date형식 변수
+            var year  = date.getFullYear()           ; // 년
+            var month = new String(date.getMonth()+1); // 월(getMonth() 메소드(함수)는 1월달을 0으로 간주하기에 +1을 해주어야 현재의 정확한 달이 나옴)
+            var day   = new String(date.getDate())   ; // 일
 
-            // 한자리수일 경우 0을 채워준다.
+            // 월, 일이 한자리수일 경우 0을 채워준다.
             if(month.length == 1){
               month = "0" + month;
             }
@@ -475,8 +515,8 @@
               day = "0" + day;
             }
 
-             code = company+ "_" + year  + "_" + month + "_" + day; // 회사코드 뒤에 현재날짜를 append
-             return code;
+            var code = company+ "_" + year  + "_" + month + "_" + day; // 회사코드 뒤에 현재날짜를 append
+            return code;
         }
     </script>
 </head>
@@ -580,8 +620,8 @@
             <ul>
                 <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
                 <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
-                <li><a href="#" data-icon="calendar">휴가신청</a></li>
-                <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
+                <li><a onclick="movePage('holidayDetail.html')" data-icon="calendar">휴가신청</a></li>
+                <li><a onclick="javascript:callLogout()"; data-icon="power" >로그아웃</a></li>
             </ul>
         </div>
     </div>

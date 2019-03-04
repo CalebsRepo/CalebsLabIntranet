@@ -1,3 +1,12 @@
+<!--
+*********************************************
+*  화면명: 프로젝트 일정 상세조회
+*  작성일지: 1) 김정진 (20190228) 최초작성
+*  업무구분: 프로젝트 일정목록 > 프로젝트 일정 상세조회
+*  내용: 프로젝트 일정 상세조회 페이지
+       : 수정가능자(관리자, 해당항목 등록자)인경우 해당페이지에서 정보 수정 가능
+*********************************************
+-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,201 +24,213 @@
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <!--DatePicker--><script src="../js/datepicker.js"></script>
 
-    <title></title>
+    <script type="text/javascript">
+        // 전역변수
+        var scheduleSeq      = getStorageItem()         ; // db에 pk값인 일정Seq번호를 세션스토리지에서 가져온다
+        var loginUser        = JSON.parse(getUserData()); // 로그인 정보
+        var loginUserAdmFlag = loginUser.adm_flag       ; // 관리자여부 A = 일반관리자 G = 그룹관리자
+        var projectStartDt   = ""                       ; // 프로젝트 시작일
+        var projectEndDt     = ""                       ; // 프로젝트 종료일
 
-    <script>
-    // 전역변수
-    var scheduleSeq = getStorageItem();         // 일정 시퀀스
-    var loginUser = JSON.parse(getUserData());  // 로그인 정보
-    var loginUserAdmFlag = loginUser.adm_flag;  // 관리자여부 A = 일반관리자 G = 그룹관리자
-    var projectStartDt = ""; // 프로젝트 시작일
-    var projectEndDt = ""; // 프로젝트 종료일
-
-    $(document).ready(function() {
-         if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){ // 로그인유저가 관리자인 경우
-            $(".admMenu").show();
-        }
-
-        var selectJSON = new Object();
-        selectJSON.schedule_seq = scheduleSeq;
-	    navigate(selectJSON, "getPlanDetail.json", getPlanDetailSuccess,""); // 일정 상세정보 조회
-    });
-
-    function getPlanDetailSuccess(result) {
-        console.log("성공");
-        console.log("============================================");
-        var selectResult="";
-        var parseSelectResult=""; // 조회데이터 파싱결과
-        selectResult=JSON.stringify(result);
-        parseSelectResult=JSON.parse(selectResult);
-        console.log("selectResult>>>>>" + selectResult);
-        console.log("parseSelectResult>>>>>" + parseSelectResult);
-        console.log("============================================");
-
-        if (parseSelectResult.length != 0) {
-            //조회데이터 화면에 Set
-            for(var i=0; i<parseSelectResult.length; i++) {
-                var registerId = parseSelectResult[i].id; // 등록자
-                document.getElementById('projectName').value = parseSelectResult[i].project_name; // 프로젝트명
-                document.getElementById('scheduleName').value = parseSelectResult[i].schedule_name; // 일정명
-                $("#kindCode").val(parseSelectResult[i].kind_code).prop("selected", true); // 구분값과 일치하는 옵션을 selected
-                $("#kindCode-button > span").text(parseSelectResult[i].kind_code); // 구분값을 select 박스에 출력
-                document.getElementById('startDt').value = YMDFormatter(parseSelectResult[i].schedule_start_dt); // 시작일
-                document.getElementById('endDt').value = YMDFormatter(parseSelectResult[i].schedule_end_dt); // 종료일
-                document.getElementById('contents').value = parseSelectResult[i].contents; // 설명
-
-                projectStartDt = parseSelectResult[i].project_start_dt; // 프로젝트 시작일을 전역변수에 저장
-                projectEndDt = parseSelectResult[i].project_end_dt; // 프로젝트 종료일을 전역변수에 저장
+        $(document).ready(function() {
+             if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){ // 로그인유저가 관리자인 경우
+                $(".admMenu").show(); // 관리자메뉴 표시
             }
 
-            $("#kindCode").attr('disabled','disabled'); // 조회시에는 select 박스가 선택되지 않도록 disabled처리
-        }else{
-            alert("일정을 불러올 수 없습니다.");
-            movePage('planList.html');
-        }
-
-        // 로그인 유저 수정권한 check
-        if (registerId == loginUser.id || loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){ // 등록자 or 관리자(A-Admin, G-GroupAdmin)
-            //취소 수정 삭제 버튼
-            $(".btn-area-3").css("display","block");
-        } else {
-            //목록 버튼
-            $(".btn-area-2").css("display","block");
-        }
-    }
-
-    //읽기모드 - input, select 수정불가
-    function readMode() {
-        $(".title-area h3").text("• 프로젝트 일정 상세");
-        $("#btnEdit").css("display","inline-flex"); // 수정버튼 화면표시
-        $("#btnSave").css("display","none"); // 저장버튼 숨김
-
-        $("#scheduleName").attr('readonly',true); // 일정명
-
-        $("#startDt").attr('readonly',true); // 시작일
-        $("#endDt").attr('readonly',true); // 종료일
-        $("#contents").attr('readonly',true); // 설명
-    }
-
-    //수정모드 - input, select 수정가능
-    function editMode() {
-        $(".title-area h3").text("• 프로젝트 일정 수정");
-        $("#btnEdit").css("display","none"); // 수정버튼 숨김
-        $("#btnSave").css("display","inline-flex"); // 저장버튼 화면표시
-
-        $("#scheduleName").attr('readonly',false); // 일정명
-        $("#kindCode").removeAttr('disabled'); // 구분
-
-        // 종료일이 시작일 이후로만 선택되도록 datepicker를 설정
-        $("#startDt").datepicker({
-            onSelect: function(selected) { // 날짜가 선택되었을때 함수
-                $("#endDt").datepicker("option","minDate", selected) // 종료일의 최소 선택일자를 선택한 날짜로 설정(시작일 이전으로 선택하지 못하도록)
+            var selectJSON = {
+                schedule_seq : scheduleSeq
             }
+            navigate(selectJSON, "getPlanDetail.json", getPlanDetailSuccess,""); // 일정 상세정보 조회
         });
-        $("#startDt").datepicker("option","maxDate", $("#endDt").val()); // 시작일의 최대 선택일자를 종료일로 설정(종료일 이후로 선택하지 못하도록)
 
-        $("#endDt").datepicker({
-            onSelect: function(selected) { // 날짜가 선택되었을때 함수
-                $("#startDt").datepicker("option","maxDate", selected) // 시작일의 최대 선택일자를 선택한 날짜로 설정(종료일 이후로 선택하지 못하도록)
+        /**
+        * 내용 : AJAX 통신결과 정상일때 호출되는 함수
+        * param result : 통신결과값
+        **/
+        function getPlanDetailSuccess(result) {
+            console.log("============================================");
+            var selectResult=JSON.stringify(result);
+            var parseSelectResult=JSON.parse(selectResult); // 조회데이터 파싱결과
+            console.log("selectResult>>>>>" + selectResult);
+            console.log("============================================");
+
+            if (parseSelectResult.length != 0) { // 조회데이터가 있는경우
+                //조회결과 화면에 Set
+                for(var i=0; i<parseSelectResult.length; i++) {
+                    var registerId = parseSelectResult[i].id; // 등록자
+                    document.getElementById('projectName' ).value = parseSelectResult[i].project_name                   ; // 프로젝트명
+                    document.getElementById('scheduleName').value = parseSelectResult[i].schedule_name                  ; // 일정명
+                    document.getElementById('startDt'     ).value = YMDFormatter(parseSelectResult[i].schedule_start_dt); // 시작일
+                    document.getElementById('endDt'       ).value = YMDFormatter(parseSelectResult[i].schedule_end_dt  ); // 종료일
+                    document.getElementById('contents'    ).value = parseSelectResult[i].contents                       ; // 설명
+                    $("#kindCode").val(parseSelectResult[i].kind_code).prop("selected", true)                           ; // 구분값과 일치하는 옵션을 selected
+                    $("#kindCode-button > span").text(parseSelectResult[i].kind_code)                                   ; // 구분값을 select 박스에 출력
+                    $("#kindCode").attr('disabled','disabled')                                                          ; // 조회시에는 select 박스가 선택되지 않도록 disabled처리
+
+                    projectStartDt = parseSelectResult[i].project_start_dt; // 프로젝트 시작일을 전역변수에 저장(수정할때 validation check에 사용됨)
+                    projectEndDt   = parseSelectResult[i].project_end_dt  ; // 프로젝트 종료일을 전역변수에 저장(수정할때 validation check에 사용됨)
+                }
+            }else{
+                alert("일정을 불러올 수 없습니다.");
+                movePage('planList.html');
             }
-        });
-        $("#endDt").datepicker("option","minDate", $("#startDt").val()); // 종료일의 최소 선택일자를 시작일로 설정(시작일 이전으로 선택하지 못하도록)
-        $("#contents").attr('readonly',false); // 설명
-    }
 
-    function planUpdate() {
-        // 값 가져오기
-        var kindSelect  = document.getElementById('kindCode');
-
-        var scheduleName  = document.getElementById('scheduleName').value; // 일정명
-        var kindCode      = kindSelect.options[kindSelect.selectedIndex].value; // 구분값
-        var startDt       = document.getElementById('startDt').value; // 시작일
-        var endDt         = document.getElementById('endDt').value; // 종료일
-        var contents      = document.getElementById('contents').value; // 설명
-
-        // Validation Check
-        // 정규식 정리
-        var patternNum = /^[0-9]+$/; // 숫자만 체크
-        var patternSpecial = /^[`~!@#$%^&*|\\\'\";:\/?]+$/; // 특수문자만 체크
-
-        // 일정명
-        if(scheduleName == "") { // 프로젝트명을 입력하지 않은 경우
-            alert("일정명을 입력해주세요");
-            return false;
-        }
-        if(patternNum.test(scheduleName) || patternSpecial.test(scheduleName)) { // 일정명이 숫자나 특수문자만으로 구성되어 있는 경우
-            alert("일정명을 확인해주세요");
-            return false;
+            // 로그인 유저 수정권한 check
+            if (registerId == loginUser.id || loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){ // 등록자 or 관리자(A-Admin, G-GroupAdmin)
+                //취소 수정 삭제 버튼
+                $(".btn-area-3").css("display","block");
+            } else {
+                //목록 버튼
+                $(".btn-area-2").css("display","block");
+            }
         }
 
-        // 발주회사
-        if(kindCode == "") { // 구분값을 선택하지 않은 경우
-            alert("구분값을 선택해주세요");
-            return false;
+        /**
+        * 내용 : 읽기모드 - input, select 수정불가
+        **/
+        function readMode() {
+            $(".title-area h3").text("• 프로젝트 일정 상세" ); // 타이틀 변경
+            $("#btnEdit"      ).css ("display","inline-flex"); // 수정버튼 화면표시
+            $("#btnSave"      ).css ("display","none"       ); // 저장버튼 숨김
+
+            $("#scheduleName").attr('readonly',true); // 일정명 readonly 설정
+            $("#startDt"     ).attr('readonly',true); // 시작일 readonly 설정
+            $("#endDt"       ).attr('readonly',true); // 종료일 readonly 설정
+            $("#contents"    ).attr('readonly',true); // 설명 readonly 설정
         }
 
-        // 일정 시작 종료일
-        if(startDt == "" || endDt == "") { // 날짜를 입력하지 않은 경우
-            alert("시작/종료일을 입력해주세요");
-            return false;
+        /**
+        * 내용 : 수정모드 - input, select 수정가능
+        **/
+        function editMode() {
+            $(".title-area h3").text("• 프로젝트 일정 수정" ); // 타이틀 변경
+            $("#btnEdit"      ).css ("display","none"       ); // 수정버튼 숨김
+            $("#btnSave"      ).css ("display","inline-flex"); // 저장버튼 화면표시
+
+            $("#scheduleName").attr      ('readonly',false); // 일정명 readonly 해제
+            $("#contents"    ).attr      ('readonly',false); // 설명 readonly 해제
+            $("#kindCode"    ).removeAttr('disabled'      ); // 구분 disabled 해제
+
+            // 종료일이 시작일 이후로만 선택되도록 datepicker를 설정
+            $("#startDt").datepicker({
+                onSelect: function(selected) { // 날짜가 선택되었을때 함수
+                    $("#endDt").datepicker("option","minDate", selected) // 종료일의 최소 선택일자를 선택한 날짜로 설정(시작일 이전으로 선택하지 못하도록)
+                }
+            });
+            $("#startDt").datepicker("option","maxDate", $("#endDt").val()); // 시작일의 최대 선택일자를 종료일로 설정(종료일 이후로 선택하지 못하도록)
+
+            $("#endDt").datepicker({
+                onSelect: function(selected) { // 날짜가 선택되었을때 함수
+                    $("#startDt").datepicker("option","maxDate", selected) // 시작일의 최대 선택일자를 선택한 날짜로 설정(종료일 이후로 선택하지 못하도록)
+                }
+            });
+            $("#endDt").datepicker("option","minDate", $("#startDt").val()); // 종료일의 최소 선택일자를 시작일로 설정(시작일 이전으로 선택하지 못하도록)
         }
 
-        // 일정기간과 프로젝트기간의 비교
-        if(diffDate(YMDFormatter(projectStartDt), startDt) < 0) { // 시작일이 프로젝트 시작일보다 작은 경우
-            alert("일정 시작일은 프로젝트 시작일보다 작을 수 없습니다.");
-            return false;
+        /**
+        * 내용 : 일정 수정 db처리
+        **/
+        function planUpdate() {
+            // 값 가져오기
+            var scheduleName = document.getElementById('scheduleName').value; // 일정명
+            var startDt      = document.getElementById('startDt'     ).value; // 시작일
+            var endDt        = document.getElementById('endDt'       ).value; // 종료일
+            var contents     = document.getElementById('contents'    ).value; // 설명
+
+            var kindSelect   = document.getElementById('kindCode'    ); // 구분값 selectBox
+            var kindCode     = kindSelect.options[kindSelect.selectedIndex].value; // 구분값
+
+            // Validation Check
+            // 정규식 정리
+            var patternNum = /^[0-9]+$/; // 숫자만 체크
+            var patternSpecial = /^[`~!@#$%^&*|\\\'\";:\/?]+$/; // 특수문자만 체크
+
+            // 일정명
+            if(scheduleName == "") { // 프로젝트명을 입력하지 않은 경우
+                alert("일정명을 입력해주세요");
+                return false;
+            }
+            if(patternNum.test(scheduleName) || patternSpecial.test(scheduleName)) { // 일정명이 숫자나 특수문자만으로 구성되어 있는 경우
+                alert("일정명을 확인해주세요");
+                return false;
+            }
+
+            // 발주회사
+            if(kindCode == "") { // 구분값을 선택하지 않은 경우
+                alert("구분값을 선택해주세요");
+                return false;
+            }
+
+            // 일정 시작 종료일
+            if(startDt == "" || endDt == "") { // 날짜를 입력하지 않은 경우
+                alert("시작/종료일을 입력해주세요");
+                return false;
+            }
+
+            // 일정기간과 프로젝트기간의 비교
+            if(diffDate(YMDFormatter(projectStartDt), startDt) < 0) { // 시작일이 프로젝트 시작일보다 작은 경우
+                alert("일정 시작일은 프로젝트 시작일보다 작을 수 없습니다.");
+                return false;
+            }
+            console.log("endDt = " + endDt + " projectEndDt = " + YMDFormatter(projectEndDt));
+            if(diffDate(YMDFormatter(projectEndDt), endDt) > 0) { // 종료일이 프로젝트 종료일보다 큰 경우
+                alert("일정 종료일은 프로젝트 시작일보다 클 수 없습니다.");
+                return false;
+            }
+
+            // 설명
+            if(contents == "") {
+                alert("설명을 입력해주세요.");
+                return false;
+            }
+
+            // AJAX통신를 위한 JSON 파라메터 데이터 처리
+            var updateJSON = new Object();
+                updateJSON.schedule_seq  = scheduleSeq ; // pk값인 seq값(WHERE 조건)
+                updateJSON.schedule_name = scheduleName; // 일정명
+                updateJSON.kind_code     = kindCode    ; // 구분값
+                updateJSON.start_dt      = startDt     ; //시작일
+                updateJSON.end_dt        = endDt       ; // 종료일
+                updateJSON.contents      = contents    ; // 설명
+
+            navigate(updateJSON, "planUpdate.json", planUpdateSuccess); // db처리
         }
-        console.log("endDt = " + endDt + " projectEndDt = " + YMDFormatter(projectEndDt));
-        if(diffDate(YMDFormatter(projectEndDt), endDt) > 0) { // 종료일이 프로젝트 종료일보다 큰 경우
-            alert("일정 종료일은 프로젝트 시작일보다 클 수 없습니다.");
-            return false;
+
+        /**
+        * 내용 : AJAX UPDATE 통신결과가 정상일때 호출되는 함수
+        * param result : 통신결과값
+        **/
+        function planUpdateSuccess(result) {
+            if(result == 1) { // spring에서 update 성공시 반환값은 1
+                alert("저장되었습니다.");
+                movePage('planList.html');
+            } else {
+                alert("저장에 실패했습니다.");
+            }
         }
 
-        // 설명
-        if(contents == "") {
-            alert("설명을 입력해주세요.");
-            return false;
+        /**
+        * 내용 : 일정 삭제 db처리
+        **/
+        function planDelete() {
+            var deleteJSON = new Object();
+            deleteJSON.schedule_seq  = scheduleSeq; // pk값인 seq값(WHERE 조건)
+
+            navigate(deleteJSON, "planDelete.json", planDeleteSuccess); // db처리
         }
 
-        var updateJSON = new Object();
-        updateJSON.schedule_seq  = scheduleSeq  ; // pk값인 seq값(WHERE 조건)
-        updateJSON.schedule_name = scheduleName; // 일정명
-        updateJSON.kind_code     = kindCode    ; // 구분값
-        updateJSON.start_dt      = startDt     ; //시작일
-        updateJSON.end_dt        = endDt       ; // 종료일
-        updateJSON.contents      = contents     ; // 설명
-
-        // navigate(updateJSON, "planUpdate.json", planUpdateSuccess);
-    }
-
-    function planUpdateSuccess(result) {
-        if(result == 1) { // spring에서 update 성공시 반환값은 1
-            console.log("성공");
-            console.log(JSON.stringify(result));
-            alert("저장되었습니다.");
-            movePage('planList.html');
-        } else {
-            alert("저장에 실패했습니다.");
+        /**
+        * 내용 : AJAX DELETE 통신결과가 정상일때 호출되는 함수
+        * param result : 통신결과값
+        **/
+        function planDeleteSuccess(result) {
+            if(result > 0) { // spring에서 delete 성공시 delete row count 반환
+                alert("삭제되었습니다.");
+                movePage('planList.html');
+            } else {
+                alert("삭제에 실패했습니다.");
+            }
         }
-    }
-
-    function planDelete() {
-        var deleteJSON = new Object();
-        deleteJSON.schedule_seq  = scheduleSeq; // pk값인 seq값(WHERE 조건)
-
-        navigate(deleteJSON, "planDelete.json", planDeleteSuccess);
-    }
-
-    function planDeleteSuccess(result) {
-        if(result > 0) { // spring에서 delete 성공시 delete row count 반환
-            console.log("성공");
-            console.log(JSON.stringify(result));
-            alert("삭제되었습니다.");
-            movePage('planList.html');
-        } else {
-            alert("삭제에 실패했습니다.");
-        }
-    }
     </script>
 
 </head>
@@ -312,8 +333,8 @@
                 <ul>
                     <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
                     <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
-                    <li><a href="#" data-icon="calendar">휴가신청</a></li>
-                    <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
+                    <li><a onclick="movePage('holidayDetail.html')" data-icon="calendar">휴가신청</a></li>
+                    <li><a onclick="javascript:callLogout()"; data-icon="power" >로그아웃</a></li>
                 </ul>
             </div>
         </div>

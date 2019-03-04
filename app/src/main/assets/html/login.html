@@ -1,6 +1,8 @@
 <!--************************************************************************
 *  화면명: 로그인
 *  작성일지: 1) 김기훈 (20190213) 최초작성
+            2) 남기완 (20190304) - MainActivity 에서 push토큰 가져오기 추가
+                                - push 토큰 비교 및 업데이트 추가
 *  업무구분: 로그인
 *  내용: 아이디 / 비밀번호 입력을 통한 로그인 화면
 **************************************************************************-->
@@ -31,10 +33,14 @@
                 $('#id').val(savedId);
             }
 
-            window.android.pushToken(); // PUSH 토큰 가져오기
+            window.android.pushToken(); // MainActivity 의 pushToken() 호출
 
         });
 
+        /**
+        * 내용 : MainActivity 에서 PUSH 토큰 가져오기
+        * param token : 디바이스에서 생성된 push토큰 값
+        **/
         function getToken(token) {
             newToken = token;
         }
@@ -71,15 +77,13 @@
                //리턴받은 로그인 유저 데이터 sessionStorage에 저장
                sessionStorage.setItem("userData",result);
 
-               /* push 토큰 비교 및 업데이트 */
+               /* push 토큰 비교 및 업데이트 start */
                var value        = JSON.parse(sessionStorage.getItem("userData"));
                var sessionToken = "";
 
-               sessionToken = value.push_token;
+               sessionToken = value.push_token; // 로그인한 사용자의 토큰
 
-               console.log("sessionToken : " + sessionToken);
-
-               if((sessionToken != newToken) || sessionToken == "" || sessionToken == null) {
+               if((sessionToken != newToken) || sessionToken == "" || sessionToken == null) { // DB에 등록된 토큰과 현재 디바이스의 토큰값이 일치하지 않는 경우
 
                     push_token = newToken;
 
@@ -87,20 +91,22 @@
                         id         : id,
                         push_token : push_token
                     };
-                    navigate(params, "tokenUpdate.json", tokenUpdateSuccess);
-                }else {
-                    movePage("index.html");
+                    navigate(params, "tokenUpdate.json", tokenUpdateSuccess); // 현재 디바이스의 토큰으로 DB업데이트
+                }else { // DB에 등록된 토큰과 현재 디바이스의 토큰값이 일치하는 경우
+                    movePage("index.html"); // index페이지로 이동
                 }
             }else{
                 alert("입력한 회원정보가 일치하지 않습니다");
             }
 
-            /* push토큰 업데이트 완료 후*/
+            /**
+            * 내용 : push토큰 업데이트 완료 후 index페이지로 이동
+            **/
             function tokenUpdateSuccess() {
                 movePage("index.html");
             }
 
-
+            /* push 토큰 비교 및 업데이트 end */
         }
 
     </script>

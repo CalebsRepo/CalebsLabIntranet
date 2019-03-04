@@ -10,7 +10,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
-    <title></title>
+    <title>휴가캘린더</title>
 
     <link href="../css/jquery.mobile-1.4.5.css" rel="stylesheet">
     <link href="../css/bootstrap.min.css" rel='stylesheet'  />
@@ -27,12 +27,17 @@
     <script src="../js/bootstrap.min.js"></script>
 
     <script type="text/javascript">
+       var loginUser = JSON.parse(getUserData());
+       var loginUserAdmFlag = loginUser.adm_flag;
 
        var eventsArr = []; // 캘린더에 출력해줄 배열
        var colorArr = ['51bec9', '24afd6', 'ffaf51', 'fd8497', 'f7d17c', '51d5a1', '21b4aa', 'aed551', 'f9916a', '99837a'];
        var cnt = 0;
 
        $(document).ready(function() {
+           if(loginUserAdmFlag == "A" || loginUserAdmFlag == "G"){
+               $(".admMenu").show();
+           }
 
            // 승인된 휴가정보 가져오기
            navigate({}, "calander.json", successCalendar);
@@ -173,7 +178,7 @@
 
 <!-- header -->
 <header data-role="header">
-    <h1 style="line-height: 1.5; font-size:15px; font-weight: 900;">CalebsLab</h1>
+    <h1 style="line-height: 1.5; font-size:15px; font-weight: 900;">휴가캘린더</h1>
     <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
 </header>
 
@@ -209,7 +214,7 @@
             <li><a onclick="movePage('main.html')" data-icon="home">홈</a></li>
             <li><a onclick="movePage('projectList.html')" data-icon="shop">프로젝트</a></li>
             <li><a onclick="movePage('holidayDetail.html')" data-icon="calendar">휴가신청</a></li>
-            <li><a href="#" data-icon="power" onclick="javascript:callLogout()";>로그아웃</a></li>
+            <li><a onclick="javascript:callLogout()"; data-icon="power" >로그아웃</a></li>
         </ul>
     </div>
 </div>

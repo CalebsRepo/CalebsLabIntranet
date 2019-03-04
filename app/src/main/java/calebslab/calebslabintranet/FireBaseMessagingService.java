@@ -1,8 +1,18 @@
+/************************************************************************
+ *  업무구분명: push메시지 설정
+ *  세부업무구분명: 서버에서 전송된 메세지를 세팅하고 push 이벤트를 설정하여 사용자에게 보여준다.
+ *  작성자: 남기완
+ *  설명: 1) push메세지 세팅 및 이벤트 설정
+ *  ------------------------------------------------
+ *  변경이력
+ *  ------------------------------------------------
+ *  NO   날짜          		       작성자       내용
+ *  1   2019-03-04                 남기완      신규생성
+ **************************************************************************/
 package calebslab.calebslabintranet;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
-
 import android.app.NotificationManager;
 
 import android.app.PendingIntent;
@@ -12,6 +22,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+
 import android.media.RingtoneManager;
 
 import android.net.Uri;
@@ -24,10 +35,7 @@ import android.util.Log;
 
 import android.content.Context;
 
-
-
 import com.google.firebase.messaging.FirebaseMessagingService;
-
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.net.URL;
@@ -39,6 +47,11 @@ public class FireBaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
     Bitmap bigPicture;
 
+
+    /**
+     * 내용 : 서버에서 전송된 메세지를 받는다
+     * param remoteMessage ; 전송된 메시지 값
+     **/
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
@@ -54,23 +67,21 @@ public class FireBaseMessagingService extends FirebaseMessagingService {
         sendNotification(title, body, type, picture);
     }
 
-
+    /**
+     * 내용 : 서버에서 전송된 메세지를 세팅하고 push 이벤트를 설정하여 사용자에게 보여준다.
+     * param messageTitle : push 메시지 제목
+     * param messageBody : push 메시지 내용
+     * param messageType : push 전송처리 구분
+     * param messagePicture : 이미지
+     **/
     private void sendNotification(String messageTitle, String messageBody, String messageType, String messagePicture) {
 
         Intent intent = new Intent(this, MainActivity.class);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        /*
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
 
-                PendingIntent.FLAG_ONE_SHOT);
-        */
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)(System.currentTimeMillis()/1000), intent,
-
-                PendingIntent.FLAG_ONE_SHOT);
-
-
+        // (int)(System.currentTimeMillis()/1000) 현재시간을 id값으로 줘서 전송되는 push메세지를 쌓이도록 한다.
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)(System.currentTimeMillis()/1000), intent, PendingIntent.FLAG_ONE_SHOT);
 
         String channelId = getString(R.string.CalebNoti);
 
@@ -79,9 +90,6 @@ public class FireBaseMessagingService extends FirebaseMessagingService {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),android.R.drawable.zoom_plate);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
-
-        //notificationBuilder.setSmallIcon(R.mipmap.ic_launcher)
-        //notificationBuilder.setSmallIcon(android.R.drawable.ic_popup_reminder)   // required
 
         notificationBuilder.setSmallIcon(R.mipmap.logo); // 작은 아이콘
 
@@ -132,21 +140,14 @@ public class FireBaseMessagingService extends FirebaseMessagingService {
 
         notificationBuilder.setLights(Color.rgb(165,102,255), 2000,2000); // LED 설정
 
-        notificationBuilder.setPriority(NotificationCompat.PRIORITY_MAX); //
+        notificationBuilder.setPriority(NotificationCompat.PRIORITY_MAX); // 우선순위
 
-        notificationBuilder.setContentIntent(pendingIntent);
+        notificationBuilder.setContentIntent(pendingIntent); // 실행할 작업이 담긴 PendingIntent
 
-
-
-
-        NotificationManager notificationManager =
-
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // 해당 기기의 OS버전이 오레오이상일때
 
             String channelName = getString(R.string.CalebNoti);
 
@@ -160,9 +161,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService {
 
         }
 
-        Log.d("NGW", "(int)(System.currentTimeMillis()/1000) : " + (int)(System.currentTimeMillis()/1000));
-
-        //notificationManager.notify(messageNotiId, notificationBuilder.build());
+        // (int)(System.currentTimeMillis()/1000) 현재시간을 id값으로 줘서 전송되는 push메세지를 쌓이도록 한다.
         notificationManager.notify((int)(System.currentTimeMillis()/1000), notificationBuilder.build());
 
     }
