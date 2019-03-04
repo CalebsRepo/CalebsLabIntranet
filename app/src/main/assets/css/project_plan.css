@@ -28,7 +28,8 @@
     .project-list .title-area div.grid-cd-1{width:calc(100% - 110px); display:inline-flex;}
     .project-list .title-area div.grid-cd-2{width:110px; display:inline-flex;}
     /*.project-list .title-area div.grid-cd-2 a{width:100%; } */
-    .project-list .title-area div.grid-cd-3{width:110px; display:inline-flex;}
+    .project-list .title-area div.grid-cd-3{ display:inline-flex;}
+    .project-list .title-area div.grid-cd-3 a{margin:0;}
 
      /*Summary List*/
     .project-list .summary-list div.plan{display:block; color:#333333; text-shadow:none;}
