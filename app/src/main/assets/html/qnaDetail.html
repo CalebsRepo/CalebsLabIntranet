@@ -107,12 +107,12 @@
             contents = contents.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
     		var form_data = {
-    		                  regnum   : sessionStorage.getItem('regnum'),
-    						  id       : userInfo.id,
-    						  name     : userInfo.name,
-    						  subject  : $("#qna-title").val(),
-    						  contents : contents,
-    						  bbs_code : $("#qna-part").val()
+    		                  regnum   : sessionStorage.getItem('regnum'),      // 게시글 번호
+    						  id       : userInfo.id,                           // 아이디
+    						  name     : userInfo.name,                         // 이름
+    						  subject  : $("#qna-title").val(),                 // 제목
+    						  contents : contents,                              // 내용
+    						  bbs_code : $("#qna-part").val()                   // 공지형태
     						};
 
     		switch (num) {
@@ -192,11 +192,11 @@
             alert("등록되었습니다.");
 
              var sendPushMessage = {
-                flag    : "multi",
-                title   : '새로 등록된 공지가 있습니다',
-                body    : $("#qna-title").val(),
-                token   : tokenArray,
-                type    : 'noti'
+                flag    : "multi",                        // single(한 사용자에게 푸시), multi(여러사람에게 푸시)
+                title   : '새로 등록된 공지가 있습니다',     // 타이틀
+                body    : $("#qna-title").val(),          // 내용
+                token   : tokenArray,                     // 푸시보낼 토큰값들
+                type    : 'noti'                          // 공지
              };
 
             // 전체 알림

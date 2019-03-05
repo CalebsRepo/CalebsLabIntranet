@@ -73,7 +73,6 @@
         for(var i=0; i<ajaxResult.length; i++) {
             var projectListview = document.getElementById('projectListview');
             var project_code = ajaxResult[i].project_code;
-            console.log("========================================================" + project_code);
             if (ajaxResult[i].project_cnt != 0) {
                 $("#projectListview").append("<li class='ui-corner-all'>"
                                                 +" <a onclick='movePage(\"projectDetail.html\", \""+project_code+"\")' class='list-detail ui-btn ui-btn-icon-right ui-icon-carat-r ui-corner-all'>"

@@ -8,17 +8,18 @@
 **************************************************************************-->
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
-    <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
-    <script src="../js/common.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-    <script src="https://smtpjs.com/v3/smtp.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:800" rel="stylesheet">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+        <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.css">
+        <link rel="stylesheet" href="../css/menu.css">
+        <script src="../js/common.js"></script>
+        <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        <script src="https://smtpjs.com/v3/smtp.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:800" rel="stylesheet">
 
-    <script language = "javascript">
+        <script language = "javascript">
 
             /* 휴가 정보 테이블 */
             var apply_seq_no     = ""; // 신청번호
@@ -910,7 +911,7 @@
 
         </script>
 
-    <style>
+        <style>
 
             #apply_seq_div, #h_type_div, #h_flag_div, #holiday_period_div, #apply_count_div, #holiday_detail_info_div, #apply_content_div, #approval_flag_div, #approval_comment_div {
                 margin-bottom : 20px;
@@ -955,179 +956,179 @@
                 font-size : 15px;
             }
         </style>
-</head>
+    </head>
 
-<body>
+    <body>
 
-<div id="holidayForm" data-role="page">
-    <!-- 상단 페이지 정보 -->
-    <header data-role="header">
-        <h1 id="pageName"></h1>
-        <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
-    </header>
+        <div id="holidayForm" data-role="page">
+            <!-- 상단 페이지 정보 -->
+            <header data-role="header">
+                <h1 id="pageName"></h1>
+                <a href="#menuPanel" class="ui-btn-right" data-icon="bars">menu</a>
+            </header>
 
-    <!-- 전체메뉴 -->
-    <div data-role="panel" class="menuPanel"id="menuPanel" data-position="right"  data-display="overlay" data-theme="a">
-        <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
-        <ul id="menuPanelList"data-role="listview">
-            <p>내정보</p>
-            <li><a onclick= "movePage('employeeDetail.html')"   >마이페이지         </a></li>
-            <p>프로젝트</p>
-            <li><a onclick= "movePage('projectList.html')"      >프로젝트           </a></li>
-            <li><a onclick= "movePage('planList.html')"         >프로젝트일정 목록   </a></li>
-            <p>휴가</p>
-            <li><a onclick= "viewHolidayDetail()"               >휴가신청           </a></li>
-            <li><a onclick= "movePage('holidayList.html')"      >휴가신청내역        </a></li>
-            <li><a onclick= "movePage('calendar.html')"         >휴가캘린더          </a></li>
-            <p>게시판</p>
-            <li><a onclick= "movePage('qnaList.html')"          >FAQ                </a></li>
-            <p class="admMenu">관리</p>
-            <li class="admMenu"><a onclick= "movePage('employeeDetail.html', 'myPage')" >사원등록</a></li>
-            <li class="admMenu"><a onclick= "movePage('employeeInfo.html')"             >사원목록</a></li>
-            <li class="admMenu"><a onclick= "movePage('holidayCondition.html')"         >휴가현황</a></li>
-        </ul>
-    </div>
+            <!-- 전체메뉴 -->
+            <div data-role="panel" class="menuPanel"id="menuPanel" data-position="right"  data-display="overlay" data-theme="a">
+                <img src="../css/images/calebslab_CI_1_upper-300x108.png" alt="CalebsLab">
+                <ul id="menuPanelList"data-role="listview">
+                    <p>내정보</p>
+                    <li><a onclick= "movePage('employeeDetail.html')"   >마이페이지         </a></li>
+                    <p>프로젝트</p>
+                    <li><a onclick= "movePage('projectList.html')"      >프로젝트           </a></li>
+                    <li><a onclick= "movePage('planList.html')"         >프로젝트일정 목록   </a></li>
+                    <p>휴가</p>
+                    <li><a onclick= "viewHolidayDetail()"               >휴가신청           </a></li>
+                    <li><a onclick= "movePage('holidayList.html')"      >휴가신청내역        </a></li>
+                    <li><a onclick= "movePage('calendar.html')"         >휴가캘린더          </a></li>
+                    <p>게시판</p>
+                    <li><a onclick= "movePage('qnaList.html')"          >FAQ                </a></li>
+                    <p class="admMenu">관리</p>
+                    <li class="admMenu"><a onclick= "movePage('employeeDetail.html', 'myPage')" >사원등록</a></li>
+                    <li class="admMenu"><a onclick= "movePage('employeeInfo.html')"             >사원목록</a></li>
+                    <li class="admMenu"><a onclick= "movePage('holidayCondition.html')"         >휴가현황</a></li>
+                </ul>
+            </div>
 
-    <div id="applicationForm_div" data-role="content">
-        <div id="apply_seq_div">
-            <label>신청번호</label>
-            <p id ="apply_seq"></p>
-        </div>
+            <div id="applicationForm_div" data-role="content">
+                <div id="apply_seq_div">
+                    <label>신청번호</label>
+                    <p id ="apply_seq"></p>
+                </div>
 
-        <div id="applicant_div">
-            <label>신청자</label>
-            <p id ="applicant"></p>
-        </div>
+                <div id="applicant_div">
+                    <label>신청자</label>
+                    <p id ="applicant"></p>
+                </div>
 
-        <div id="h_type_div">
-            <label>휴가 구분</label>
-            <select id = "h_type" data-role="none"  data-theme="b">
-                <option value="연차" selected>연차</option>
-                <option value="특별">특별</option>
-            </select>
-        </div>
+                <div id="h_type_div">
+                    <label>휴가 구분</label>
+                    <select id = "h_type" data-role="none"  data-theme="b">
+                        <option value="연차" selected>연차</option>
+                        <option value="특별">특별</option>
+                    </select>
+                </div>
 
-        <div id="h_flag_div">
-            <label>휴가 종류</label>
-            <select id = "h_flag" data-role="none" >
-                <option value="refresh" selected>refresh</option>
-                <option value="가족">가족</option>
-                <option value="경조사">경조사</option>
-                <option value="공항">공항</option>
-                <option value="기타">기타</option>
-                <option value="매매">매매</option>
-                <option value="병원">병원</option>
-                <option value="여행">여행</option>
-                <option value="오후">오후</option>
-                <option value="육아">육아</option>
-                <option value="일반">일반</option>
-                <option value="자녀">자녀</option>
-                <option value="출산">출산</option>
-                <option value="플젝">플젝</option>
-            </select>
-        </div>
+                <div id="h_flag_div">
+                    <label>휴가 종류</label>
+                    <select id = "h_flag" data-role="none" >
+                        <option value="refresh" selected>refresh</option>
+                        <option value="가족">가족</option>
+                        <option value="경조사">경조사</option>
+                        <option value="공항">공항</option>
+                        <option value="기타">기타</option>
+                        <option value="매매">매매</option>
+                        <option value="병원">병원</option>
+                        <option value="여행">여행</option>
+                        <option value="오후">오후</option>
+                        <option value="육아">육아</option>
+                        <option value="일반">일반</option>
+                        <option value="자녀">자녀</option>
+                        <option value="출산">출산</option>
+                        <option value="플젝">플젝</option>
+                    </select>
+                </div>
 
-        <div id="holiday_period_div">
-            <label>휴가기간</label>
-            <table>
-                <tr>
-                    <td style="width:48%;"><input id="start_ymd" type="date" value=""></td>
-                    <td> ~ </td>
-                    <td style="width:48%;"><input id="end_ymd" type="date" value=""></td>
-                </tr>
-            </table>
-        </div>
+                <div id="holiday_period_div">
+                    <label>휴가기간</label>
+                    <table>
+                        <tr>
+                            <td style="width:48%;"><input id="start_ymd" type="date" value=""></td>
+                            <td> ~ </td>
+                            <td style="width:48%;"><input id="end_ymd" type="date" value=""></td>
+                        </tr>
+                    </table>
+                </div>
 
-        <div id="apply_count_div">
-            <label>휴가신청일수</label>
-            <select id = "apply_count" data-role="none">
-                <option value="0.5">0.5</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-                <option value="15">15</option>
-            </select>
-        </div>
+                <div id="apply_count_div">
+                    <label>휴가신청일수</label>
+                    <select id = "apply_count" data-role="none">
+                        <option value="0.5">0.5</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                    </select>
+                </div>
 
-        <div id="holiday_detail_info_div">
-            <label>연차정보</label>
-            <table id="holiday_detail_count_table">
-                <tr>
-                    <td style="width:40%; color:#999;">연차발생기간</td>
-                    <td id="holiday_period"></td>
-                </tr>
-                <tr>
-                    <td style="width:40%; color:#999;">총 연차 일수</td>
-                    <td id="holiday_total_count"></td>
-                </tr>
-                <tr>
-                    <td style="width:40%; color:#999;">사용한 연차 일수</td>
-                    <td id="used_holiday_count"></td>
-                </tr>
-                <tr>
-                    <td style="width:40%; color:#999;">남은 연차 일수</td>
-                    <td id="available_holiday"></td>
-                </tr>
-            </table>
-        </div>
+                <div id="holiday_detail_info_div">
+                    <label>연차정보</label>
+                    <table id="holiday_detail_count_table">
+                        <tr>
+                            <td style="width:40%; color:#999;">연차발생기간</td>
+                            <td id="holiday_period"></td>
+                        </tr>
+                        <tr>
+                            <td style="width:40%; color:#999;">총 연차 일수</td>
+                            <td id="holiday_total_count"></td>
+                        </tr>
+                        <tr>
+                            <td style="width:40%; color:#999;">사용한 연차 일수</td>
+                            <td id="used_holiday_count"></td>
+                        </tr>
+                        <tr>
+                            <td style="width:40%; color:#999;">남은 연차 일수</td>
+                            <td id="available_holiday"></td>
+                        </tr>
+                    </table>
+                </div>
 
-        <div id ="apply_content_div">
-            <label>휴가사유</label>
-            <textarea name="apply_content" id="apply_content" class="textarea01" rows="8" cols="70" style="color:#999; background-color:#FFFF6C; overflow-x:hidden; overflow-y:auto; font-size:15px;">사유 : &#10;장소 : </textarea>
-        </div>
+                <div id ="apply_content_div">
+                    <label>휴가사유</label>
+                    <textarea name="apply_content" id="apply_content" class="textarea01" rows="8" cols="70" style="color:#999; background-color:#FFFF6C; overflow-x:hidden; overflow-y:auto; font-size:15px;">사유 : &#10;장소 : </textarea>
+                </div>
 
-        <div id="approval_flag_div">
-            <label>신청처리 결과</label>
-            <select id = "approval_flag" onchange="approvalChange()" data-role="none">
-                <option value="">결재처리</option>
-                <option value="검토">검토중</option>
-                <option value="승인">승인</option>
-                <option value="반려">반려</option>
-                <option value="신청">신청</option>
-            </select>
-        </div>
+                <div id="approval_flag_div">
+                    <label>신청처리 결과</label>
+                    <select id = "approval_flag" onchange="approvalChange()" data-role="none">
+                        <option value="">결재처리</option>
+                        <option value="검토">검토중</option>
+                        <option value="승인">승인</option>
+                        <option value="반려">반려</option>
+                        <option value="신청">신청</option>
+                    </select>
+                </div>
 
-        <div id="approval_comment_div">
-            <label>결재사항</label>
-            <textarea name="approval_comment" id="approval_comment" class="textarea01" rows="8" cols="70" style="color:#999; background-color:#FFFF6C; overflow-x:hidden; overflow-y:auto; font-size:15px;"></textarea>
-        </div>
+                <div id="approval_comment_div">
+                    <label>결재사항</label>
+                    <textarea name="approval_comment" id="approval_comment" class="textarea01" rows="8" cols="70" style="color:#999; background-color:#FFFF6C; overflow-x:hidden; overflow-y:auto; font-size:15px;"></textarea>
+                </div>
 
-        <div class="btn-area-1">
-            <div class="grid-pt">
-                <div class="grid-cd-1"  id="holidayCancelBtn"   ><button onclick="holidayCancel();"                                                                 >취소</button></div>
-                <div class="grid-cd-2"  id="holidayApplyBtn"    ><button class="ui-btn ui-corner-all ui-btn-b" id="applyBtn"    onclick="holidayApply('apply');"    >신청</button></div>
-                <div class="grid-cd-2"  id="holidayModifyBtn"   ><button class="ui-btn ui-corner-all ui-btn-b" id="modifyBtn"   onclick="holidayApply('modify');"   >수정</button></div>
+                <div class="btn-area-1">
+                    <div class="grid-pt">
+                        <div class="grid-cd-1"  id="holidayCancelBtn"   ><button onclick="holidayCancel();"                                                                 >취소</button></div>
+                        <div class="grid-cd-2"  id="holidayApplyBtn"    ><button class="ui-btn ui-corner-all ui-btn-b" id="applyBtn"    onclick="holidayApply('apply');"    >신청</button></div>
+                        <div class="grid-cd-2"  id="holidayModifyBtn"   ><button class="ui-btn ui-corner-all ui-btn-b" id="modifyBtn"   onclick="holidayApply('modify');"   >수정</button></div>
+                    </div>
+                </div>
+                <div class="btn-area-2">
+                    <div class="gird-pt">
+                        <button class="ui-btn ui-corner-all ui-btn-b" id="holidayDeleteBtn"         onclick="holidayDelete();" style="background-color:#FF3636;">삭제</button>
+                        <button                                       id="memberHolidayCancelBtn"   onclick="holidayCancel();" style="display:none;">취소</button>
+                    </div>
+                </div>
+            </div>
+            <!-- footer -->
+            <div class="footer" data-role="footer" data-position="fixed">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a onclick="movePage('main.html')" data-icon="home"                 >홈     </a></li>
+                        <li><a onclick="movePage('projectList.html')" data-icon="shop"          >프로젝트</a></li>
+                        <li><a onclick="viewHolidayDetail()" data-icon="calendar"               >휴가신청</a></li>
+                        <li><a href="#" data-icon="power" onclick="javascript:callLogout()";    >로그아웃</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
-        <div class="btn-area-2">
-            <div class="gird-pt">
-                <button class="ui-btn ui-corner-all ui-btn-b" id="holidayDeleteBtn"         onclick="holidayDelete();" style="background-color:#FF3636;">삭제</button>
-                <button                                       id="memberHolidayCancelBtn"   onclick="holidayCancel();" style="display:none;">취소</button>
-            </div>
-        </div>
-    </div>
-    <!-- footer -->
-    <div class="footer" data-role="footer" data-position="fixed">
-        <div data-role="navbar">
-            <ul>
-                <li><a onclick="movePage('main.html')" data-icon="home"                 >홈     </a></li>
-                <li><a onclick="movePage('projectList.html')" data-icon="shop"          >프로젝트</a></li>
-                <li><a onclick="viewHolidayDetail()" data-icon="calendar"               >휴가신청</a></li>
-                <li><a href="#" data-icon="power" onclick="javascript:callLogout()";    >로그아웃</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
-</body>
+    </body>
 </html>
