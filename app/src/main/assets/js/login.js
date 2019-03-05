@@ -18,7 +18,7 @@
 
             loginData = JSON.parse(getUserData());
             id = loginData.id;
-            logout_result = window.android.callLogout(sndUrl, id);
+            logout_result = window.temp.callLogout(sndUrl, id);
 
 
 

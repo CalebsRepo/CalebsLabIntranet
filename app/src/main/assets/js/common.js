@@ -21,7 +21,7 @@
      */
     function navigate(param, urlAddress, successFunc, errorFunc) {
 
-        sessionId = window.android.returnSessionId();
+        sessionId = window.temp.returnSessionId();
         //JSON 데이터가 없을 시
         if(param == "") {
             console.log("JSON 데이터 없음");
@@ -181,7 +181,7 @@
 
     /* 서버에서 push 전송 시 */
     function pushNavigate(param, urlAddress) {
-        sessionId = window.android.returnSessionId();
+        sessionId = window.temp.returnSessionId();
 
         $.ajax({
             url : sndUrl + urlAddress,

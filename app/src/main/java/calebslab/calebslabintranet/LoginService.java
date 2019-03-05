@@ -15,19 +15,19 @@ import java.net.URL;
 
 public class LoginService {
 
-    private static String loginData;
+    private String loginData;
 
-    public String login(String id, String pwd, String sndUrl, Activity mContext){
+    public String login(String id, String pwd, String sndUrl, Activity mContext) {
 
         Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
 
-                try{
+                try {
                     URL url;
                     HttpURLConnection conn;
                     DataOutputStream wr;
-                    String callUrl = sndUrl +"login.json";
+                    String callUrl = sndUrl + "login.json";
 
                     url = new URL(callUrl);
                     conn = (HttpURLConnection) url.openConnection();
@@ -67,9 +67,9 @@ public class LoginService {
 
                     }
                     conn.disconnect();
-                } catch(MalformedURLException e){
+                } catch (MalformedURLException e) {
                     e.printStackTrace();
-                } catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
 
@@ -82,7 +82,7 @@ public class LoginService {
 
             t1.join();
 
-        }catch (InterruptedException e){
+        } catch (InterruptedException e) {
 
             t1.interrupt();
         }
@@ -91,4 +91,80 @@ public class LoginService {
 
     }
 
+
+    public String logOut(String sndUrl, String id, Activity mContext) {
+
+        Thread t2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    URL url;
+                    HttpURLConnection conn;
+                    DataOutputStream wr;
+
+                    String callUrl = sndUrl + "logOut.json";
+
+                    url = new URL(callUrl);
+                    conn = (HttpURLConnection) url.openConnection();
+                    conn.setDoOutput(true);
+                    conn.setConnectTimeout(15000);
+                    conn.setReadTimeout(10000);
+                    conn.setRequestMethod("POST");
+                    conn.setDefaultUseCaches(false);
+                    conn.setUseCaches(false);
+                    conn.setDoInput(true);
+                    conn.setDoOutput(true);
+                    SessionManager sm = new SessionManager();
+                    sm.setCookieHeader(mContext, conn);
+
+                    String param = "id=" + id;
+
+                    wr = new DataOutputStream(conn.getOutputStream());
+                    wr.writeBytes(param);
+                    wr.flush();
+                    wr.close();
+
+                    Log.d("LOG", url + "로 HTTP 요청 전송");
+
+                    if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) { //이때 요청이 보내짐.
+
+                        Log.d("LOG", "HTTP_OK를 받지 못했습니다.");
+
+                    } else {
+
+                        InputStream in = new BufferedInputStream(conn.getInputStream());
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                        String result = "";
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            result += line;
+                        }
+                        loginData = result;
+                    }
+                    conn.disconnect();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        try {
+            t2.start();
+            t2.join();
+
+        } catch (InterruptedException e) {
+
+            t2.interrupt();
+
+
+        }
+
+        return loginData;
+
     }
+
+}

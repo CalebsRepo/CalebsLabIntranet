@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         context = this.getBaseContext();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);  //세로모드 고정
         web = (WebView) findViewById(R.id.webview); //웹뷰 선언
-        webViewInterface = new WebViewInterface(MainActivity.this, web);//임시
+        webViewInterface = new WebViewInterface(MainActivity.this, web,handler);//임시
         web.setWebViewClient(new WebViewClient());
 
         // 웹뷰 세팅
@@ -329,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
         /* 페이지 이동*/
         @JavascriptInterface
         public void movePage(final String url, final String json) {
-            Log.d("HYJ","아니여기까지 안들어오세여?????");
+
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -650,76 +650,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        /**
-         * 내용 : 로그아웃
-         * param sndUrl : 대상 서버 URL, id : 로그아웃 아이디
-         * return : 로그아웃 성공 시 "success" 실패 시 "fail" 반환
-         **/
-        @JavascriptInterface
-        public String callLogout(final String sndUrl, final String id) throws Exception {
-            userData ="";
-            Thread t2 = new Thread(new Runnable() {
-                @Override
-                public void run() {
 
-                    try{
-                        URL url;
-                        HttpURLConnection conn;
-                        DataOutputStream wr;
 
-                        String callUrl = sndUrl +"logOut.json";
-
-                        url = new URL(callUrl);
-                        conn = (HttpURLConnection) url.openConnection();
-                        conn.setDoOutput(true);
-                        conn.setConnectTimeout(15000);
-                        conn.setReadTimeout(10000);
-                        conn.setRequestMethod("POST");
-                        conn.setDefaultUseCaches(false);
-                        conn.setUseCaches(false);
-                        conn.setDoInput(true);
-                        conn.setDoOutput(true);
-                        SessionManager sm = new SessionManager();
-                        sm.setCookieHeader(myApp, conn);
-
-                        String param = "id=" + id;
-
-                        wr = new DataOutputStream(conn.getOutputStream());
-                        wr.writeBytes(param);
-                        wr.flush();
-                        wr.close();
-
-                        Log.d("LOG", url + "로 HTTP 요청 전송");
-
-                        if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) { //이때 요청이 보내짐.
-
-                            Log.d("LOG", "HTTP_OK를 받지 못했습니다.");
-
-                        } else {
-
-                            InputStream in = new BufferedInputStream(conn.getInputStream());
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                            String result ="";
-                            String line;
-                            while ((line = reader.readLine()) != null) {
-                                result += line;
-                            }
-                            userData = result;
-                        }
-                        conn.disconnect();
-                    } catch(MalformedURLException e){
-                        e.printStackTrace();
-                    } catch(IOException e){
-                        e.printStackTrace();
-                    }
-
-                }
-            });
-            t2.start();
-            t2.join();
-
-            return userData;
-        }
 
         /**
          * 내용 : android preference에 저장된 세션 아이디 반환
