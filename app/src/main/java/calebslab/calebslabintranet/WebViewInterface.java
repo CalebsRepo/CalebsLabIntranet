@@ -85,7 +85,11 @@ public class WebViewInterface {
         return sessionId;
     }
 
-    /* 연차사용내역 엑셀 파일 생성 및 공유 */
+
+    /**
+     * 내용 : 연차사용내역 엑셀 파일 생성 및 공유
+     * param result : 엑셀로 출력할 json 형식의 문자
+     **/
     @JavascriptInterface
     public void saveExcel(final String result){
         Toast.makeText(mContext.getApplicationContext(),"Excel 파일을 생성 중 입니다.",Toast.LENGTH_SHORT).show();
